@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { ChatMessages } from '@/components/chat/ChatMessages'
 import { ChatInput } from '@/components/chat/ChatInput'
@@ -27,16 +27,14 @@ export function ChatPage() {
     messages,
     isStreaming,
     error,
+    messageCount: _messageCount,
+    limitReached,
     loadMessages,
     sendMessage,
     stopStreaming,
     regenerate,
     clearError,
   } = useChat(activeConversationId)
-
-  useEffect(() => {
-    if (activeConversationId) loadMessages()
-  }, [activeConversationId, loadMessages])
 
   const handleNewChat = useCallback(async () => {
     const conv = await createConversation()
@@ -45,8 +43,9 @@ export function ChatPage() {
 
   const handleSelectConversation = useCallback((id: string) => {
     setActiveConversationId(id)
+    loadMessages()
     if (window.innerWidth < 1024) setSidebarOpen(false)
-  }, [])
+  }, [loadMessages])
 
   const handleSendMessage = useCallback(async (content: string) => {
     if (!activeConversationId) {
@@ -79,8 +78,8 @@ export function ChatPage() {
         onTogglePin={togglePin}
         onSignOut={signOut}
         searchQuery={searchQuery}
-          searchFilter={debouncedSearch}
-          onSearchChange={setSearchQuery}
+        searchFilter={debouncedSearch}
+        onSearchChange={setSearchQuery}
       />
       <div className="flex-1 flex flex-col min-w-0">
         <header className="flex items-center gap-3 px-4 h-12 border-b border-neutral-800 shrink-0">
@@ -107,6 +106,11 @@ export function ChatPage() {
             )}
           </div>
         </header>
+        {limitReached && (
+          <div className="px-4 py-2 bg-amber-900/20 border-b border-amber-800/30 text-center">
+            <p className="text-xs text-amber-400">Limit reached — 35 messages per conversation. Start a new chat.</p>
+          </div>
+        )}
         <ChatMessages
           messages={messages}
           loading={convsLoading}
@@ -119,7 +123,7 @@ export function ChatPage() {
           onSend={handleSendMessage}
           onStop={stopStreaming}
           isStreaming={isStreaming}
-          disabled={!user}
+          disabled={!user || limitReached}
         />
       </div>
     </div>

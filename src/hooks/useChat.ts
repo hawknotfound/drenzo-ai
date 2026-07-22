@@ -5,18 +5,25 @@ import { streamChatWithCallbacks, type OpenCodeMessage } from '@/lib/opencode/se
 import { getRelevantFiles } from '@/lib/utils/relevance'
 import { getRelevantKnowledge } from '@/lib/cloudinary/service'
 
+const MESSAGE_LIMIT = 35
+
 export function useChat(conversationId: string | null) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isStreaming, setIsStreaming] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const sendingRef = useRef(false)
 
-  const loadMessages = useCallback(async () => {
-    if (!conversationId) { setMessages([]); return }
+  const messageCount = messages.filter(m => m.role === 'user').length
+  const limitReached = messageCount >= MESSAGE_LIMIT
+
+  const loadMessages = useCallback(async (convId?: string) => {
+    const id = convId || conversationId
+    if (!id || sendingRef.current) { setMessages([]); return }
     const { data, error } = await supabase
       .from('messages')
       .select('*')
-      .eq('conversation_id', conversationId)
+      .eq('conversation_id', id)
       .order('created_at', { ascending: true })
 
     if (!error && data) setMessages(data)
@@ -26,7 +33,9 @@ export function useChat(conversationId: string | null) {
   const sendMessage = useCallback(async (content: string, overrideConvId?: string) => {
     const convId = overrideConvId || conversationId
     if (!convId || !content.trim()) return
+    if (limitReached) { setError('Message limit reached (35 per conversation). Start a new chat.'); return }
 
+    sendingRef.current = true
     setError(null)
 
     const userMessage: ChatMessage = {
@@ -91,6 +100,7 @@ export function useChat(conversationId: string | null) {
           })
         },
         onDone: async () => {
+          sendingRef.current = false
           setIsStreaming(false)
           const lastMsg = messages[messages.length - 1]
           if (lastMsg && lastMsg.role === 'assistant' && lastMsg.content) {
@@ -103,14 +113,16 @@ export function useChat(conversationId: string | null) {
           }
         },
         onError: (err) => {
+          sendingRef.current = false
           setIsStreaming(false)
           setError(err.message)
         },
       }
     )
-  }, [conversationId, messages])
+  }, [conversationId, messages, limitReached])
 
   const stopStreaming = useCallback(() => {
+    sendingRef.current = false
     abortRef.current?.abort()
     setIsStreaming(false)
   }, [])
@@ -130,6 +142,8 @@ export function useChat(conversationId: string | null) {
     messages,
     isStreaming,
     error,
+    messageCount,
+    limitReached,
     loadMessages,
     sendMessage,
     stopStreaming,
