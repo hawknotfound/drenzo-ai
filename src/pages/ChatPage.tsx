@@ -88,8 +88,8 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
       const title = text.length > 55 ? text.slice(0, 52) + '...' : text
       const conv = await createConversation(title)
       if (conv) {
-        setActiveConversationId(conv.id)
         sendMessage(text, conv.id)
+        setActiveConversationId(conv.id)
         return
       }
     }

@@ -4,13 +4,8 @@ import { useThemeContext } from '@/providers/ThemeProvider';
 import { useSettings } from '@/hooks/useSettings';
 
 const MODELS = [
-  { id: 'deepseek-v4-flash-free', label: 'Default (DeepSeek V4 Flash)' },
-  { id: 'deepseek-v4', label: 'DeepSeek V4' },
-  { id: 'deepseek-r1', label: 'DeepSeek R1' },
-  { id: 'gpt-4o', label: 'GPT-4o' },
-  { id: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-  { id: 'claude-3.5-sonnet', label: 'Claude 3.5 Sonnet' },
-  { id: 'claude-3-haiku', label: 'Claude 3 Haiku' },
+  { id: 'deepseek-v4-flash-free', label: 'DeepSeek V4 Flash Free' },
+  { id: 'deepseek-r1', label: 'DeepSeek R1 (reasoning)' },
 ]
 
 interface SettingsModalProps {

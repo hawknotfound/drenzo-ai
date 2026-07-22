@@ -34,7 +34,8 @@ export function useChat(conversationId: string | null, isGuest = false, language
   const loadMessages = useCallback(async (convId?: string) => {
     if (isGuest) { setMessages([]); return }
     const id = convId || conversationId
-    if (!id || sendingRef.current) { setMessages([]); return }
+    if (!id) { setMessages([]); return }
+    if (sendingRef.current) return
     const { data, error } = await supabase
       .from('messages')
       .select('*')
@@ -47,8 +48,11 @@ export function useChat(conversationId: string | null, isGuest = false, language
 
   useEffect(() => {
     if (isGuest) { setMessages([]); return }
-    if (conversationId) loadMessages(conversationId)
-    else setMessages([])
+    if (conversationId) {
+      if (!sendingRef.current) loadMessages(conversationId)
+    } else {
+      setMessages([])
+    }
   }, [conversationId, isGuest, loadMessages])
 
   const sendMessage = useCallback(async (content: string, overrideConvId?: string, isRegen = false) => {
