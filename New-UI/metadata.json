@@ -1,0 +1,6 @@
+{
+  "name": "Drenzo AI",
+  "description": "An interactive, animated AI studio workspace interface inspired by Drenzo AI with rich chat, model selection, capability chips, and smooth motion transitions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

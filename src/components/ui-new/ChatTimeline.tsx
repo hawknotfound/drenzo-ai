@@ -9,12 +9,11 @@ interface ChatTimelineProps {
   messages: ChatMessage[];
   onSendMessage: (text: string) => void;
   onRegenerate: () => void;
-  onNewChat: () => void;
   isStreaming: boolean;
 }
 
 export function ChatTimeline({
-  messages, onSendMessage, onRegenerate, onNewChat, isStreaming
+  messages, onSendMessage, onRegenerate, isStreaming
 }: ChatTimelineProps) {
   const [inputText, setInputText] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);

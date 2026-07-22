@@ -5,7 +5,6 @@ import {
   Star, Eye, Lightbulb, Target, Users, Scale, UserCheck, Terminal,
   Code2, Globe, PenTool, Clock, MessageSquare, Monitor
 } from 'lucide-react';
-import type { PromptSuggestion } from '@/types/ui';
 import { PROMPT_SUGGESTIONS } from '@/data/initialData';
 
 interface HeroStateProps {
@@ -66,12 +65,12 @@ const THEMES: Record<string, { border: string; hoverBorder: string; bg: string; 
   },
 };
 
-const ANIM_VARIANTS: Record<string, { initial: object; animate: object }> = {
+const ANIM_VARIANTS = {
   fadeRight: { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 } },
   fadeLeft: { initial: { opacity: 0, x: 20 }, animate: { opacity: 1, x: 0 } },
   fadeUp: { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } },
   scale: { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 } },
-};
+} as const;
 
 function SuggestionIcon({ iconName }: { iconName: string }) {
   const props = { className: "w-3.5 h-3.5" };

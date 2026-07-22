@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Plus, Search, Settings, ChevronRight,
-  X, PanelLeftOpen, Sparkles, Trash2, Pencil, Check
+  X, PanelLeftOpen, Sparkles, Trash2, Pencil
 } from 'lucide-react';
 import type { Conversation } from '@/types/database';
 
@@ -17,7 +17,6 @@ interface SidebarProps {
   onRenameConversation: (id: string, title: string) => void;
   onOpenSearch: () => void;
   onOpenSettings: () => void;
-  onSignOut: () => void;
   userName?: string;
   userEmail?: string;
 }
@@ -26,7 +25,7 @@ export function Sidebar({
   isCollapsed, onToggleCollapse, onNewChat, conversations,
   activeConversationId, onSelectConversation,
   onDeleteConversation, onRenameConversation,
-  onOpenSearch, onOpenSettings, onSignOut,
+  onOpenSearch, onOpenSettings,
   userName, userEmail,
 }: SidebarProps) {
   const [editingId, setEditingId] = useState<string | null>(null);

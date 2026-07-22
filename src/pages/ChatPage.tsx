@@ -46,7 +46,6 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     guestMessagesUsed,
     loadMessages,
     sendMessage,
-    stopStreaming,
     regenerate,
     clearError,
   } = useChat(isGuest ? guestConvId.current : activeConversationId, !!isGuest, language)
@@ -113,7 +112,6 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
             onRenameConversation={renameConversation}
             onOpenSearch={() => setIsSearchOpen(true)}
             onOpenSettings={() => setIsSettingsOpen(true)}
-            onSignOut={signOut}
             userName={user?.user_metadata?.name || user?.email?.split('@')[0]}
             userEmail={user?.email || ''}
           />
@@ -179,7 +177,6 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                     messages={messages}
                     onSendMessage={handleSendMessage}
                     onRegenerate={regenerate}
-                    onNewChat={handleNewChat}
                     isStreaming={isStreaming}
                   />
                 </motion.div>
