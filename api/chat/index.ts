@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 
-const OPENCODE_API_URL = process.env.OPENCODE_API_URL || 'https://opencode.ai/zen/v1'
-const OPENCODE_API_KEY = process.env.OPENCODE_API_KEY
-const OPENCODE_MODEL = process.env.OPENCODE_MODEL || 'deepseek-v4-flash-free'
+const OPENCODE_API_URL = process.env.OPENCODE_API_URL || process.env.VITE_OPENCODE_API_URL || 'https://opencode.ai/zen/v1'
+const OPENCODE_API_KEY = process.env.OPENCODE_API_KEY || process.env.VITE_OPENCODE_API_KEY
+const OPENCODE_MODEL = process.env.OPENCODE_MODEL || process.env.VITE_OPENCODE_MODEL || 'deepseek-v4-flash-free'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
