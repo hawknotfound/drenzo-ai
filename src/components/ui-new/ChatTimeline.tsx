@@ -40,8 +40,8 @@ export function ChatTimeline({
   };
 
   return (
-    <div className="flex flex-col h-full w-full max-w-4xl mx-auto px-4 select-none">
-      <div className="flex-1 overflow-y-auto space-y-6 py-6 pr-2 custom-scrollbar">
+    <div className="flex flex-col h-full w-full max-w-4xl mx-auto px-3 sm:px-4 select-none">
+      <div className="flex-1 overflow-y-auto space-y-4 sm:space-y-6 py-4 sm:py-6 pr-1 sm:pr-2 custom-scrollbar">
         <AnimatePresence initial={false}>
           {messages.map((msg) => (
             <motion.div
@@ -69,9 +69,9 @@ export function ChatTimeline({
               </div>
 
               <div
-                className={`p-4 rounded-2xl text-sm leading-relaxed ${
+                className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl text-sm leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-blue-600/20 border border-blue-500/30 text-zinc-100 ml-auto max-w-[85%]'
+                    ? 'bg-blue-600/20 border border-blue-500/30 text-zinc-100 ml-auto max-w-[85%] sm:max-w-[75%]'
                     : 'bg-[#151924]/80 border border-white/10 text-zinc-200 w-full backdrop-blur-md shadow-xl'
                 }`}
               >

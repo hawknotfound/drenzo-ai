@@ -118,12 +118,12 @@ export function HeroState({
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="text-center space-y-2 mb-8"
+        className="text-center space-y-1 mb-6 sm:mb-8"
       >
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-sm font-sans">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-sm font-sans">
           Drenzo AI
         </h1>
-        <p className="text-lg md:text-xl text-zinc-400 font-normal tracking-wide">
+        <p className="text-sm sm:text-lg md:text-xl text-zinc-400 font-normal tracking-wide">
           Think. Build. Create.
         </p>
       </motion.div>
@@ -146,10 +146,10 @@ export function HeroState({
           onKeyDown={handleKeyDown}
           placeholder="Message AI chat..."
           rows={3}
-          className="w-full p-5 bg-transparent text-white placeholder-zinc-500 text-base font-normal resize-none focus:outline-none custom-scrollbar"
+          className="w-full p-4 sm:p-5 bg-transparent text-white placeholder-zinc-500 text-sm sm:text-base font-normal resize-none focus:outline-none custom-scrollbar"
         />
 
-        <div className="flex items-center justify-end px-4 pb-4">
+        <div className="flex items-center justify-end px-3 sm:px-4 pb-3 sm:pb-4">
           <button
             type="button"
             onClick={onSubmit}
@@ -165,7 +165,7 @@ export function HeroState({
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-10 w-full">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 mt-6 sm:mt-10 w-full">
         {PROMPT_SUGGESTIONS.map((sug, i) => {
           const theme = THEMES[sug.theme || 'blue'];
           const anim = ANIM_VARIANTS[sug.anim || 'fadeUp'];
@@ -179,12 +179,12 @@ export function HeroState({
             >
               <button
                 onClick={() => onSelectPromptSuggestion(sug.promptText)}
-                className={`group flex items-center gap-2.5 p-3 rounded-2xl border transition-all duration-200 text-left shadow-md active:scale-98 cursor-pointer w-full ${theme.bg} ${theme.border} ${theme.hoverBg} ${theme.hoverBorder} ${theme.shadow}`}
+                className={`group flex items-center gap-2 sm:gap-2.5 p-2 sm:p-3 rounded-xl sm:rounded-2xl border transition-all duration-200 text-left shadow-md active:scale-98 cursor-pointer w-full ${theme.bg} ${theme.border} ${theme.hoverBg} ${theme.hoverBorder} ${theme.shadow}`}
               >
-                <div className={`p-1.5 rounded-xl transition-colors shrink-0 ${theme.iconBg} ${theme.iconHoverBg}`}>
+                <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl transition-colors shrink-0 ${theme.iconBg} ${theme.iconHoverBg}`}>
                   <SuggestionIcon iconName={sug.icon} />
                 </div>
-                <span className={`text-xs font-medium truncate ${theme.text} group-hover:text-white transition-colors`}>
+                <span className={`text-[10px] sm:text-xs font-medium truncate ${theme.text} group-hover:text-white transition-colors`}>
                   {sug.label}
                 </span>
               </button>
