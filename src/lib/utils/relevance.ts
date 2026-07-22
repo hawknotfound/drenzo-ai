@@ -1,35 +1,45 @@
 const KEYWORD_MAP: Record<string, string[]> = {
-  'about-me': ['who are you', 'about', 'yourself', 'introduce'],
-  identity: ['identity', 'who am i', 'self'],
-  rules: ['rule', 'constraint', 'limit', 'cannot', 'must not', 'forbidden', 'restriction'],
-  'communication-style': ['communication', 'talk', 'speak', 'conversation'],
-  'operating-system': ['operating system', 'how you work', 'system', 'framework'],
-  knowledge: ['know', 'knowledge', 'information', 'fact', 'general', 'tell me about'],
-  'mental-models': ['mental model', 'think', 'reason', 'approach', 'logic', 'framework'],
-  projects: ['project', 'drenzo', 'portfolio', 'work', 'case study'],
-  philosophy: ['philosophy', 'meaning', 'purpose', 'belief', 'why'],
-  patterns: ['pattern', 'habit', 'behavior', 'cycle'],
-  'emotional-patterns': ['emotion', 'feel', 'mood', 'emotional'],
-  'social-patterns': ['social', 'people', 'relationship', 'friend'],
-  psychology: ['psychology', 'mind', 'cognitive', 'mental'],
-  'defense-mechanisms': ['defense', 'protect', 'cope', 'mechanism'],
-  'inner-child': ['inner child', 'childhood', 'past', 'wound'],
-  beliefs: ['believe', 'belief', 'value', 'principle'],
-  shadow: ['shadow', 'dark', 'hidden', 'suppress'],
-  strengths: ['strength', 'good at', 'strong', 'talent'],
-  weaknesses: ['weakness', 'weak', 'improve', 'grow'],
-  goals: ['goal', 'aim', 'target', 'objective', 'ambition'],
-  future: ['future', 'next', 'plan', 'ahead'],
-  fears: ['fear', 'scared', 'anxious', 'worry'],
-  decisions: ['decision', 'choose', 'choice', 'option', 'decide'],
-  'mind-games': ['mind game', 'trick', 'manipulate', 'game'],
-  conflict: ['conflict', 'argue', 'fight', 'disagree'],
-  'pain-and-justice': ['pain', 'justice', 'suffer', 'unfair', 'hurt'],
-  memory: ['memory', 'remember', 'recall', 'past'],
-  taste: ['taste', 'prefer', 'like', 'aesthetic'],
-  'non-negotiables': ['non-negotiable', 'must have', 'deal breaker', 'boundary'],
-  mistakes: ['mistake', 'error', 'fail', 'wrong', 'lesson'],
-  lessons: ['lesson', 'learn', 'taught', 'experience'],
+  '01-identity-origin': [
+    'who are you', 'about', 'yourself', 'introduce', 'identity', 'name', 'shubham',
+    'drenzo', 'origin', 'birth', 'background', 'personal', 'life story', 'lore',
+    'history', 'nature', 'core', 'personality', 'mind', 'communicate', 'style',
+    'taste', 'prefer', 'environment', 'space', 'health', 'body', 'sleep', 'routine'
+  ],
+  '02-philosophy-rules': [
+    'philosophy', 'belief', 'value', 'principle', 'rule', 'non-negotiable',
+    'constraint', 'limit', 'cannot', 'must not', 'forbidden', 'restriction',
+    'mental model', 'think', 'reason', 'approach', 'logic', 'decision',
+    'choose', 'option', 'decide', 'honest', 'quote', 'karma', 'meaning',
+    'purpose', 'why', 'boundary', 'deal breaker', 'standard'
+  ],
+  '03-psychology-patterns': [
+    'emotion', 'feel', 'feelings', 'mood', 'emotional', 'pattern', 'cycle',
+    'behavior', 'habit', 'shadow', 'dark', 'hidden', 'suppress', 'defense',
+    'protect', 'cope', 'mechanism', 'fear', 'scared', 'anxious', 'worry',
+    'blindspot', 'blind', 'paradox', 'contradiction', 'strength', 'talent',
+    'good at', 'strong', 'weakness', 'weak', 'improve', 'grow', 'attachment',
+    'social', 'people', 'relationship', 'friend', 'inner child', 'childhood',
+    'wound', 'past', 'conflict', 'argue', 'apology', 'maafi', 'forgive',
+    'growth edge', 'psychology', 'mind', 'cognitive', 'mental', 'gussa',
+    'angry', 'lonely', 'alone'
+  ],
+  '04-knowledge-projects': [
+    'know', 'knowledge', 'information', 'learn', 'interest', 'curious',
+    'project', 'drenzo', 'portfolio', 'work', 'build', 'create', 'quest',
+    'adventure', 'skill', 'lesson', 'taught', 'experience', 'mistake',
+    'error', 'fail', 'wrong', 'people', 'value', 'drain', 'friend', 'circle',
+    'topic', 'explore', 'study', 'health goal'
+  ],
+  '05-life-growth': [
+    'goal', 'aim', 'target', 'objective', 'ambition', 'future', 'next',
+    'plan', 'ahead', 'dream', 'vision', 'life', 'growth', 'phase', 'age',
+    'operating manual', 'wound', 'trauma', 'emergency', 'crisis', 'scroll',
+    'comparison', 'tulna', 'isolat', 'alone', 'suicidal', 'dark thought',
+    'gussa', 'anger', 'coping', 'tool', 'golden thread', 'survival',
+    'decade', '2021', '2022', '2023', '2024', '2025', '2026', '2027',
+    'current', 'teen', 'relationship', 'romantic', 'family', 'parents',
+    'self-check', 'check-in', 'protocol', 'foundation'
+  ],
 }
 
 export function getRelevantFiles(message: string): string[] {
