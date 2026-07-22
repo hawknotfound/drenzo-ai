@@ -23,8 +23,9 @@ export function useChat(conversationId: string | null) {
     if (error) setError(error.message)
   }, [conversationId])
 
-  const sendMessage = useCallback(async (content: string) => {
-    if (!conversationId || !content.trim()) return
+  const sendMessage = useCallback(async (content: string, overrideConvId?: string) => {
+    const convId = overrideConvId || conversationId
+    if (!convId || !content.trim()) return
 
     setError(null)
 
@@ -38,7 +39,7 @@ export function useChat(conversationId: string | null) {
 
     await supabase.from('messages').insert({
       id: userMessage.id,
-      conversation_id: conversationId,
+      conversation_id: convId,
       role: 'user',
       content,
     })
@@ -95,7 +96,7 @@ export function useChat(conversationId: string | null) {
           if (lastMsg && lastMsg.role === 'assistant' && lastMsg.content) {
             await supabase.from('messages').insert({
               id: assistantMessage.id,
-              conversation_id: conversationId,
+              conversation_id: convId,
               role: 'assistant',
               content: lastMsg.content,
             })

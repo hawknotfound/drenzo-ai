@@ -53,7 +53,7 @@ export function ChatPage() {
       const conv = await createConversation()
       if (conv) {
         setActiveConversationId(conv.id)
-        setTimeout(() => sendMessage(content), 100)
+        sendMessage(content, conv.id)
         return
       }
     }
