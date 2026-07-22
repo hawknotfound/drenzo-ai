@@ -19,6 +19,7 @@ export interface PromptSuggestion {
   promptText: string;
   theme?: 'blue' | 'purple' | 'amber' | 'emerald' | 'rose' | 'cyan' | 'violet' | 'orange';
   anim?: 'fadeRight' | 'fadeLeft' | 'fadeUp' | 'scale';
+  recommended?: boolean;
 }
 
 export interface PromptTemplate {

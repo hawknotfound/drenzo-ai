@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
   Send, Sparkles, Layout, FileSpreadsheet, GitPullRequest, Palette, Atom, Brain,
   Star, Eye, Lightbulb, Target, Users, Scale, UserCheck, Terminal,
-  Code2, Globe, PenTool, Clock, MessageSquare, Monitor
+  Code2, Globe, PenTool, Clock, MessageSquare, Monitor, Paperclip
 } from 'lucide-react';
 import { PROMPT_SUGGESTIONS } from '@/data/initialData';
 
@@ -105,12 +105,33 @@ export function HeroState({
 }: HeroStateProps) {
   const [isFocused, setIsFocused] = useState(false);
 
+  const recommended = PROMPT_SUGGESTIONS.filter(s => s.recommended)
+  const others = PROMPT_SUGGESTIONS.filter(s => !s.recommended)
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       onSubmit();
     }
   };
+
+  const handleAttach = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.txt,.md,.js,.ts,.tsx,.jsx,.py,.html,.css,.json,.csv,.yml,.yaml,.toml,.sh,.bat,.ps1,.sql,.xml,.env'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = () => {
+        const content = reader.result as string
+        const text = `[Attached: ${file.name}]\n\`\`\`\n${content}\n\`\`\``
+        setInputText(inputText ? `${inputText}\n\n${text}` : text)
+      }
+      reader.readAsText(file)
+    }
+    input.click()
+  }
 
   return (
     <div className="relative flex flex-col items-center w-full max-w-4xl mx-auto px-4 py-8 my-auto select-none">
@@ -149,7 +170,14 @@ export function HeroState({
           className="w-full p-4 sm:p-5 bg-transparent text-white placeholder-zinc-500 text-sm sm:text-base font-normal resize-none focus:outline-none custom-scrollbar"
         />
 
-        <div className="flex items-center justify-end px-3 sm:px-4 pb-3 sm:pb-4">
+        <div className="flex items-center justify-between px-3 sm:px-4 pb-3 sm:pb-4">
+          <button
+            onClick={handleAttach}
+            className="p-2.5 rounded-xl text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            title="Attach a file"
+          >
+            <Paperclip className="w-4 h-4" />
+          </button>
           <button
             type="button"
             onClick={onSubmit}
@@ -165,32 +193,69 @@ export function HeroState({
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 mt-6 sm:mt-10 w-full">
-        {PROMPT_SUGGESTIONS.map((sug, i) => {
-          const theme = THEMES[sug.theme || 'blue'];
-          const anim = ANIM_VARIANTS[sug.anim || 'fadeUp'];
-          return (
-            <motion.div
-              key={sug.id}
-              initial={anim.initial}
-              animate={anim.animate}
-              transition={{ duration: 0.35, delay: 0.3 + i * 0.04, ease: 'easeOut' }}
-              className="w-full"
-            >
-              <button
-                onClick={() => onSelectPromptSuggestion(sug.promptText)}
-                className={`group flex items-center gap-2 sm:gap-2.5 p-2 sm:p-3 rounded-xl sm:rounded-2xl border transition-all duration-200 text-left shadow-md active:scale-98 cursor-pointer w-full ${theme.bg} ${theme.border} ${theme.hoverBg} ${theme.hoverBorder} ${theme.shadow}`}
+      {recommended.length > 0 && (
+        <div className="w-full mt-6 sm:mt-8">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-blue-400">Recommended</span>
+            <div className="h-px flex-1 bg-gradient-to-r from-blue-500/30 to-transparent" />
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:gap-2.5 w-full">
+            {recommended.map((sug, i) => {
+              const theme = THEMES[sug.theme || 'blue'];
+              return (
+                <motion.button
+                  key={sug.id}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.3 + i * 0.06 }}
+                  onClick={() => onSelectPromptSuggestion(sug.promptText)}
+                  className={`group flex items-center gap-2.5 p-3 rounded-xl border transition-all duration-200 text-left shadow-md active:scale-[0.98] cursor-pointer w-full ${theme.bg} ${theme.border} ${theme.hoverBg} ${theme.hoverBorder} ${theme.shadow} relative overflow-hidden`}
+                >
+                  <div className={`p-1.5 rounded-lg transition-colors shrink-0 ${theme.iconBg} ${theme.iconHoverBg}`}>
+                    <SuggestionIcon iconName={sug.icon} />
+                  </div>
+                  <span className={`text-xs font-semibold truncate ${theme.text} group-hover:text-white transition-colors`}>
+                    {sug.label}
+                  </span>
+                </motion.button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="w-full mt-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">More prompts</span>
+          <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 w-full">
+          {others.map((sug, i) => {
+            const theme = THEMES[sug.theme || 'blue'];
+            const anim = ANIM_VARIANTS[sug.anim || 'fadeUp'];
+            return (
+              <motion.div
+                key={sug.id}
+                initial={anim.initial}
+                animate={anim.animate}
+                transition={{ duration: 0.35, delay: 0.3 + i * 0.04 }}
+                className="w-full"
               >
-                <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl transition-colors shrink-0 ${theme.iconBg} ${theme.iconHoverBg}`}>
-                  <SuggestionIcon iconName={sug.icon} />
-                </div>
-                <span className={`text-[10px] sm:text-xs font-medium truncate ${theme.text} group-hover:text-white transition-colors`}>
-                  {sug.label}
-                </span>
-              </button>
-            </motion.div>
-          );
-        })}
+                <button
+                  onClick={() => onSelectPromptSuggestion(sug.promptText)}
+                  className={`group flex items-center gap-2 sm:gap-2.5 p-2 sm:p-3 rounded-xl sm:rounded-2xl border transition-all duration-200 text-left shadow-md active:scale-98 cursor-pointer w-full ${theme.bg} ${theme.border} ${theme.hoverBg} ${theme.hoverBorder} ${theme.shadow}`}
+                >
+                  <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl transition-colors shrink-0 ${theme.iconBg} ${theme.iconHoverBg}`}>
+                    <SuggestionIcon iconName={sug.icon} />
+                  </div>
+                  <span className={`text-[10px] sm:text-xs font-medium truncate ${theme.text} group-hover:text-white transition-colors`}>
+                    {sug.label}
+                  </span>
+                </button>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
 
 

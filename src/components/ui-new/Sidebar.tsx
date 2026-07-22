@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   Plus, Search, Settings, ChevronRight,
-  X, PanelLeftOpen, Sparkles, Trash2, Pencil
+  X, PanelLeftOpen, Sparkles, Trash2, Pencil, Pin, PinOff
 } from 'lucide-react';
 import type { Conversation } from '@/types/database';
 
@@ -14,6 +14,7 @@ interface SidebarProps {
   onSelectConversation: (id: string) => void;
   onDeleteConversation: (id: string) => void;
   onRenameConversation: (id: string, title: string) => void;
+  onTogglePin: (id: string, isPinned: boolean) => void;
   onOpenSearch: () => void;
   onOpenSettings: () => void;
   userName?: string;
@@ -23,7 +24,7 @@ interface SidebarProps {
 export function Sidebar({
   isCollapsed, onToggleCollapse, onNewChat, conversations,
   activeConversationId, onSelectConversation,
-  onDeleteConversation, onRenameConversation,
+  onDeleteConversation, onRenameConversation, onTogglePin,
   onOpenSearch, onOpenSettings,
   userName, userEmail,
 }: SidebarProps) {
@@ -54,6 +55,10 @@ export function Sidebar({
     { id: 'search', label: 'Search Conversations', icon: Search, onClick: onOpenSearch },
     { id: 'settings', label: 'Settings', icon: Settings, onClick: onOpenSettings },
   ];
+
+  const pinned = conversations.filter(c => c.is_pinned)
+  const unpinned = conversations.filter(c => !c.is_pinned)
+  const sorted = [...pinned, ...unpinned]
 
   return (
     <>
@@ -131,7 +136,7 @@ export function Sidebar({
                 Recent Conversations
               </div>
               <div className="space-y-0.5 max-h-[300px] overflow-y-auto custom-scrollbar">
-                {conversations.map((c) => (
+                {sorted.map((c) => (
                   <div
                     key={c.id}
                     className={`group relative flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
@@ -141,7 +146,7 @@ export function Sidebar({
                     }`}
                     onClick={() => { onSelectConversation(c.id); if (window.innerWidth < 1024) onToggleCollapse(); }}
                   >
-                    <Sparkles className="w-3 h-3 shrink-0 text-zinc-500" />
+                    <Sparkles className={`w-3 h-3 shrink-0 ${c.is_pinned ? 'text-blue-400' : 'text-zinc-500'}`} />
                     {editingId === c.id ? (
                       <input
                         ref={editRef}
@@ -165,6 +170,15 @@ export function Sidebar({
                     <div className="max-lg:flex hidden group-hover:flex items-center gap-0.5">
                       {editingId !== c.id && (
                         <>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onTogglePin(c.id, c.is_pinned); }}
+                            className={`p-1.5 rounded hover:bg-white/10 transition-colors ${
+                              c.is_pinned ? 'text-blue-400' : 'text-zinc-500 hover:text-blue-400'
+                            }`}
+                            title={c.is_pinned ? 'Unpin' : 'Pin'}
+                          >
+                            {c.is_pinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
+                          </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); startRename(c.id, c.title); }}
                             className="p-1.5 rounded hover:bg-white/10 text-zinc-500 hover:text-blue-400 transition-colors"

@@ -1,7 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Markdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
+import remarkGfm from 'remark-gfm';
 import {
-  Send, Sparkles, Copy, Check, RotateCw, User, Brain
+  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip
 } from 'lucide-react';
 import type { ChatMessage } from '@/types/chat';
 
@@ -12,16 +15,56 @@ interface ChatTimelineProps {
   isStreaming: boolean;
 }
 
+function relativeTime(dateStr: string | undefined): string {
+  if (!dateStr) return ''
+  const now = Date.now()
+  const then = new Date(dateStr).getTime()
+  const diff = now - then
+  const seconds = Math.floor(diff / 1000)
+  if (seconds < 60) return 'just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days}d ago`
+  return new Date(dateStr).toLocaleDateString()
+}
+
+function exportChat(messages: ChatMessage[]) {
+  const text = messages
+    .map(m => `[${m.role === 'user' ? 'You' : 'Drenzo AI'}]\n${m.content}`)
+    .join('\n\n---\n\n')
+  const blob = new Blob([text], { type: 'text/plain' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `chat-export-${Date.now()}.txt`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export function ChatTimeline({
   messages, onSendMessage, onRegenerate, isStreaming
 }: ChatTimelineProps) {
   const [inputText, setInputText] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const threshold = 100
+    setIsAtBottom(el.scrollHeight - el.scrollTop - el.clientHeight < threshold)
+  }, [])
+
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    if (isAtBottom) {
+      bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages, isAtBottom])
 
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
@@ -39,9 +82,43 @@ export function ChatTimeline({
     }
   };
 
+  const handleAttach = () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.txt,.md,.js,.ts,.tsx,.jsx,.py,.html,.css,.json,.csv,.yml,.yaml,.toml,.sh,.bat,.ps1,.sql,.xml,.env'
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = () => {
+        const content = reader.result as string
+        const text = `[Attached: ${file.name}]\n\`\`\`\n${content}\n\`\`\``
+        setInputText(prev => prev ? `${prev}\n\n${text}` : text)
+      }
+      reader.readAsText(file)
+    }
+    input.click()
+  }
+
   return (
     <div className="flex flex-col h-full w-full max-w-4xl mx-auto px-3 sm:px-4 select-none">
-      <div className="flex-1 overflow-y-auto space-y-4 sm:space-y-6 py-4 sm:py-6 pr-1 sm:pr-2 custom-scrollbar">
+      <div
+        ref={scrollRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto space-y-4 sm:space-y-6 py-4 sm:py-6 pr-1 sm:pr-2 custom-scrollbar"
+      >
+        {messages.length > 0 && (
+          <div className="flex justify-end mb-2">
+            <button
+              onClick={() => exportChat(messages)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-400 hover:text-white text-xs transition-all"
+              title="Export chat"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export
+            </button>
+          </div>
+        )}
         <AnimatePresence initial={false}>
           {messages.map((msg) => (
             <motion.div
@@ -65,7 +142,7 @@ export function ChatTimeline({
                 <span className="text-xs font-semibold text-white">
                   {msg.role === 'user' ? 'You' : 'Drenzo AI'}
                 </span>
-                <span className="text-[11px] text-zinc-500 ml-auto">{msg.created_at}</span>
+                <span className="text-[11px] text-zinc-500 ml-auto">{relativeTime(msg.created_at)}</span>
               </div>
 
               <div
@@ -103,8 +180,14 @@ export function ChatTimeline({
                     <span className="text-xs text-zinc-400">Thinking</span>
                   </div>
                 ) : (
-                  <div className="whitespace-pre-wrap font-sans">
-                    {msg.content}
+                  <div className="prose prose-invert prose-sm max-w-none [&_pre]:bg-[#0d1117] [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_code]:text-sm [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_table]:w-full [&_th]:text-left [&_th]:border-b [&_th]:border-white/20 [&_th]:pb-2 [&_td]:py-1 [&_blockquote]:border-l-blue-500 [&_blockquote]:text-zinc-400 [&_a]:text-blue-400 [&_a:hover]:text-blue-300 [&_hr]:border-white/10 [&_img]:rounded-lg [&_ul]:list-disc [&_ol]:list-decimal [&_li]:my-0.5">
+                    {msg.role === 'assistant' ? (
+                      <Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>
+                        {msg.content}
+                      </Markdown>
+                    ) : (
+                      <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
+                    )}
                     {msg.role === 'assistant' && isStreaming && (
                       <motion.span
                         animate={{ opacity: [1, 0] }}
@@ -135,15 +218,49 @@ export function ChatTimeline({
         <div ref={bottomRef} />
       </div>
 
+      {isStreaming && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="shrink-0 flex items-center gap-2.5 px-4 py-2 mx-3 sm:mx-4 mb-2 rounded-xl bg-blue-600/10 border border-blue-500/20 backdrop-blur-sm"
+        >
+          <div className="flex items-center gap-1.5">
+            <motion.span
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
+              className="w-2 h-2 rounded-full bg-blue-400"
+            />
+            <motion.span
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, delay: 0.3 }}
+              className="w-2 h-2 rounded-full bg-blue-400"
+            />
+            <motion.span
+              animate={{ opacity: [0, 1, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, delay: 0.6 }}
+              className="w-2 h-2 rounded-full bg-blue-400"
+            />
+          </div>
+          <span className="text-xs text-blue-300 font-medium">Drenzo AI is thinking</span>
+        </motion.div>
+      )}
+
       <div className="pt-2 pb-4 shrink-0">
         <div className="relative flex items-center rounded-2xl bg-[#161a25]/90 border border-white/10 focus-within:border-blue-500/50 backdrop-blur-2xl shadow-xl">
+          <button
+            onClick={handleAttach}
+            className="ml-3 p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            title="Attach a file"
+          >
+            <Paperclip className="w-4 h-4" />
+          </button>
           <textarea
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Send a follow-up message..."
             rows={1}
-            className="w-full py-3.5 px-4 bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none resize-none custom-scrollbar"
+            className="w-full py-3.5 px-3 bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none resize-none custom-scrollbar"
           />
           <button
             onClick={() => {

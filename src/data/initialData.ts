@@ -20,6 +20,7 @@ export const PROMPT_SUGGESTIONS: PromptSuggestion[] = [
     category: 'learning',
     theme: 'rose',
     anim: 'fadeUp',
+    recommended: true,
     promptText: 'I want a full brutal honest roast of my current life situation. Tell me what I am doing wrong, where I am coping instead of fixing, what excuses I am hiding behind, and what I would tell myself if I had zero filter. Be savage but useful — I want to feel it.'
   },
   {
@@ -29,6 +30,7 @@ export const PROMPT_SUGGESTIONS: PromptSuggestion[] = [
     category: 'learning',
     theme: 'violet',
     anim: 'fadeRight',
+    recommended: true,
     promptText: 'I want to understand astrology deeply. Explain how my Sun, Moon, and rising signs interact. Cover houses, aspects, and what transits I should watch for. Be specific, practical — no generic horoscope nonsense.'
   },
   {
@@ -38,6 +40,7 @@ export const PROMPT_SUGGESTIONS: PromptSuggestion[] = [
     category: 'learning',
     theme: 'purple',
     anim: 'fadeUp',
+    recommended: true,
     promptText: 'Explain dark psychology tactics someone might be using on me. Cover gaslighting, manipulation patterns, love bombing, and how to detect them early. Give me defense strategies — boundaries, red flags, and recovery steps. Do not sugarcoat — I need to see it clearly.'
   },
   {
@@ -47,6 +50,7 @@ export const PROMPT_SUGGESTIONS: PromptSuggestion[] = [
     category: 'learning',
     theme: 'amber',
     anim: 'fadeLeft',
+    recommended: true,
     promptText: 'I am going to describe myself — my habits, my patterns, my insecurities, my goals. Then I want you to tell me what I am blind to. Where am I lying to myself? What am I avoiding? What pattern will I repeat next if I do not change? Be brutal. I can handle it.'
   },
   {
@@ -65,6 +69,7 @@ export const PROMPT_SUGGESTIONS: PromptSuggestion[] = [
     category: 'learning',
     theme: 'amber',
     anim: 'fadeRight',
+    recommended: true,
     promptText: 'I am going to tell you about a goal or dream I have. I want you to give me a brutal reality check — the hard truth about whether I am actually working towards it or just fantasizing. Tell me exactly what I would need to do, what it would cost me, and whether I have what it takes. If I do not, tell me why.'
   },
   {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAuthContext } from '@/providers/AuthProvider'
 import { useConversations } from '@/hooks/useConversations'
@@ -17,6 +17,8 @@ interface ChatPageProps {
   onExitGuest?: () => void
 }
 
+const ONBOARDING_KEY = 'drenzo_onboarding_seen'
+
 export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const { user, signOut } = useAuthContext()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -26,6 +28,10 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const [language, setLanguage] = useState<'english' | 'hinglish'>('english')
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (isGuest) return false
+    return !localStorage.getItem(ONBOARDING_KEY)
+  })
 
   const guestConvId = useRef(isGuest ? crypto.randomUUID() : null)
 
@@ -35,6 +41,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     createConversation,
     deleteConversation,
     renameConversation,
+    togglePin,
   } = useConversations(user?.id)
 
   const {
@@ -89,8 +96,36 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
 
   const handlePromptSuggestion = (promptText: string) => {
     setInputText(promptText)
-    handleSendMessage(promptText)
   }
+
+  const handleDismissOnboarding = useCallback(() => {
+    setShowOnboarding(false)
+    localStorage.setItem(ONBOARDING_KEY, 'true')
+  }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey
+      if (mod && e.key === 'k') {
+        e.preventDefault()
+        if (!isGuest) setIsSearchOpen(prev => !prev)
+      }
+      if (mod && e.shiftKey && e.key === ',') {
+        e.preventDefault()
+        setIsSettingsOpen(prev => !prev)
+      }
+      if (mod && e.key === 'n') {
+        e.preventDefault()
+        handleNewChat()
+      }
+      if (e.key === 'Escape') {
+        if (isSearchOpen) setIsSearchOpen(false)
+        else if (isSettingsOpen) setIsSettingsOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isGuest, isSearchOpen, isSettingsOpen, handleNewChat])
 
   const hasConversation = (isGuest ? messages.length > 0 : activeConversationId && messages.length > 0)
   const guestRemaining = Math.max(0, 3 - guestMessagesUsed)
@@ -110,6 +145,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
             onSelectConversation={handleSelectConversation}
             onDeleteConversation={handleDeleteConversation}
             onRenameConversation={renameConversation}
+            onTogglePin={togglePin}
             onOpenSearch={() => setIsSearchOpen(true)}
             onOpenSettings={() => setIsSettingsOpen(true)}
             userName={user?.user_metadata?.name || user?.email?.split('@')[0]}
@@ -214,6 +250,53 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                 </div>
               </motion.div>
             )}
+
+            {showOnboarding && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute inset-0 z-30 bg-[#090b10]/90 backdrop-blur-md flex items-center justify-center p-4"
+              >
+                <div className="max-w-md text-center space-y-5">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-indigo-600/30 border border-blue-400/40 flex items-center justify-center mx-auto shadow-lg shadow-blue-500/20">
+                    <svg className="w-8 h-8 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M4 4h8a8 8 0 0 1 8 8 8 8 0 0 1-8 8H4V4z" />
+                      <path d="M9 8h3a4 4 0 0 1 4 4 4 4 0 0 1-4 4H9V8z" className="text-sky-300 opacity-90" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white mb-2">Welcome to Drenzo AI</h2>
+                    <p className="text-sm text-zinc-400 leading-relaxed">
+                      A researcher and texting AI — brutally honest, mature, and direct. No fluff, no cringe, just real talk.
+                    </p>
+                  </div>
+                  <ul className="text-left space-y-2 text-sm text-zinc-400">
+                    <li className="flex items-center gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                      <span><kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 text-xs font-mono">Ctrl+K</kbd> Search conversations</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                      <span><kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 text-xs font-mono">Ctrl+N</kbd> New conversation</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                      <span><kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 text-xs font-mono">Ctrl+Shift+,</kbd> Open settings</span>
+                    </li>
+                    <li className="flex items-center gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                      <span>Pin, rename, or delete conversations from sidebar</span>
+                    </li>
+                  </ul>
+                  <button
+                    onClick={handleDismissOnboarding}
+                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium transition-all active:scale-[0.98]"
+                  >
+                    Get Started
+                  </button>
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
@@ -230,6 +313,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         userEmail={user?.email}
+        userId={user?.id}
         onSignOut={signOut}
       />
     </div>
