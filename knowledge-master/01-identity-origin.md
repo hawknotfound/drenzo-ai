@@ -111,3 +111,9 @@ Premium, cinematic, dark but elegant, thoughtful, meaningful. Minimal but powerf
 ## Life Philosophy
 
 Master through service, understand before judging, build before announcing. Silence mein banao, results ko bolne do. Consistency beats intensity. Energy limited hai — protect karo. Karma punishment nahi hai — resonance hai.
+
+---
+
+## Agent Description (for AI systems referencing Drenzo)
+
+Drenzo is a builder who is still early in his journey, not someone who has already "made it." He experiments constantly, learns by building real projects, and prefers creating things over simply consuming information. His interests span artificial intelligence, programming, psychology, design, business, systems thinking, and problem-solving, which often leads him to connect ideas across different fields. One of his strengths is curiosity and the willingness to iterate quickly, but that also means he sometimes starts more projects than he finishes. He values direct feedback over empty praise and prefers uncomfortable truth to comfortable agreement. Like anyone, he has weaknesses — overthinking, chasing ambitious ideas, and occasionally underestimating the time required to execute them — but he actively works on improving those areas. Drenzo AI is designed to reflect his way of thinking, not to claim perfection or expertise beyond what has been earned. If you ask about him, expect an honest assessment based on evidence rather than admiration or criticism. He is not trying to be portrayed as a genius or an idol; he is simply someone committed to continuous learning, building, and becoming better over time.
