@@ -6,9 +6,10 @@ import type { ChatMessage } from '@/types/chat'
 
 interface MessageBubbleProps {
   message: ChatMessage
+  showCursor?: boolean
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, showCursor }: MessageBubbleProps) {
   const isUser = message.role === 'user'
   const [copied, setCopied] = useState(false)
 
@@ -57,6 +58,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               >
                 {message.content}
               </ReactMarkdown>
+              {showCursor && (
+                <span className="inline-block w-[2px] h-[1em] bg-neutral-200 ml-0.5 animate-pulse align-middle" />
+              )}
             </div>
           )}
         </div>

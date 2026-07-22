@@ -43,24 +43,20 @@ export function ChatMessages({ messages, loading, isStreaming, error, onRegenera
     <div className="flex-1 overflow-y-auto px-4 md:px-8">
       <div className="max-w-3xl mx-auto py-4">
         <AnimatePresence initial={false}>
-          {messages.map(msg => (
+          {messages.map((msg, i) => (
             <motion.div
               key={msg.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <MessageBubble message={msg} />
+              <MessageBubble
+                message={msg}
+                showCursor={isStreaming && i === messages.length - 1 && msg.role === 'assistant'}
+              />
             </motion.div>
           ))}
         </AnimatePresence>
-        {isStreaming && (
-          <div className="flex gap-2 py-2">
-            <span className="w-2 h-2 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-2 h-2 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="w-2 h-2 rounded-full bg-neutral-500 animate-bounce" style={{ animationDelay: '300ms' }} />
-          </div>
-        )}
         {error && (
           <div className="flex items-center gap-3 p-3 rounded-lg bg-red-900/20 border border-red-800/30 mt-2">
             <p className="text-sm text-red-400 flex-1">{error}</p>
