@@ -47,6 +47,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const {
     messages,
     isStreaming,
+    thinking,
     error,
     limitReached,
     guestLimitReached,
@@ -84,7 +85,8 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
       return
     }
     if (!activeConversationId) {
-      const conv = await createConversation()
+      const title = text.length > 55 ? text.slice(0, 52) + '...' : text
+      const conv = await createConversation(title)
       if (conv) {
         setActiveConversationId(conv.id)
         sendMessage(text, conv.id)
@@ -214,6 +216,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                     onSendMessage={handleSendMessage}
                     onRegenerate={regenerate}
                     isStreaming={isStreaming}
+                    thinking={thinking}
                   />
                 </motion.div>
               )}

@@ -9,15 +9,21 @@ export interface OpenCodeRequest {
   max_tokens?: number
 }
 
+export interface StreamToken {
+  type: 'content' | 'thinking'
+  text: string
+}
+
 export interface OpenCodeStreamCallbacks {
   onToken: (token: string) => void
+  onThinking?: (token: string) => void
   onDone: (reason?: string) => void
   onError: (error: Error) => void
 }
 
 export async function* streamChat(
   request: OpenCodeRequest
-): AsyncGenerator<string, void, unknown> {
+): AsyncGenerator<StreamToken, void, unknown> {
   const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -54,8 +60,11 @@ export async function* streamChat(
 
         try {
           const parsed = JSON.parse(data)
-          const content = parsed.choices?.[0]?.delta?.content || ''
-          if (content) yield content
+          const delta = parsed.choices?.[0]?.delta
+          const content = delta?.content || ''
+          const reasoning = delta?.reasoning_content || ''
+          if (reasoning) yield { type: 'thinking', text: reasoning }
+          if (content) yield { type: 'content', text: content }
         } catch {
           continue
         }
@@ -76,7 +85,11 @@ export function streamChatWithCallbacks(
     try {
       for await (const token of streamChat(request)) {
         if (controller.signal.aborted) break
-        callbacks.onToken(token)
+        if (token.type === 'thinking' && callbacks.onThinking) {
+          callbacks.onThinking(token.text)
+        } else if (token.type === 'content') {
+          callbacks.onToken(token.text)
+        }
       }
       if (!controller.signal.aborted) {
         callbacks.onDone()

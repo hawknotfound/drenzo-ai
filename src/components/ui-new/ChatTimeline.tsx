@@ -4,7 +4,7 @@ import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import {
-  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip
+  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip, ChevronDown, ChevronRight
 } from 'lucide-react';
 import type { ChatMessage } from '@/types/chat';
 
@@ -13,6 +13,7 @@ interface ChatTimelineProps {
   onSendMessage: (text: string) => void;
   onRegenerate: () => void;
   isStreaming: boolean;
+  thinking: string;
 }
 
 function relativeTime(dateStr: string | undefined): string {
@@ -45,11 +46,12 @@ function exportChat(messages: ChatMessage[]) {
 }
 
 export function ChatTimeline({
-  messages, onSendMessage, onRegenerate, isStreaming
+  messages, onSendMessage, onRegenerate, isStreaming, thinking
 }: ChatTimelineProps) {
   const [inputText, setInputText] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [showThinking, setShowThinking] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -218,31 +220,33 @@ export function ChatTimeline({
         <div ref={bottomRef} />
       </div>
 
-      {isStreaming && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="shrink-0 flex items-center gap-2.5 px-4 py-2 mx-3 sm:mx-4 mb-2 rounded-xl bg-blue-600/10 border border-blue-500/20 backdrop-blur-sm"
-        >
-          <div className="flex items-center gap-1.5">
-            <motion.span
-              animate={{ opacity: [0, 1, 0] }}
-              transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
-              className="w-2 h-2 rounded-full bg-blue-400"
-            />
-            <motion.span
-              animate={{ opacity: [0, 1, 0] }}
-              transition={{ duration: 1.2, repeat: Infinity, delay: 0.3 }}
-              className="w-2 h-2 rounded-full bg-blue-400"
-            />
-            <motion.span
-              animate={{ opacity: [0, 1, 0] }}
-              transition={{ duration: 1.2, repeat: Infinity, delay: 0.6 }}
-              className="w-2 h-2 rounded-full bg-blue-400"
-            />
-          </div>
-          <span className="text-xs text-blue-300 font-medium">Drenzo AI is thinking</span>
-        </motion.div>
+      {thinking && (
+        <div className="shrink-0 mx-3 sm:mx-4 mb-2 rounded-xl bg-zinc-900/80 border border-zinc-700/30 overflow-hidden">
+          <button
+            onClick={() => setShowThinking(!showThinking)}
+            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+          >
+            {showThinking ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            <Brain className="w-3.5 h-3.5 text-blue-400" />
+            <span className="font-medium">Model thinking</span>
+            {isStreaming && (
+              <motion.span
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+                className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 ml-1"
+              />
+            )}
+          </button>
+          {showThinking && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              className="px-3 pb-3 text-[11px] text-zinc-500 leading-relaxed whitespace-pre-wrap font-mono max-h-40 overflow-y-auto custom-scrollbar border-t border-zinc-800/50 pt-2"
+            >
+              {thinking}
+            </motion.div>
+          )}
+        </div>
       )}
 
       <div className="pt-2 pb-4 shrink-0">
