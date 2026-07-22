@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AuthProvider, useAuthContext } from '@/providers/AuthProvider'
 import { ThemeProvider } from '@/providers/ThemeProvider'
 import { AuthPage } from '@/pages/AuthPage'
@@ -5,6 +6,7 @@ import { ChatPage } from '@/pages/ChatPage'
 
 function AppContent() {
   const { user, loading } = useAuthContext()
+  const [guestMode, setGuestMode] = useState(false)
 
   if (loading) {
     return (
@@ -18,7 +20,9 @@ function AppContent() {
     )
   }
 
-  return user ? <ChatPage /> : <AuthPage />
+  if (user) return <ChatPage />
+  if (guestMode) return <ChatPage isGuest onExitGuest={() => setGuestMode(false)} />
+  return <AuthPage onTryAsGuest={() => setGuestMode(true)} />
 }
 
 export default function App() {

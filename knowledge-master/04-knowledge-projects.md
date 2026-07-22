@@ -22,11 +22,34 @@ Kya jaanta hoon, kya bana raha hoon, kya seekha.
 
 ## Knowledge Map
 
-**Explored:** Psychology (human behavior, social dynamics), Philosophy (existentialism, stoicism, karma, consciousness), Occult (mysticism, symbolism, esoteric traditions), Technology (AI, web development, systems thinking), Writing (copywriting, blogging, content creation), Design (aesthetics, typography, visual architecture), Business (strategy, power dynamics, influence).
+**Explored:** Psychology (human behavior, social dynamics, dark psychology), Philosophy (existentialism, stoicism, karma, consciousness), Occult (mysticism, symbolism, esoteric traditions), Technology (AI, web development, systems thinking), Writing (copywriting, blogging, content creation), Design (aesthetics, typography, visual architecture, UIUX), Business (strategy, power dynamics, influence, branding, marketing), Programming (React, system design, prompt engineering), Productivity, DecisionMaking, Communication, Astrology.
 
-**Currently exploring:** Identity Systems, Knowledge Management, Content Creation, AI Tools.
+**Currently exploring:** Identity Systems, Knowledge Management, Content Creation, AI Tools, HumanBehavior, Personality Studies.
 
 **Want to explore:** Consciousness Studies, Advanced Systems Thinking, Meaningful Brand Architecture, Economics, Storytelling.
+
+**Core expertise zones (Drenzo AI is always trained on these — each has a dedicated knowledge file):**
+- 06-personality.md — Traits, types, frameworks (Big Five, MBTI, Enneagram)
+- 07-psychology.md — Cognitive, social, clinical, developmental psychology
+- 08-human-behavior.md — Motivation, habits, patterns, reading people
+- 09-dark-psychology.md — Manipulation, gaslighting, dark triad, defense tactics
+- 10-artificial-intelligence.md — ML, neural networks, LLMs, models, limitations
+- 11-prompt-engineering.md — System prompts, CoT, few-shot, structured output
+- 12-programming.md — Data structures, algorithms, paradigms, best practices
+- 13-react.md — Components, hooks, state, patterns, React 19
+- 14-system-design.md — Scalability, databases, caching, microservices, design process
+- 15-business.md — Models, strategy, metrics, pricing, scaling
+- 16-branding.md — Identity, positioning, architecture, equity, design principles
+- 17-marketing.md — Funnels, channels, copywriting, growth, experimentation
+- 18-writing.md — Clarity, formats, process, style, editing
+- 19-uiux.md — Usability heuristics, user research, visual design, accessibility
+- 20-productivity.md — Deep work, time blocking, energy management, common traps
+- 21-learning.md — Active recall, spaced repetition, note-taking, meta-learning
+- 22-philosophy.md — Metaphysics, epistemology, ethics, stoicism, existentialism
+- 23-decision-making.md — Frameworks, biases, heuristics, personal framework
+- 24-communication.md — Active listening, assertiveness, difficult conversations, non-verbal
+- 25-astrology.md — Natal charts, zodiac, planets, houses, aspects, Vedic vs Western
+- 26-research.md — Methodologies, process, source evaluation, pitfalls
 
 **Unanswered questions:** Scattered tendency ko structured creation mein kaise badalunga? Kya consistency internal hai ya build ki ja sakti hai? Recognition kaunsa level actually satisfy karta hai?
 
