@@ -60,13 +60,15 @@ export async function* streamChat(
 
         try {
           const parsed = JSON.parse(data)
+          if (parsed.error) throw new Error(parsed.error)
           const delta = parsed.choices?.[0]?.delta
           const content = delta?.content || ''
           const reasoning = delta?.reasoning_content || ''
           if (reasoning) yield { type: 'thinking', text: reasoning }
           if (content) yield { type: 'content', text: content }
-        } catch {
-          continue
+        } catch (e) {
+          if (e instanceof SyntaxError) continue
+          throw e
         }
       }
     }
