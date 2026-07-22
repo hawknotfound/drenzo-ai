@@ -5,15 +5,18 @@ import { Input } from '@/components/ui/Input'
 interface SignUpFormProps {
   onSignUp: (email: string, password: string) => Promise<void>
   onSwitchToLogin: () => void
+  onResendConfirmation?: (email: string) => Promise<void>
 }
 
-export function SignUpForm({ onSignUp, onSwitchToLogin }: SignUpFormProps) {
+export function SignUpForm({ onSignUp, onSwitchToLogin, onResendConfirmation }: SignUpFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [resent, setResent] = useState(false)
+  const [resending, setResending] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,9 +28,28 @@ export function SignUpForm({ onSignUp, onSwitchToLogin }: SignUpFormProps) {
       await onSignUp(email, password)
       setSuccess(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign up failed')
+      const msg = err instanceof Error ? err.message : 'Sign up failed'
+      if (msg.toLowerCase().includes('rate limit')) {
+        setError('Too many attempts. Please wait a few minutes before trying again.')
+      } else {
+        setError(msg)
+      }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleResend = async () => {
+    if (!onResendConfirmation || !email) return
+    setResending(true)
+    setResent(false)
+    try {
+      await onResendConfirmation(email)
+      setResent(true)
+    } catch {
+      setError('Failed to resend confirmation email.')
+    } finally {
+      setResending(false)
     }
   }
 
@@ -40,8 +62,27 @@ export function SignUpForm({ onSignUp, onSwitchToLogin }: SignUpFormProps) {
           </svg>
         </div>
         <h2 className="text-lg font-semibold text-neutral-100">Check your email</h2>
-        <p className="text-sm text-neutral-500">We sent a confirmation link to {email}</p>
-        <Button variant="ghost" onClick={onSwitchToLogin}>Back to sign in</Button>
+        <p className="text-sm text-neutral-400">We sent a confirmation link to <span className="text-neutral-200">{email}</span></p>
+        <p className="text-xs text-neutral-500">Click the link in the email to activate your account, then sign in. Check spam if you don't see it.</p>
+
+        <div className="pt-2 space-y-2">
+          {resent ? (
+            <p className="text-xs text-emerald-400">Confirmation resent! Check your inbox.</p>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resending}
+              className="text-xs text-blue-400 hover:text-blue-300 underline underline-offset-2 disabled:opacity-50"
+            >
+              {resending ? 'Sending...' : 'Resend confirmation email'}
+            </button>
+          )}
+        </div>
+
+        <div className="pt-2">
+          <Button variant="ghost" onClick={onSwitchToLogin}>Go to sign in</Button>
+        </div>
       </div>
     )
   }
