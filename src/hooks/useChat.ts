@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import type { ChatMessage } from '@/types/chat'
 import { supabase } from '@/lib/supabase/client'
 import { streamChatWithCallbacks, type OpenCodeMessage } from '@/lib/opencode/service'
@@ -42,6 +42,12 @@ export function useChat(conversationId: string | null, isGuest = false, language
     if (!error && data) setMessages(data)
     if (error) setError(error.message)
   }, [conversationId, isGuest])
+
+  useEffect(() => {
+    if (isGuest) { setMessages([]); return }
+    if (conversationId) loadMessages(conversationId)
+    else setMessages([])
+  }, [conversationId, isGuest, loadMessages])
 
   const sendMessage = useCallback(async (content: string, overrideConvId?: string, isRegen = false) => {
     if (sendingRef.current) return
