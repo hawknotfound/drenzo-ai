@@ -134,17 +134,17 @@ export function HeroState({
   }
 
   return (
-    <div className="relative flex flex-col items-center w-full max-w-4xl mx-auto px-4 py-8 my-auto select-none">
+    <div className="relative flex flex-col items-center w-full max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-4 lg:px-8 py-8 my-auto select-none">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="text-center space-y-1 mb-6 sm:mb-8"
       >
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight drop-shadow-sm font-sans">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight drop-shadow-sm font-sans">
           Drenzo AI
         </h1>
-        <p className="text-sm sm:text-lg md:text-xl text-zinc-400 font-normal tracking-wide">
+        <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-zinc-400 font-normal tracking-wide">
           Think. Build. Create.
         </p>
       </motion.div>
@@ -199,7 +199,7 @@ export function HeroState({
             <span className="text-[10px] font-semibold uppercase tracking-widest text-blue-400">Recommended</span>
             <div className="h-px flex-1 bg-gradient-to-r from-blue-500/30 to-transparent" />
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:gap-2.5 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
             {recommended.map((sug, i) => {
               const theme = THEMES[sug.theme || 'blue'];
               return (
@@ -229,7 +229,7 @@ export function HeroState({
           <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">More prompts</span>
           <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full">
           {others.map((sug, i) => {
             const theme = THEMES[sug.theme || 'blue'];
             const anim = ANIM_VARIANTS[sug.anim || 'fadeUp'];

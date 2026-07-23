@@ -260,7 +260,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                 animate={{ opacity: 1 }}
                 className="absolute inset-0 z-30 bg-[#090b10]/90 backdrop-blur-md flex items-center justify-center p-4"
               >
-                <div className="max-w-md text-center space-y-5">
+                <div className="max-w-md lg:max-w-lg text-center space-y-5 lg:space-y-6">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-indigo-600/30 border border-blue-400/40 flex items-center justify-center mx-auto shadow-lg shadow-blue-500/20">
                     <svg className="w-8 h-8 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M4 4h8a8 8 0 0 1 8 8 8 8 0 0 1-8 8H4V4z" />

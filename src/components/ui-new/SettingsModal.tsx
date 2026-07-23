@@ -31,7 +31,7 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut }:
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 48 }}
           transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-          className="relative w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl bg-[#121622] sm:border border-white/15 shadow-2xl sm:overflow-hidden max-h-[92dvh] sm:max-h-[70vh] flex flex-col"
+          className="relative w-full sm:max-w-lg xl:max-w-xl sm:rounded-2xl rounded-t-2xl bg-[#121622] sm:border border-white/15 shadow-2xl sm:overflow-hidden max-h-[92dvh] sm:max-h-[70vh] flex flex-col"
         >
           <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-white/10 bg-[#161a26] shrink-0">
             <div className="flex items-center gap-2.5">

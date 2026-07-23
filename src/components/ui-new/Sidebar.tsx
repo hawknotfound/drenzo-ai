@@ -109,22 +109,27 @@ export function Sidebar({
           >
             <Plus className="w-4 h-4 text-blue-400 group-hover:scale-110 group-hover:rotate-90 transition-transform duration-200" />
             {!isCollapsed && <span className="whitespace-nowrap">New Chat</span>}
+            {!isCollapsed && <kbd className="hidden lg:inline-flex ml-auto text-[10px] text-zinc-600 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/5">Ctrl+N</kbd>}
           </button>
         </div>
 
         <div className="flex-1 px-3 py-1 space-y-1 overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
             const Icon = item.icon;
+            const shortcut = item.id === 'search' ? 'Ctrl+K' : item.id === 'settings' ? 'Ctrl+Shift+,' : '';
             return (
               <button
                 key={item.id}
                 onClick={() => { item.onClick(); if (window.innerWidth < 1024) onToggleCollapse(); }}
-                className="group flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-zinc-400 hover:text-white hover:bg-white/5"
+                className="group flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-zinc-400 hover:text-white hover:bg-white/5 active:bg-white/10"
                 title={isCollapsed ? item.label : undefined}
               >
                 <Icon className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
                 {!isCollapsed && (
-                  <span className="truncate whitespace-nowrap text-[13.5px] font-normal">{item.label}</span>
+                  <>
+                    <span className="flex-1 truncate whitespace-nowrap text-[13.5px] font-normal text-left">{item.label}</span>
+                    {shortcut && <kbd className="hidden lg:inline-flex text-[10px] text-zinc-600 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/5">{shortcut}</kbd>}
+                  </>
                 )}
               </button>
             );
@@ -135,7 +140,7 @@ export function Sidebar({
               <div className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
                 Recent Conversations
               </div>
-              <div className="space-y-0.5 max-h-[300px] overflow-y-auto custom-scrollbar">
+              <div className="space-y-0.5 max-h-[300px] lg:max-h-[500px] overflow-y-auto custom-scrollbar">
                 {sorted.map((c) => (
                   <div
                     key={c.id}

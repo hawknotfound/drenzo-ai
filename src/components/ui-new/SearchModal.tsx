@@ -33,7 +33,7 @@ export function SearchModal({ isOpen, onClose, conversations, onSelectConversati
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 48 }}
           transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-          className="relative w-full sm:max-w-xl sm:rounded-2xl rounded-t-2xl bg-[#121622] sm:border border-white/15 shadow-2xl max-h-[80dvh] sm:max-h-auto flex flex-col"
+          className="relative w-full sm:max-w-xl xl:max-w-2xl sm:rounded-2xl rounded-t-2xl bg-[#121622] sm:border border-white/15 shadow-2xl max-h-[80dvh] sm:max-h-auto flex flex-col"
         >
           <div className="flex items-center px-4 py-4 sm:py-3 border-b border-white/10 shrink-0">
             <Search className="w-5 h-5 sm:w-4 sm:h-4 text-zinc-400 mr-3 shrink-0" />
