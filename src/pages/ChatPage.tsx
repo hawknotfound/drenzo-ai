@@ -159,6 +159,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
           <TopBar
             onOpenSettings={() => setIsSettingsOpen(true)}
             onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+            sidebarCollapsed={sidebarCollapsed}
             language={language}
             onToggleLanguage={() => setLanguage(prev => prev === 'english' ? 'hinglish' : 'english')}
           />

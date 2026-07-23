@@ -1,24 +1,24 @@
-import { Settings, Languages } from 'lucide-react';
+import { Settings, Languages, PanelLeftClose, PanelLeft } from 'lucide-react';
 
 interface TopBarProps {
   onOpenSettings: () => void;
   onToggleSidebar: () => void;
+  sidebarCollapsed?: boolean;
   language?: 'english' | 'hinglish';
   onToggleLanguage?: () => void;
 }
 
-export function TopBar({ onOpenSettings, onToggleSidebar, language = 'english', onToggleLanguage }: TopBarProps) {
+export function TopBar({ onOpenSettings, onToggleSidebar, sidebarCollapsed = false, language = 'english', onToggleLanguage }: TopBarProps) {
   return (
     <div className="relative z-20 flex items-center justify-between w-full px-3 sm:px-6 py-3 sm:py-4 border-b border-white/5 bg-transparent select-none shrink-0 min-h-0">
         <div className="flex items-center gap-1.5 sm:gap-2">
         <button
           onClick={onToggleSidebar}
-          className="p-2.5 sm:p-2 rounded-xl bg-[#1a202c]/70 hover:bg-[#222938] active:bg-[#2a3248] border border-white/10 text-zinc-300 hover:text-white transition-all lg:hidden"
-          aria-label="Toggle sidebar"
+          className="p-2.5 sm:p-2 rounded-xl bg-[#1a202c]/70 hover:bg-[#222938] active:bg-[#2a3248] border border-white/10 text-zinc-300 hover:text-white transition-all"
+          aria-label={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+          title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
         >
-          <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          {sidebarCollapsed ? <PanelLeft className="w-5 h-5 sm:w-4 sm:h-4" /> : <PanelLeftClose className="w-5 h-5 sm:w-4 sm:h-4" />}
         </button>
         <button
           onClick={onToggleLanguage}
