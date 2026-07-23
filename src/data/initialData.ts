@@ -197,5 +197,231 @@ export const PROMPT_SUGGESTIONS: PromptSuggestion[] = [
     theme: 'violet',
     anim: 'fadeLeft',
     promptText: 'I need deep research on [topic]. Give me the key frameworks, the contradicting viewpoints, the actual evidence (not just popular opinion), and what experts actually disagree on. Cut through the noise — I want signal, not citations.'
-  }
-];
+  },
+  {
+    id: 'p21',
+    label: 'Architect my app',
+    icon: 'GitPullRequest',
+    category: 'code',
+    theme: 'blue',
+    anim: 'fadeUp',
+    promptText: 'I want to build [app idea]. Walk me through the architecture — folder structure, data flow, state management, API layer, auth strategy, and deployment. Tell me where most people over-engineer this and where they under-invest.'
+  },
+  {
+    id: 'p22',
+    label: 'Refactor this code',
+    icon: 'Code2',
+    category: 'code',
+    theme: 'orange',
+    anim: 'fadeRight',
+    promptText: 'Here is a piece of my code. Refactor it and explain every change — why the original was bad, what pattern you replaced it with, and what future bugs you just prevented. I want to write cleaner code, not just get a fix.'
+  },
+  {
+    id: 'p23',
+    label: 'Design my database',
+    icon: 'FileSpreadsheet',
+    category: 'code',
+    theme: 'emerald',
+    anim: 'scale',
+    promptText: 'I need a database schema for [project]. Give me the tables, relationships, indexes, and queries that will hurt first at scale. Point out where denormalization makes sense and where I am over-normalizing out of theory.'
+  },
+  {
+    id: 'p24',
+    label: 'Build my startup',
+    icon: 'Target',
+    category: 'business',
+    theme: 'violet',
+    anim: 'fadeUp',
+    promptText: 'I have a startup idea: [describe it]. Give me a brutal reality check — the business model, unit economics, market size, who will actually pay, and why most startups in this space fail. Tell me if I should build it or kill it.'
+  },
+  {
+    id: 'p25',
+    label: 'Write my copy',
+    icon: 'PenTool',
+    category: 'writing',
+    theme: 'rose',
+    anim: 'fadeLeft',
+    promptText: 'I need copy for [product/landing page/email]. Write it sharp — no adjectives, no fluff, no "revolutionary." Hook in the first line, prove value fast, and tell them exactly what to do next. Give me 3 versions with different angles.'
+  },
+  {
+    id: 'p26',
+    label: 'Price my product',
+    icon: 'Scale',
+    category: 'business',
+    theme: 'amber',
+    anim: 'scale',
+    promptText: 'I am launching [product]. Help me figure out pricing — what models work for this type of product, what psychological price anchors to use, what tier structure makes sense, and where I am leaving money on the table or pricing myself out.'
+  },
+  {
+    id: 'p27',
+    label: 'Build my resume',
+    icon: 'UserCheck',
+    category: 'career',
+    theme: 'blue',
+    anim: 'fadeRight',
+    recommended: true,
+    promptText: 'Here is my work history. Rewrite my resume so it actually gets past ATS filters and grabs attention in 6 seconds. Tell me what achievements I am underselling, what buzzwords to kill, and what gap I need to explain. No generic "results-oriented professional" nonsense.'
+  },
+  {
+    id: 'p28',
+    label: 'Ace the interview',
+    icon: 'Brain',
+    category: 'career',
+    theme: 'violet',
+    anim: 'fadeUp',
+    promptText: 'I have an interview for [role/company]. Tell me what they actually want to hear vs what most candidates say. Give me the questions I am not expecting, the stories I should prepare, and the mistakes that will instantly disqualify me. Mock drill me if I send my answers.'
+  },
+  {
+    id: 'p29',
+    label: 'Negotiate better',
+    icon: 'Users',
+    category: 'career',
+    theme: 'cyan',
+    anim: 'fadeLeft',
+    promptText: 'I need to negotiate [salary/deal/contract]. Walk me through the psychology — what leverage I actually have, what they expect me to say, and the exact script to use when they push back. Tell me where most people fold and why.'
+  },
+  {
+    id: 'p30',
+    label: 'Build a habit',
+    icon: 'Clock',
+    category: 'learning',
+    theme: 'emerald',
+    anim: 'scale',
+    promptText: 'I want to build [habit]. Tell me the exact system — trigger, routine, reward, and what to do when I fail. Be specific about the common failure points and why willpower is not the answer. Design it so I cannot cheat.'
+  },
+  {
+    id: 'p31',
+    label: 'Understand my bias',
+    icon: 'Eye',
+    category: 'learning',
+    theme: 'purple',
+    anim: 'fadeRight',
+    promptText: 'Tell me which cognitive biases are most likely affecting my decision in [situation]. Walk through each one — what it is, how it is distorting my thinking, and the exact technique to counter it. Be clinical — this is about pattern recognition, not feelings.'
+  },
+  {
+    id: 'p32',
+    label: 'Resolve conflict',
+    icon: 'MessageSquare',
+    category: 'learning',
+    theme: 'rose',
+    anim: 'fadeUp',
+    promptText: 'I have a conflict with [person]. Describe their psychology, what they actually want vs what they are saying, and the strategy to resolve this without losing or escalating. Give me the lines to say and the traps to avoid. No "just communicate better" trash.'
+  },
+  {
+    id: 'p33',
+    label: 'Build my workflow',
+    icon: 'Layout',
+    category: 'productivity',
+    theme: 'blue',
+    anim: 'fadeLeft',
+    promptText: 'I do [type of work]. Design my optimal workflow — tools, automation, daily rhythm, what to batch, what to cut. Look for the bottlenecks I have normalized and tell me why my current system is slower than I think.'
+  },
+  {
+    id: 'p34',
+    label: 'Organize my life',
+    icon: 'Sparkles',
+    category: 'productivity',
+    theme: 'amber',
+    anim: 'scale',
+    promptText: 'My life is chaotic in [these areas]. Build me a system — not a schedule, not a planner app, but rules and rhythms that keep me from slipping. Cover priorities, energy management, decision fatigue, and recovery. Make it stupid-proof.'
+  },
+  {
+    id: 'p35',
+    label: 'Explain like I am smart',
+    icon: 'Atom',
+    category: 'learning',
+    theme: 'cyan',
+    anim: 'fadeRight',
+    promptText: 'Explain [complex topic] to me. Skip the ELI5 — give me the actual mechanics, the key principles, the counterintuitive parts, and why most explanations of this topic are wrong or misleading. I want real understanding, not simplified metaphors.'
+  },
+  {
+    id: 'p36',
+    label: 'Write SQL for me',
+    icon: 'FileSpreadsheet',
+    category: 'code',
+    theme: 'emerald',
+    anim: 'fadeUp',
+    promptText: 'I need a SQL query that does [describe requirement]. Write it, explain the joins, and tell me what will break when the data grows 100x. Include indexing strategy and the EXPLAIN plan. If there is a faster way without SQL, tell me.'
+  },
+  {
+    id: 'p37',
+    label: 'Test my strategy',
+    icon: 'Target',
+    category: 'business',
+    theme: 'orange',
+    anim: 'fadeLeft',
+    promptText: 'Here is my strategy for [goal]. Tear it apart. What assumptions am I making? Where is the biggest risk? What would a competitor do to destroy this plan? What am I overconfident about? Give me the failure scenarios before I find them the hard way.'
+  },
+  {
+    id: 'p38',
+    label: 'Optimize for scale',
+    icon: 'Terminal',
+    category: 'code',
+    theme: 'violet',
+    anim: 'scale',
+    promptText: 'Here is my current [infrastructure/codebase]. Tell me the top 3 bottlenecks that will kill me at 10x scale. Give me specific solutions — not "use caching" but exactly what to cache, where, and what invalidation strategy. Prioritize by impact vs effort.'
+  },
+  {
+    id: 'p39',
+    label: 'Fix my finances',
+    icon: 'Scale',
+    category: 'finance',
+    theme: 'emerald',
+    anim: 'fadeRight',
+    promptText: 'Here is my financial situation — income, expenses, debts, savings. Tell me the hard truths I am avoiding, where I am bleeding money without noticing, and the 3 things I can do in the next 30 days that would change my trajectory. No "cut your coffee" advice.'
+  },
+  {
+    id: 'p40',
+    label: 'Plan my product launch',
+    icon: 'Globe',
+    category: 'business',
+    theme: 'blue',
+    anim: 'fadeUp',
+    promptText: 'I am launching [product] on [date]. Give me the launch plan — pre-launch sequence, launch day tactics, post-launch follow-up, and what metric actually matters vs what is vanity. Tell me what most people get wrong about launches in my space.'
+  },
+  {
+    id: 'p41',
+    label: 'Create a character',
+    icon: 'PenTool',
+    category: 'creative',
+    theme: 'purple',
+    anim: 'fadeLeft',
+    promptText: 'I need a character for [story/game]. Build them from scratch — motivation, flaw, secret, arc, voice, and the scene that reveals who they really are. Make them feel real, not assembled from a character sheet. Bonus: give me their worst possible decision.'
+  },
+  {
+    id: 'p42',
+    label: 'Build my world',
+    icon: 'Layout',
+    category: 'creative',
+    theme: 'cyan',
+    anim: 'scale',
+    promptText: 'I am building a fictional world for [story/setting]. Help me design the systems — politics, economy, magic/technology, history, conflict. What makes this world unique and what cliché am I falling into? Tell me where the interesting stories actually live.'
+  },
+  {
+    id: 'p43',
+    label: 'Plan my learning',
+    icon: 'Lightbulb',
+    category: 'learning',
+    theme: 'blue',
+    anim: 'fadeRight',
+    recommended: true,
+    promptText: 'I want to master [topic]. Design a 90-day learning plan — what to learn each week, what to build/practice, what resources to use, and what most learners waste time on. Be honest about the prerequisites and the grind. No "anyone can learn anything" fluff.'
+  },
+  {
+    id: 'p44',
+    label: 'Analyze my data',
+    icon: 'FileSpreadsheet',
+    category: 'analysis',
+    theme: 'emerald',
+    anim: 'fadeUp',
+    promptText: 'Here is my dataset [paste CSV or describe]. Tell me what patterns I should look for, what anomalies might be hiding signal, and what visualizations would expose the truth. Point out where my data is misleading me or where I have collection bias.'
+  },
+  {
+    id: 'p45',
+    label: 'Review my PRD',
+    icon: 'Terminal',
+    category: 'business',
+    theme: 'violet',
+    anim: 'fadeLeft',
+    promptText: 'Here is my product requirements doc. Review it like a senior PM who has seen this fail before. What am I not defining clearly enough? Where am I solving symptoms not root causes? What edge cases will make engineering hate me? Mark it up.'
+  }];
