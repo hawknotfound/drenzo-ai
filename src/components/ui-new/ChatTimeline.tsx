@@ -204,12 +204,12 @@ export function ChatTimeline({
                   <div className="flex items-center gap-3 pt-3 mt-2 border-t border-white/5 text-zinc-400 text-xs">
                     <button
                       onClick={() => handleCopy(msg.content, msg.id)}
-                      className="flex items-center gap-1 hover:text-white transition-colors"
+                      className="flex items-center gap-1.5 p-2 sm:p-1 hover:text-white active:text-emerald-400 transition-colors rounded-lg hover:bg-white/5"
                     >
-                      {copiedId === msg.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedId === msg.id ? <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-emerald-400" /> : <Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
                     </button>
-                    <button onClick={onRegenerate} className="flex items-center gap-1 hover:text-white transition-colors">
-                      <RotateCw className="w-3.5 h-3.5" />
+                    <button onClick={onRegenerate} className="flex items-center gap-1.5 p-2 sm:p-1 hover:text-white active:text-blue-400 transition-colors rounded-lg hover:bg-white/5">
+                      <RotateCw className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                     </button>
                   </div>
                 )}
@@ -249,14 +249,14 @@ export function ChatTimeline({
         </div>
       )}
 
-      <div className="pt-2 pb-4 shrink-0">
+      <div className="pt-2 pb-3 sm:pb-4 shrink-0 px-3 sm:px-0">
         <div className="relative flex items-center rounded-2xl bg-[#161a25]/90 border border-white/10 focus-within:border-blue-500/50 backdrop-blur-2xl shadow-xl">
           <button
             onClick={handleAttach}
-            className="ml-3 p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            className="ml-2 sm:ml-3 p-2.5 sm:p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 active:bg-white/10 transition-all"
             title="Attach a file"
           >
-            <Paperclip className="w-4 h-4" />
+            <Paperclip className="w-5 h-5 sm:w-4 sm:h-4" />
           </button>
           <textarea
             value={inputText}
@@ -264,7 +264,7 @@ export function ChatTimeline({
             onKeyDown={handleKeyDown}
             placeholder="Send a follow-up message..."
             rows={1}
-            className="w-full py-3.5 px-3 bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none resize-none custom-scrollbar"
+            className="w-full py-4 sm:py-3.5 px-2 sm:px-3 bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none resize-none custom-scrollbar"
           />
           <button
             onClick={() => {
@@ -274,13 +274,13 @@ export function ChatTimeline({
               }
             }}
             disabled={!inputText.trim() || isStreaming}
-            className={`mr-2 p-2 rounded-xl transition-all ${
+            className={`mr-2 sm:mr-2 p-2.5 sm:p-2 rounded-xl transition-all ${
               inputText.trim() && !isStreaming
                 ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95'
                 : 'bg-white/5 text-zinc-500 cursor-not-allowed'
             }`}
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>

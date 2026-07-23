@@ -173,22 +173,22 @@ export function HeroState({
         <div className="flex items-center justify-between px-3 sm:px-4 pb-3 sm:pb-4">
           <button
             onClick={handleAttach}
-            className="p-2.5 rounded-xl text-zinc-500 hover:text-zinc-300 hover:bg-white/5 transition-all"
+            className="p-3 sm:p-2.5 rounded-xl text-zinc-500 hover:text-zinc-300 hover:bg-white/5 active:bg-white/10 transition-all"
             title="Attach a file"
           >
-            <Paperclip className="w-4 h-4" />
+            <Paperclip className="w-5 h-5 sm:w-4 sm:h-4" />
           </button>
           <button
             type="button"
             onClick={onSubmit}
             disabled={!inputText.trim()}
-            className={`flex items-center justify-center p-2.5 rounded-xl transition-all duration-200 ${
+            className={`flex items-center justify-center p-3 sm:p-2.5 rounded-xl transition-all duration-200 ${
               inputText.trim()
                 ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-100 cursor-pointer active:scale-95'
                 : 'bg-blue-600/40 text-white/50 cursor-not-allowed scale-95'
             }`}
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5 sm:w-4 sm:h-4" />
           </button>
         </div>
       </motion.div>

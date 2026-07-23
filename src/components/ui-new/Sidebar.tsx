@@ -94,7 +94,7 @@ export function Sidebar({
           {!isCollapsed && (
             <button
               onClick={onToggleCollapse}
-              className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-400 hover:text-white transition-colors lg:hidden"
+              className="p-2.5 rounded-lg hover:bg-white/10 active:bg-white/15 text-zinc-400 hover:text-white transition-colors lg:hidden"
             >
               <X className="w-4 h-4" />
             </button>
@@ -167,12 +167,12 @@ export function Sidebar({
                         {c.title}
                       </span>
                     )}
-                    <div className="max-lg:flex hidden group-hover:flex items-center gap-0.5">
+                    <div className="flex lg:opacity-0 lg:group-hover:opacity-100 items-center gap-0.5 transition-opacity">
                       {editingId !== c.id && (
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); onTogglePin(c.id, c.is_pinned); }}
-                            className={`p-1.5 rounded hover:bg-white/10 transition-colors ${
+                            className={`p-2 rounded hover:bg-white/10 active:bg-white/15 transition-colors ${
                               c.is_pinned ? 'text-blue-400' : 'text-zinc-500 hover:text-blue-400'
                             }`}
                             title={c.is_pinned ? 'Unpin' : 'Pin'}
@@ -181,14 +181,14 @@ export function Sidebar({
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); startRename(c.id, c.title); }}
-                            className="p-1.5 rounded hover:bg-white/10 text-zinc-500 hover:text-blue-400 transition-colors"
+                            className="p-2 rounded hover:bg-white/10 active:bg-white/15 text-zinc-500 hover:text-blue-400 transition-colors"
                             title="Rename"
                           >
                             <Pencil className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); onDeleteConversation(c.id); }}
-                            className="p-1.5 rounded hover:bg-red-500/10 text-zinc-500 hover:text-red-400 transition-colors"
+                            className="p-2 rounded hover:bg-red-500/10 active:bg-red-500/20 text-zinc-500 hover:text-red-400 transition-colors"
                             title="Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

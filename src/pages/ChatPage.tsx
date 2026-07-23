@@ -164,23 +164,23 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
           />
 
           {isGuest && !guestLimitReached && (
-            <div className="px-4 py-2 bg-blue-900/20 border-b border-blue-800/30 text-center flex items-center justify-center gap-2">
-              <MessageSquare className="w-3 h-3 text-blue-400" />
-              <p className="text-xs text-blue-400">{guestRemaining} free chat{guestRemaining !== 1 ? 's' : ''} remaining — <button onClick={onExitGuest} className="underline hover:text-blue-300">sign in</button> for unlimited</p>
+            <div className="px-3 sm:px-4 py-2.5 sm:py-2 bg-blue-900/20 border-b border-blue-800/30 text-center flex items-center justify-center gap-2">
+              <MessageSquare className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-blue-400 shrink-0" />
+              <p className="text-xs text-blue-400">{guestRemaining} free chat{guestRemaining !== 1 ? 's' : ''} remaining — <button onClick={onExitGuest} className="underline hover:text-blue-300 active:text-blue-200">sign in</button> for unlimited</p>
             </div>
           )}
 
           {limitReached && !isGuest && (
-            <div className="px-4 py-2 bg-amber-900/20 border-b border-amber-800/30 text-center">
+            <div className="px-3 sm:px-4 py-2.5 sm:py-2 bg-amber-900/20 border-b border-amber-800/30 text-center">
               <p className="text-xs text-amber-400">Limit reached — 35 messages per conversation. Start a new chat.</p>
             </div>
           )}
 
           {error && (
-            <div className="flex items-center gap-3 p-3 mx-4 mt-2 rounded-lg bg-red-900/20 border border-red-800/30">
+            <div className="flex items-center gap-3 p-3 mx-3 sm:mx-4 mt-2 rounded-lg bg-red-900/20 border border-red-800/30">
               <p className="text-xs text-red-400 flex-1">{error}</p>
-              <button onClick={clearError} className="text-xs text-red-400 hover:text-red-300">Dismiss</button>
-              {!isGuest && <button onClick={regenerate} className="text-xs text-zinc-400 hover:text-zinc-200">Retry</button>}
+              <button onClick={clearError} className="text-xs text-red-400 hover:text-red-300 active:text-red-200 px-2 py-1.5">Dismiss</button>
+              {!isGuest && <button onClick={regenerate} className="text-xs text-zinc-400 hover:text-zinc-200 active:text-zinc-100 px-2 py-1.5">Retry</button>}
             </div>
           )}
 
