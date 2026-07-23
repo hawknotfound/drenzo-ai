@@ -3,11 +3,6 @@ import { Settings, X, LogOut, Sun, Moon } from 'lucide-react';
 import { useThemeContext } from '@/providers/ThemeProvider';
 import { useSettings } from '@/hooks/useSettings';
 
-const MODELS = [
-  { id: 'deepseek-v4-flash-free', label: 'DeepSeek V4 Flash Free' },
-  { id: 'deepseek-r1', label: 'DeepSeek R1 (reasoning)' },
-]
-
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -72,22 +67,6 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut }:
                   {theme === 'dark' ? 'Dark' : 'Light'}
                 </span>
               </button>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span className="w-1 h-4 rounded-full bg-blue-500" />
-                Model
-              </h3>
-              <select
-                value={settings.model}
-                onChange={(e) => updateSettings({ model: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm text-zinc-300 focus:outline-none focus:border-blue-500/50 transition-all appearance-none cursor-pointer"
-              >
-                {MODELS.map(m => (
-                  <option key={m.id} value={m.id} className="bg-[#121622]">{m.label}</option>
-                ))}
-              </select>
             </div>
 
             <div className="space-y-3">
