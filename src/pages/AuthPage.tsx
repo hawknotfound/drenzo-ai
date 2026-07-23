@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Eye } from 'lucide-react'
+import { BackgroundOrbs } from '@/components/ui-new/BackgroundOrbs'
 import { LoginForm } from '@/components/auth/LoginForm'
 import { SignUpForm } from '@/components/auth/SignUpForm'
 import { useAuthContext } from '@/providers/AuthProvider'
@@ -22,32 +23,7 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
 
   return (
     <div className="fixed inset-0 overflow-y-auto bg-[#090b10]">
-      {/* Animated background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-950/25 via-[#0b0f19] to-[#06080d]" />
-        <div
-          className="absolute inset-0 opacity-[0.035]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-            backgroundSize: '40px 40px'
-          }}
-        />
-        <motion.div
-          animate={{ x: [0, 25, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.08, 0.95, 1] }}
-          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-[10%] left-[8%] w-72 h-72 rounded-full bg-gradient-to-tr from-blue-600/30 via-indigo-500/20 to-sky-400/10 blur-3xl"
-        />
-        <motion.div
-          animate={{ x: [0, -35, 15, 0], y: [0, 35, -25, 0], scale: [1, 1.1, 0.92, 1] }}
-          transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute bottom-[10%] right-[8%] w-80 h-80 rounded-full bg-gradient-to-br from-blue-500/20 via-sky-600/15 to-purple-600/10 blur-3xl"
-        />
-        <motion.div
-          animate={{ opacity: [0.2, 0.4, 0.2], scale: [1, 1.05, 1] }}
-          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-[5%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-blue-500/15 via-indigo-600/10 to-transparent blur-3xl"
-        />
-      </div>
+      <BackgroundOrbs />
 
       <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-6">
         <motion.div
