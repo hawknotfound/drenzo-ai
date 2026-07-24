@@ -141,7 +141,7 @@ export function HeroState({
         transition={{ duration: 0.5, ease: 'easeOut' }}
         className="text-center space-y-1 mb-6 sm:mb-8"
       >
-        <div className="w-48 sm:w-64 mx-auto mb-4 sm:mb-5">
+        <div className="w-72 sm:w-96 mx-auto mb-4 sm:mb-5">
           <img src="/banner.png" alt="DRENZO AI" className="w-full h-full object-contain" />
         </div>
         <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-zinc-400 font-normal tracking-wide">
