@@ -10,11 +10,14 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-neutral-950 flex items-center justify-center">
+      <div className="h-screen bg-[#0b0f19] flex flex-col items-center justify-center gap-6">
+        <div className="w-20 h-20">
+          <img src="/Logo.png" alt="DRENZO AI" className="w-full h-full object-contain" />
+        </div>
         <div className="flex gap-2">
-          <span className="w-2 h-2 rounded-full bg-neutral-600 animate-bounce" style={{ animationDelay: '0ms' }} />
-          <span className="w-2 h-2 rounded-full bg-neutral-600 animate-bounce" style={{ animationDelay: '150ms' }} />
-          <span className="w-2 h-2 rounded-full bg-neutral-600 animate-bounce" style={{ animationDelay: '300ms' }} />
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+          <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     )
