@@ -61,6 +61,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   } = useChat(isGuest ? guestConvId.current : activeConversationId, !!isGuest, language)
 
   const handleNewChat = useCallback(async () => {
+    setInputText('')
     if (isGuest) {
       guestConvId.current = crypto.randomUUID()
       setActiveConversationId(null)
@@ -69,12 +70,11 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     const conv = await createConversation()
     if (conv) setActiveConversationId(conv.id)
   }, [createConversation, isGuest])
-
   const handleSelectConversation = useCallback((id: string) => {
+    setInputText('')
     setActiveConversationId(id)
     loadMessages(id)
   }, [loadMessages])
-
   const handleDeleteConversation = useCallback(async (id: string) => {
     await deleteConversation(id)
     if (activeConversationId === id) setActiveConversationId(null)
