@@ -47,7 +47,7 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Drenzo AI</h1>
-            <p className="text-sm text-zinc-500 mt-1">Think. Build. Create.</p>
+            <p className="text-sm text-zinc-500 mt-1">No filter. Real talk.</p>
           </motion.div>
 
           {/* Auth card */}

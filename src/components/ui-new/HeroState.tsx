@@ -145,7 +145,7 @@ export function HeroState({
           DRENZO AI
         </h1>
         <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-zinc-400 font-normal tracking-wide">
-          Think. Build. Create.
+          No filter. Real talk.
         </p>
       </motion.div>
 
