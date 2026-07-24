@@ -142,7 +142,7 @@ export function HeroState({
         className="text-center"
       >
         <div className="w-80 sm:w-[28rem] mx-auto">
-          <img src="/banner.png" alt="DRENZO AI" className="w-full h-full object-contain" />
+          <img src="/banner.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
         </div>
       </motion.div>
 

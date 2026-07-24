@@ -70,12 +70,12 @@ export function Sidebar({
           <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={isCollapsed ? onNewChat : undefined}>
             {!isCollapsed && (
               <div className="shrink-0">
-                <img src="/banner.png" alt="DRENZO AI" className="h-12 w-auto object-contain" />
+                <img src="/banner.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="h-12 w-auto object-contain" />
               </div>
             )}
             {isCollapsed && (
               <div className="flex items-center justify-center w-9 h-9 shrink-0">
-                <img src="/Logo.png" alt="DRENZO AI" className="w-full h-full object-contain" />
+                <img src="/Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
               </div>
             )}
           </div>

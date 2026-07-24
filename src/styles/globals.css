@@ -44,6 +44,11 @@ body {
   overflow-x: hidden;
 }
 
+img {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
 ::selection {
   background-color: rgba(59, 130, 246, 0.4);
   color: #ffffff;
