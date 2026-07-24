@@ -154,8 +154,6 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
         <div className="flex flex-col flex-1 min-w-0 bg-gradient-to-b from-transparent via-blue-950/5 to-transparent">
           <TopBar
             onOpenSettings={() => setIsSettingsOpen(true)}
-            language={language}
-            onToggleLanguage={() => setLanguage(prev => prev === 'english' ? 'hinglish' : 'english')}
           />
 
           {isGuest && !guestLimitReached && (
@@ -297,8 +295,8 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
             )}
           </div>
 
-          {!isGuest && (
-            <div className="flex justify-center pb-4 shrink-0">
+          <div className="relative flex justify-center pb-4 shrink-0">
+            {!isGuest && (
               <div className="inline-flex items-center gap-1.5 p-1.5 rounded-xl bg-[#1a202c]/80 backdrop-blur-md border border-white/10 shadow-lg">
                 <button
                   onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -336,8 +334,22 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                   <Settings className="w-4 h-4" />
                 </button>
               </div>
+            )}
+
+            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+              <button
+                onClick={() => setLanguage(prev => prev === 'english' ? 'hinglish' : 'english')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all active:scale-95 ${
+                  language === 'hinglish'
+                    ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/15'
+                    : 'bg-blue-500/10 border-blue-500/30 text-blue-400 hover:bg-blue-500/15'
+                }`}
+                title={`Switch to ${language === 'english' ? 'Hinglish' : 'English'}`}
+              >
+                {language === 'hinglish' ? 'Hinglish' : 'English'}
+              </button>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
