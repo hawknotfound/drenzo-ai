@@ -53,6 +53,23 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
             transition={{ duration: 0.4, delay: 0.15 }}
             className="rounded-2xl bg-[#161a25]/80 border border-white/[0.06] backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.3)] p-6 sm:p-8"
           >
+            {/* Form */}
+            {mode === 'login' ? (
+              <LoginForm onLogin={signIn} onSwitchToSignUp={() => setMode('signup')} onResendConfirmation={resendConfirmation} />
+            ) : (
+              <SignUpForm onSignUp={signUp} onSwitchToLogin={() => setMode('login')} onResendConfirmation={resendConfirmation} />
+            )}
+
+            {/* Divider */}
+            <div className="relative my-5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/[0.06]" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-[#161a25] px-3 text-zinc-500 tracking-wider">or continue with</span>
+              </div>
+            </div>
+
             {/* Google */}
             <button
               type="button"
@@ -68,23 +85,6 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
               </svg>
               {googleLoading ? 'Redirecting...' : 'Continue with Google'}
             </button>
-
-            {/* Divider */}
-            <div className="relative my-5">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/[0.06]" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#161a25] px-3 text-zinc-500 tracking-wider">or {mode === 'login' ? 'sign in' : 'sign up'} with email</span>
-              </div>
-            </div>
-
-            {/* Form */}
-            {mode === 'login' ? (
-              <LoginForm onLogin={signIn} onSwitchToSignUp={() => setMode('signup')} onResendConfirmation={resendConfirmation} />
-            ) : (
-              <SignUpForm onSignUp={signUp} onSwitchToLogin={() => setMode('login')} onResendConfirmation={resendConfirmation} />
-            )}
 
             {/* Guest access */}
             {onTryAsGuest && (
