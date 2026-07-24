@@ -77,8 +77,9 @@ export function Sidebar({
           ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
         `}
       >
-        <div className="flex items-center justify-between px-5 py-5 border-b border-white/5">
-          <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={onNewChat}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-5 border-b border-white/5 shrink-0">
+          <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={isCollapsed ? onNewChat : undefined}>
             <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/20 via-sky-500/30 to-indigo-600/20 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)] shrink-0">
               <svg className="w-5 h-5 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 4h8a8 8 0 0 1 8 8 8 8 0 0 1-8 8H4V4z" />
@@ -101,57 +102,28 @@ export function Sidebar({
           )}
         </div>
 
-        <div className="p-3">
-          <button
-            onClick={onNewChat}
-            className="group relative flex items-center justify-center gap-2.5 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-white/10 via-white/5 to-white/10 hover:from-blue-600/30 hover:via-blue-500/20 hover:to-indigo-600/30 border border-white/15 hover:border-blue-400/50 text-white font-medium text-sm transition-all duration-200 shadow-md hover:shadow-blue-500/20 active:scale-[0.98]"
-            title="New Chat"
-          >
-            <Plus className="w-4 h-4 text-blue-400 group-hover:scale-110 group-hover:rotate-90 transition-transform duration-200" />
-            {!isCollapsed && <span className="whitespace-nowrap">New Chat</span>}
-            {!isCollapsed && <kbd className="hidden lg:inline-flex ml-auto text-[10px] text-zinc-600 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/5">Ctrl+N</kbd>}
-          </button>
-        </div>
-
-        <div className="flex-1 px-3 py-1 space-y-1 overflow-y-auto custom-scrollbar">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const shortcut = item.id === 'search' ? 'Ctrl+K' : item.id === 'settings' ? 'Ctrl+Shift+,' : '';
-            return (
-              <button
-                key={item.id}
-                onClick={() => { item.onClick(); if (window.innerWidth < 1024) onToggleCollapse(); }}
-                className="group flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 text-zinc-400 hover:text-white hover:bg-white/5 active:bg-white/10"
-                title={isCollapsed ? item.label : undefined}
+        {/* Recent Conversations */}
+        <div className="flex-1 px-3 py-2 overflow-y-auto custom-scrollbar min-h-0">
+          {!isCollapsed && (
+            <div className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
+              Recent Conversations
+            </div>
+          )}
+          <div className="space-y-0.5">
+            {sorted.map((c) => (
+              <div
+                key={c.id}
+                className={`group relative flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
+                  activeConversationId === c.id
+                    ? 'bg-blue-500/20'
+                    : 'hover:bg-white/5'
+                }`}
+                onClick={() => { onSelectConversation(c.id); if (window.innerWidth < 1024) onToggleCollapse(); }}
+                title={isCollapsed ? c.title : undefined}
               >
-                <Icon className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
+                <Sparkles className={`w-3.5 h-3.5 shrink-0 ${c.is_pinned ? 'text-blue-400' : 'text-zinc-500'}`} />
                 {!isCollapsed && (
                   <>
-                    <span className="flex-1 truncate whitespace-nowrap text-[13.5px] font-normal text-left">{item.label}</span>
-                    {shortcut && <kbd className="hidden lg:inline-flex text-[10px] text-zinc-600 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/5">{shortcut}</kbd>}
-                  </>
-                )}
-              </button>
-            );
-          })}
-
-          {!isCollapsed && (
-            <div className="pt-3 mt-2 border-t border-white/5">
-              <div className="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                Recent Conversations
-              </div>
-              <div className="space-y-0.5 max-h-[300px] lg:max-h-[500px] overflow-y-auto custom-scrollbar">
-                {sorted.map((c) => (
-                  <div
-                    key={c.id}
-                    className={`group relative flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
-                      activeConversationId === c.id
-                        ? 'bg-blue-500/20'
-                        : 'hover:bg-white/5'
-                    }`}
-                    onClick={() => { onSelectConversation(c.id); if (window.innerWidth < 1024) onToggleCollapse(); }}
-                  >
-                    <Sparkles className={`w-3 h-3 shrink-0 ${c.is_pinned ? 'text-blue-400' : 'text-zinc-500'}`} />
                     {editingId === c.id ? (
                       <input
                         ref={editRef}
@@ -172,54 +144,84 @@ export function Sidebar({
                         {c.title}
                       </span>
                     )}
-                    <div className="flex lg:opacity-0 lg:group-hover:opacity-100 items-center gap-0.5 transition-opacity">
+                    <div className="flex lg:opacity-0 lg:group-hover:opacity-100 items-center gap-0.5 transition-opacity shrink-0">
                       {editingId !== c.id && (
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); onTogglePin(c.id, c.is_pinned); }}
-                            className={`p-2 rounded hover:bg-white/10 active:bg-white/15 transition-colors ${
+                            className={`p-1.5 rounded hover:bg-white/10 active:bg-white/15 transition-colors ${
                               c.is_pinned ? 'text-blue-400' : 'text-zinc-500 hover:text-blue-400'
                             }`}
                             title={c.is_pinned ? 'Unpin' : 'Pin'}
                           >
-                            {c.is_pinned ? <PinOff className="w-3.5 h-3.5" /> : <Pin className="w-3.5 h-3.5" />}
+                            {c.is_pinned ? <PinOff className="w-3 h-3" /> : <Pin className="w-3 h-3" />}
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); startRename(c.id, c.title); }}
-                            className="p-2 rounded hover:bg-white/10 active:bg-white/15 text-zinc-500 hover:text-blue-400 transition-colors"
+                            className="p-1.5 rounded hover:bg-white/10 active:bg-white/15 text-zinc-500 hover:text-blue-400 transition-colors"
                             title="Rename"
                           >
-                            <Pencil className="w-3.5 h-3.5" />
+                            <Pencil className="w-3 h-3" />
                           </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); onDeleteConversation(c.id); }}
-                            className="p-2 rounded hover:bg-red-500/10 active:bg-red-500/20 text-zinc-500 hover:text-red-400 transition-colors"
+                            className="p-1.5 rounded hover:bg-red-500/10 active:bg-red-500/20 text-zinc-500 hover:text-red-400 transition-colors"
                             title="Delete"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3 h-3" />
                           </button>
                         </>
                       )}
                     </div>
-                  </div>
-                ))}
+                  </>
+                )}
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
 
-        <div className="p-3 border-t border-white/5 space-y-2">
-          <div className="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/15 cursor-pointer transition-all" onClick={onOpenSettings}>
+        {/* Bottom actions */}
+        <div className="p-3 border-t border-white/5 space-y-2 shrink-0">
+          <button
+            onClick={onNewChat}
+            className="group relative flex items-center justify-center gap-2.5 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-white/10 via-white/5 to-white/10 hover:from-blue-600/30 hover:via-blue-500/20 hover:to-indigo-600/30 border border-white/15 hover:border-blue-400/50 text-white font-medium text-sm transition-all duration-200 shadow-md hover:shadow-blue-500/20 active:scale-[0.98]"
+            title="New Chat"
+          >
+            <Plus className="w-4 h-4 text-blue-400 group-hover:scale-110 group-hover:rotate-90 transition-transform duration-200" />
+            {!isCollapsed && <span className="whitespace-nowrap">New Chat</span>}
+            {!isCollapsed && <kbd className="hidden lg:inline-flex ml-auto text-[10px] text-zinc-600 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/5">Ctrl+N</kbd>}
+          </button>
+
+          <div className="flex items-center gap-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => { item.onClick(); if (window.innerWidth < 1024) onToggleCollapse(); }}
+                  className={`group flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 text-zinc-400 hover:text-white hover:bg-white/5 active:bg-white/10 ${isCollapsed ? 'w-full p-2.5' : 'flex-1 py-2.5 px-3'}`}
+                  title={isCollapsed ? item.label : undefined}
+                >
+                  <Icon className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
+                  {!isCollapsed && (
+                    <span className="truncate whitespace-nowrap text-[13.5px] font-normal">{item.label}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/15 cursor-pointer transition-all" onClick={onOpenSettings}>
             <div className="relative w-8 h-8 rounded-full overflow-hidden border border-blue-400/40 shrink-0 flex items-center justify-center bg-blue-600/30 text-blue-300 text-xs font-bold">
               {userName?.charAt(0).toUpperCase() || 'U'}
             </div>
             {!isCollapsed && (
-              <div className="flex flex-col truncate">
+              <div className="flex flex-col truncate flex-1">
                 <span className="text-xs font-semibold text-white truncate leading-tight">{userName || 'User'}</span>
                 <span className="text-[10.5px] text-zinc-400 truncate leading-tight">{userEmail || ''}</span>
               </div>
             )}
-            {!isCollapsed && <ChevronRight className="w-3.5 h-3.5 text-zinc-400 shrink-0 ml-auto" />}
+            {!isCollapsed && <ChevronRight className="w-3.5 h-3.5 text-zinc-400 shrink-0" />}
           </div>
 
           <button
