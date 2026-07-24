@@ -287,6 +287,12 @@ export function ChatTimeline({
                 {msg.role === 'user' && !editingId && !isStreaming && (
                   <div className="flex items-center gap-3 pt-3 mt-2 border-t border-white/5 text-zinc-400 text-xs">
                     <button
+                      onClick={() => handleCopy(msg.content, `user-${msg.id}`)}
+                      className="flex items-center gap-1.5 p-2 sm:p-1 hover:text-white active:text-emerald-400 transition-colors rounded-lg hover:bg-white/5"
+                    >
+                      {copiedId === `user-${msg.id}` ? <Check className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-emerald-400" /> : <Copy className="w-4 h-4 sm:w-3.5 sm:h-3.5" />}
+                    </button>
+                    <button
                       onClick={() => startEditing(msg)}
                       className="flex items-center gap-1.5 p-2 sm:p-1 hover:text-white active:text-blue-400 transition-colors rounded-lg hover:bg-white/5"
                       title="Edit message"

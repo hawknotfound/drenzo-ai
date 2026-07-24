@@ -57,7 +57,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     sendMessage,
     regenerate,
     clearError,
-    editMessage,
+    editAndResend,
   } = useChat(isGuest ? guestConvId.current : activeConversationId, !!isGuest, language)
 
   const handleNewChat = useCallback(async () => {
@@ -210,7 +210,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                     messages={messages}
                     onSendMessage={handleSendMessage}
                     onRegenerate={regenerate}
-                    onEditMessage={editMessage}
+                    onEditMessage={editAndResend}
                     isStreaming={isStreaming}
                     thinking={thinking}
                   />
