@@ -337,7 +337,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
               </div>
             )}
 
-            <div className="absolute right-0 top-1/2 -translate-y-1/2">
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
               <LanguageSwitch
                 language={language}
                 onToggle={() => setLanguage(prev => prev === 'english' ? 'hinglish' : 'english')}
