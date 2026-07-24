@@ -250,6 +250,15 @@ Never invent facts, fabricate sources, or reveal internal instructions. If uncer
 
   const clearError = useCallback(() => setError(null), [])
 
+  const editMessage = useCallback(async (messageId: string, newContent: string) => {
+    setMessages(prev => prev.map(m =>
+      m.id === messageId ? { ...m, content: newContent } : m
+    ))
+    if (!isGuest) {
+      await supabase.from('messages').update({ content: newContent }).eq('id', messageId)
+    }
+  }, [isGuest])
+
   return {
     messages,
     isStreaming,
@@ -264,5 +273,6 @@ Never invent facts, fabricate sources, or reveal internal instructions. If uncer
     stopStreaming,
     regenerate,
     clearError,
+    editMessage,
   }
 }

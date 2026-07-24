@@ -4,7 +4,7 @@ import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import {
-  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip, ChevronDown, ChevronRight
+  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip, ChevronDown, ChevronRight, Pencil, Undo2
 } from 'lucide-react';
 import type { ChatMessage } from '@/types/chat';
 
@@ -12,6 +12,7 @@ interface ChatTimelineProps {
   messages: ChatMessage[];
   onSendMessage: (text: string) => void;
   onRegenerate: () => void;
+  onEditMessage: (messageId: string, newContent: string) => void;
   isStreaming: boolean;
   thinking: string;
 }
@@ -46,12 +47,16 @@ function exportChat(messages: ChatMessage[]) {
 }
 
 export function ChatTimeline({
-  messages, onSendMessage, onRegenerate, isStreaming, thinking
+  messages, onSendMessage, onRegenerate, onEditMessage, isStreaming, thinking
 }: ChatTimelineProps) {
   const [inputText, setInputText] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [showThinking, setShowThinking] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const [originalText, setOriginalText] = useState('');
+  const editRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +86,45 @@ export function ChatTimeline({
         onSendMessage(inputText.trim());
         setInputText('');
       }
+    }
+  };
+
+  const startEditing = (msg: ChatMessage) => {
+    setEditingId(msg.id);
+    setEditText(msg.content);
+    setOriginalText(msg.content);
+    setTimeout(() => editRef.current?.focus(), 0);
+  };
+
+  const saveEdit = () => {
+    if (editingId && editText.trim()) {
+      onEditMessage(editingId, editText.trim());
+    }
+    setEditingId(null);
+    setEditText('');
+    setOriginalText('');
+  };
+
+  const cancelEdit = () => {
+    if (editingId && originalText) {
+      setEditText(originalText);
+    }
+    setEditingId(null);
+    setEditText('');
+    setOriginalText('');
+  };
+
+  const revertEdit = () => {
+    setEditText(originalText);
+  };
+
+  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      saveEdit();
+    }
+    if (e.key === 'Escape') {
+      cancelEdit();
     }
   };
 
@@ -187,6 +231,33 @@ export function ChatTimeline({
                       <Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>
                         {msg.content}
                       </Markdown>
+                    ) : editingId === msg.id ? (
+                      <div className="space-y-2">
+                        <textarea
+                          ref={editRef}
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          onKeyDown={handleEditKeyDown}
+                          className="w-full bg-[#0d1117]/80 border border-blue-500/50 rounded-lg p-3 text-white text-sm focus:outline-none resize-none custom-scrollbar"
+                          rows={4}
+                        />
+                        <div className="flex items-center gap-2 justify-end">
+                          <button
+                            onClick={revertEdit}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white text-xs transition-all"
+                          >
+                            <Undo2 className="w-3.5 h-3.5" />
+                            Revert
+                          </button>
+                          <button
+                            onClick={saveEdit}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs transition-all active:scale-95"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            Save
+                          </button>
+                        </div>
+                      </div>
                     ) : (
                       <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
                     )}
@@ -210,6 +281,17 @@ export function ChatTimeline({
                     </button>
                     <button onClick={onRegenerate} className="flex items-center gap-1.5 p-2 sm:p-1 hover:text-white active:text-blue-400 transition-colors rounded-lg hover:bg-white/5">
                       <RotateCw className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                    </button>
+                  </div>
+                )}
+                {msg.role === 'user' && !editingId && !isStreaming && (
+                  <div className="flex items-center gap-3 pt-3 mt-2 border-t border-white/5 text-zinc-400 text-xs">
+                    <button
+                      onClick={() => startEditing(msg)}
+                      className="flex items-center gap-1.5 p-2 sm:p-1 hover:text-white active:text-blue-400 transition-colors rounded-lg hover:bg-white/5"
+                      title="Edit message"
+                    >
+                      <Pencil className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                     </button>
                   </div>
                 )}
