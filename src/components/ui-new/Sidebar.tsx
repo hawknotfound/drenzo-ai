@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import {
-  X, Sparkles, Trash2, Pencil, Pin, PinOff
+  X, Sheet, Trash2, Pencil, Pin, PinOff
 } from 'lucide-react';
 import type { Conversation } from '@/types/database';
 
@@ -109,7 +109,7 @@ export function Sidebar({
                 onClick={() => { onSelectConversation(c.id); if (window.innerWidth < 1024) onToggleCollapse(); }}
                 title={isCollapsed ? c.title : undefined}
               >
-                <Sparkles className={`w-3.5 h-3.5 shrink-0 ${c.is_pinned ? 'text-blue-400' : 'text-zinc-500'}`} />
+                <Sheet className={`w-3.5 h-3.5 shrink-0 ${c.is_pinned ? 'text-blue-400' : 'text-zinc-500'}`} />
                 {!isCollapsed && (
                   <>
                     {editingId === c.id ? (
