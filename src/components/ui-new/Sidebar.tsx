@@ -68,11 +68,8 @@ export function Sidebar({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/5 shrink-0">
           <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={isCollapsed ? onNewChat : undefined}>
-            <div className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500/20 via-sky-500/30 to-indigo-600/20 border border-blue-400/30 shadow-[0_0_15px_rgba(59,130,246,0.3)] shrink-0">
-              <svg className="w-5 h-5 text-blue-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h8a8 8 0 0 1 8 8 8 8 0 0 1-8 8H4V4z" />
-                <path d="M9 8h3a4 4 0 0 1 4 4 4 4 0 0 1-4 4H9V8z" className="text-sky-300 opacity-90" />
-              </svg>
+            <div className="relative flex items-center justify-center w-9 h-9 shrink-0">
+              <img src="/Logo.png" alt="DRENZO AI" className="w-full h-full object-contain" />
             </div>
             {!isCollapsed && (
               <span className="text-white font-bold text-lg tracking-tight whitespace-nowrap">

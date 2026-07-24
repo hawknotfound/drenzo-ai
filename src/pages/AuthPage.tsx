@@ -39,12 +39,8 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="text-center mb-8"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-500/25">
-              <svg className="w-5 h-5 text-white" viewBox="0 0 32 32" fill="none">
-                <rect x="8" y="10" width="4" height="12" rx="1" fill="currentColor" opacity="0.9"/>
-                <rect x="14" y="10" width="4" height="12" rx="1" fill="currentColor" opacity="0.6"/>
-                <rect x="20" y="10" width="4" height="12" rx="1" fill="currentColor" opacity="0.3"/>
-              </svg>
+            <div className="w-14 h-14 mx-auto mb-3">
+              <img src="/Logo.png" alt="DRENZO AI" className="w-full h-full object-contain" />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Drenzo AI</h1>
             <p className="text-sm text-zinc-500 mt-1">No filter. Real talk.</p>
