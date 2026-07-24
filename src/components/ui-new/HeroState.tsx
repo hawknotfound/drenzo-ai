@@ -142,7 +142,7 @@ export function HeroState({
         className="text-center space-y-1 mb-6 sm:mb-8"
       >
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight drop-shadow-sm font-sans">
-          Drenzo AI
+          DRENZO AI
         </h1>
         <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-zinc-400 font-normal tracking-wide">
           Think. Build. Create.
