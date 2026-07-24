@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, X, LogOut, Sun, Moon } from 'lucide-react';
-import { useThemeContext } from '@/providers/ThemeProvider';
+import { Settings, X, LogOut } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 
 interface SettingsModalProps {
@@ -12,7 +11,6 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut }: SettingsModalProps) {
-  const { theme, toggleTheme } = useThemeContext()
   const { settings, updateSettings } = useSettings(userId)
 
   if (!isOpen) return null;
@@ -60,23 +58,6 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut }:
               >
                 <LogOut className="w-3.5 h-3.5 shrink-0" />
                 Sign Out
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span className="w-1 h-4 rounded-full bg-blue-500" />
-                Appearance
-              </h3>
-              <button
-                onClick={toggleTheme}
-                className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 active:bg-white/15 transition-all"
-              >
-                <span className="text-sm text-zinc-300">Theme</span>
-                <span className="flex items-center gap-2 text-sm text-zinc-400">
-                  {theme === 'dark' ? <Moon className="w-4 h-4 text-blue-400" /> : <Sun className="w-4 h-4 text-amber-400" />}
-                  {theme === 'dark' ? 'Dark' : 'Light'}
-                </span>
               </button>
             </div>
 
