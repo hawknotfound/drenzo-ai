@@ -10,7 +10,7 @@ import { HeroState } from '@/components/ui-new/HeroState'
 import { ChatTimeline } from '@/components/ui-new/ChatTimeline'
 import { SearchModal } from '@/components/ui-new/SearchModal'
 import { SettingsModal } from '@/components/ui-new/SettingsModal'
-import { LogIn, UserPlus, MessageSquare, PanelLeft } from 'lucide-react'
+import { LogIn, UserPlus, MessageSquare, PanelLeft, Plus, Search, Settings } from 'lucide-react'
 
 interface ChatPageProps {
   isGuest?: boolean
@@ -148,10 +148,6 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
             onDeleteConversation={handleDeleteConversation}
             onRenameConversation={renameConversation}
             onTogglePin={togglePin}
-            onOpenSearch={() => setIsSearchOpen(true)}
-            onOpenSettings={() => setIsSettingsOpen(true)}
-            userName={user?.user_metadata?.name || user?.email?.split('@')[0]}
-            userEmail={user?.email || ''}
           />
         )}
 
@@ -303,14 +299,43 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
 
           {!isGuest && (
             <div className="flex justify-center pb-4 shrink-0">
-              <button
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="p-2.5 rounded-xl bg-[#1a202c]/80 hover:bg-[#222938] active:bg-[#2a3248] border border-white/10 text-zinc-400 hover:text-white transition-all backdrop-blur-md active:scale-95"
-                aria-label={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
-                title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
-              >
-                <PanelLeft className="w-5 h-5" />
-              </button>
+              <div className="inline-flex items-center gap-1.5 p-1.5 rounded-xl bg-[#1a202c]/80 backdrop-blur-md border border-white/10 shadow-lg">
+                <button
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="p-2.5 rounded-lg hover:bg-white/10 active:bg-white/15 text-zinc-400 hover:text-white transition-all active:scale-95"
+                  aria-label={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+                  title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+                >
+                  <PanelLeft className="w-4 h-4" />
+                </button>
+                <div className="w-px h-5 bg-white/10" />
+                <button
+                  onClick={handleNewChat}
+                  className="p-2.5 rounded-lg hover:bg-white/10 active:bg-white/15 text-zinc-400 hover:text-white transition-all active:scale-95"
+                  aria-label="New Chat"
+                  title="New Chat"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+                <div className="w-px h-5 bg-white/10" />
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-2.5 rounded-lg hover:bg-white/10 active:bg-white/15 text-zinc-400 hover:text-white transition-all active:scale-95"
+                  aria-label="Search"
+                  title="Search"
+                >
+                  <Search className="w-4 h-4" />
+                </button>
+                <div className="w-px h-5 bg-white/10" />
+                <button
+                  onClick={() => setIsSettingsOpen(true)}
+                  className="p-2.5 rounded-lg hover:bg-white/10 active:bg-white/15 text-zinc-400 hover:text-white transition-all active:scale-95"
+                  aria-label="Settings"
+                  title="Settings"
+                >
+                  <Settings className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
         </div>

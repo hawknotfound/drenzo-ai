@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import {
-  Plus, Search, Settings, ChevronRight,
-  X, PanelLeftOpen, Sparkles, Trash2, Pencil, Pin, PinOff
+  X, Sparkles, Trash2, Pencil, Pin, PinOff
 } from 'lucide-react';
 import type { Conversation } from '@/types/database';
 
@@ -15,18 +14,12 @@ interface SidebarProps {
   onDeleteConversation: (id: string) => void;
   onRenameConversation: (id: string, title: string) => void;
   onTogglePin: (id: string, isPinned: boolean) => void;
-  onOpenSearch: () => void;
-  onOpenSettings: () => void;
-  userName?: string;
-  userEmail?: string;
 }
 
 export function Sidebar({
   isCollapsed, onToggleCollapse, onNewChat, conversations,
   activeConversationId, onSelectConversation,
   onDeleteConversation, onRenameConversation, onTogglePin,
-  onOpenSearch, onOpenSettings,
-  userName, userEmail,
 }: SidebarProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -50,11 +43,6 @@ export function Sidebar({
     }
     setEditingId(null);
   };
-
-  const navItems = [
-    { id: 'search', label: 'Search Conversations', icon: Search, onClick: onOpenSearch },
-    { id: 'settings', label: 'Settings', icon: Settings, onClick: onOpenSettings },
-  ];
 
   const pinned = conversations.filter(c => c.is_pinned)
   const unpinned = conversations.filter(c => !c.is_pinned)
@@ -180,61 +168,6 @@ export function Sidebar({
           </div>
         </div>
 
-        {/* Bottom actions */}
-        <div className="p-3 border-t border-white/5 space-y-2 shrink-0">
-          <button
-            onClick={onNewChat}
-            className="group relative flex items-center justify-center gap-2.5 w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-white/10 via-white/5 to-white/10 hover:from-blue-600/30 hover:via-blue-500/20 hover:to-indigo-600/30 border border-white/15 hover:border-blue-400/50 text-white font-medium text-sm transition-all duration-200 shadow-md hover:shadow-blue-500/20 active:scale-[0.98]"
-            title="New Chat"
-          >
-            <Plus className="w-4 h-4 text-blue-400 group-hover:scale-110 group-hover:rotate-90 transition-transform duration-200" />
-            {!isCollapsed && <span className="whitespace-nowrap">New Chat</span>}
-            {!isCollapsed && <kbd className="hidden lg:inline-flex ml-auto text-[10px] text-zinc-600 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/5">Ctrl+N</kbd>}
-          </button>
-
-          <div className="flex items-center gap-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => { item.onClick(); if (window.innerWidth < 1024) onToggleCollapse(); }}
-                  className={`group flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 text-zinc-400 hover:text-white hover:bg-white/5 active:bg-white/10 ${isCollapsed ? 'w-full p-2.5' : 'flex-1 py-2.5 px-3'}`}
-                  title={isCollapsed ? item.label : undefined}
-                >
-                  <Icon className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-200 transition-colors" />
-                  {!isCollapsed && (
-                    <span className="truncate whitespace-nowrap text-[13.5px] font-normal">{item.label}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/15 cursor-pointer transition-all" onClick={onOpenSettings}>
-            <div className="relative w-8 h-8 rounded-full overflow-hidden border border-blue-400/40 shrink-0 flex items-center justify-center bg-blue-600/30 text-blue-300 text-xs font-bold">
-              {userName?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            {!isCollapsed && (
-              <div className="flex flex-col truncate flex-1">
-                <span className="text-xs font-semibold text-white truncate leading-tight">{userName || 'User'}</span>
-                <span className="text-[10.5px] text-zinc-400 truncate leading-tight">{userEmail || ''}</span>
-              </div>
-            )}
-            {!isCollapsed && <ChevronRight className="w-3.5 h-3.5 text-zinc-400 shrink-0" />}
-          </div>
-
-          <button
-            onClick={onToggleCollapse}
-            className="max-lg:hidden flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-zinc-400 hover:text-white text-xs font-medium transition-all"
-          >
-            {isCollapsed ? (
-              <PanelLeftOpen className="w-4 h-4 text-zinc-300" />
-            ) : (
-              <><X className="w-3.5 h-3.5 text-zinc-400" /><span>Collapse</span></>
-            )}
-          </button>
-        </div>
       </aside>
     </>
   );
