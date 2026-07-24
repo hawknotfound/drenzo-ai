@@ -68,13 +68,15 @@ export function Sidebar({
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-white/5 shrink-0">
           <div className="flex items-center gap-3 overflow-hidden cursor-pointer" onClick={isCollapsed ? onNewChat : undefined}>
-            <div className="relative flex items-center justify-center w-9 h-9 shrink-0">
-              <img src="/Logo.png" alt="DRENZO AI" className="w-full h-full object-contain" />
-            </div>
             {!isCollapsed && (
-              <span className="text-white font-bold text-lg tracking-tight whitespace-nowrap">
-                Drenzo AI
-              </span>
+              <div className="shrink-0">
+                <img src="/banner.png" alt="DRENZO AI" className="h-7 sm:h-8 w-auto object-contain" />
+              </div>
+            )}
+            {isCollapsed && (
+              <div className="flex items-center justify-center w-9 h-9 shrink-0">
+                <img src="/Logo.png" alt="DRENZO AI" className="w-full h-full object-contain" />
+              </div>
             )}
           </div>
           {!isCollapsed && (
