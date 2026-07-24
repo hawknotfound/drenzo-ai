@@ -139,14 +139,11 @@ export function HeroState({
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="text-center space-y-1 mb-6 sm:mb-8"
+        className="text-center"
       >
-        <div className="w-72 sm:w-96 mx-auto mb-4 sm:mb-5">
+        <div className="w-80 sm:w-[28rem] mx-auto">
           <img src="/banner.png" alt="DRENZO AI" className="w-full h-full object-contain" />
         </div>
-        <p className="text-sm sm:text-lg md:text-xl lg:text-2xl text-zinc-400 font-normal tracking-wide">
-          No filter. Real talk.
-        </p>
       </motion.div>
 
       <motion.div
