@@ -15,6 +15,7 @@ interface ChatTimelineProps {
   onEditMessage: (messageId: string, newContent: string) => void;
   isStreaming: boolean;
   thinking: string;
+  isFounder?: boolean;
 }
 
 function relativeTime(dateStr: string | undefined): string {
@@ -47,7 +48,7 @@ function exportChat(messages: ChatMessage[]) {
 }
 
 export function ChatTimeline({
-  messages, onSendMessage, onRegenerate, onEditMessage, isStreaming, thinking
+  messages, onSendMessage, onRegenerate, onEditMessage, isStreaming, thinking, isFounder: isFounderProp
 }: ChatTimelineProps) {
   const [inputText, setInputText] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -185,8 +186,10 @@ export function ChatTimeline({
                     <Sparkles className="w-4 h-4" />
                   </div>
                 )}
-                <span className="text-xs font-semibold text-white">
-                  {msg.role === 'user' ? 'You' : 'Drenzo AI'}
+                <span className="text-xs font-semibold text-white flex items-center gap-1.5">
+                  {msg.role === 'user' ? (
+                    <>You{isFounderProp && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-medium">Founder</span>}</>
+                  ) : 'Drenzo AI'}
                 </span>
                 <span className="text-[11px] text-zinc-500 ml-auto">{relativeTime(msg.created_at)}</span>
               </div>

@@ -10,6 +10,7 @@ import { HeroState } from '@/components/ui-new/HeroState'
 import { ChatTimeline } from '@/components/ui-new/ChatTimeline'
 import { SearchModal } from '@/components/ui-new/SearchModal'
 import { SettingsModal } from '@/components/ui-new/SettingsModal'
+import { isFounder } from '@/lib/config'
 import { LanguageSwitch } from '@/components/ui-new/LanguageSwitch'
 import { LogIn, UserPlus, MessageSquare, PanelLeft, Plus, Search, Settings } from 'lucide-react'
 
@@ -133,6 +134,8 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
 
   const hasConversation = (isGuest ? messages.length > 0 : activeConversationId && messages.length > 0)
   const guestRemaining = Math.max(0, 3 - guestMessagesUsed)
+  const userEmail = user?.email
+  const isFounderUser = isFounder(userEmail)
 
   return (
     <div className="h-screen flex bg-[#090b10] overflow-hidden relative">
@@ -213,6 +216,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                     onEditMessage={editAndResend}
                     isStreaming={isStreaming}
                     thinking={thinking}
+                    isFounder={isFounderUser}
                   />
                 </motion.div>
               )}

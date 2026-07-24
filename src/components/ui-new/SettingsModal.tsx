@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, X, LogOut } from 'lucide-react';
+import { Settings, X, LogOut, Crown } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import { isFounder } from '@/lib/config';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -52,6 +53,12 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut }:
                 Account
               </h3>
               <p className="text-xs text-zinc-400">{userEmail || 'Not signed in'}</p>
+              {isFounder(userEmail) && (
+                <div className="flex items-center gap-1.5 mt-1">
+                  <Crown className="w-3 h-3 text-purple-400" />
+                  <span className="text-[11px] font-semibold text-purple-400 bg-purple-500/15 px-2 py-0.5 rounded-full border border-purple-500/30">Founder</span>
+                </div>
+              )}
               <button
                 onClick={onSignOut}
                 className="flex items-center justify-center gap-2 w-full py-2.5 sm:py-2 px-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs font-medium hover:bg-red-500/20 active:bg-red-500/25 transition-colors"
