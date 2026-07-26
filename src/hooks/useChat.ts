@@ -100,34 +100,24 @@ export function useChat(conversationId: string | null, isGuest = false, language
       } catch {}
     }
 
-    const RESEARCH_KEYWORDS = ['research', 'find', 'search', 'what is', 'who is', 'how to',
-      'explain', 'tell me about', 'latest', 'news', 'current', 'look up',
-      'google', 'wikipedia', 'data on', 'facts about', 'define', 'meaning of',
-      'information about', 'web search', 'find out', 'can you look',
-      'what are', 'who are', 'where is', 'when did', 'why is', 'how does',
-      'astrology', 'birth chart', 'vedic', 'kundli', 'horoscope', 'rashi', 'nakshatra',
-      'zodiac', 'planets', 'houses', 'ascendant', 'lagna', 'jyotish', 'graha']
     const ASTROLOGY_KEYWORDS = ['astrology', 'birth chart', 'vedic', 'kundli', 'horoscope', 'rashi', 'nakshatra',
       'zodiac', 'ascendant', 'lagna', 'jyotish', 'sun sign', 'moon sign', 'rising sign',
       'houses', 'aspects', 'transits', 'dasha', 'graha', 'karma', 'birth details',
       'date of birth', 'time of birth', 'place of birth']
-    const isResearchQuery = RESEARCH_KEYWORDS.some(k => content.toLowerCase().includes(k))
 
     let searchContext = ''
-    if (isResearchQuery) {
-      try {
-        const searchQuery = ASTROLOGY_KEYWORDS.some(k => content.toLowerCase().includes(k))
-          ? `Vedic astrology ${content}`
-          : content
-        const searchRes = await searchWeb(searchQuery)
-        if (searchRes.results?.length > 0) {
-          searchContext = '\n\nWeb search results:\n' + searchRes.results
-            .map((r, i) => `[${i + 1}] ${r.title}\n${r.content}`)
-            .join('\n\n')
-          if (searchRes.answer) searchContext += `\n\nSummary: ${searchRes.answer}`
-        }
-      } catch {}
-    }
+    try {
+      const searchQuery = ASTROLOGY_KEYWORDS.some(k => content.toLowerCase().includes(k))
+        ? `Vedic astrology ${content}`
+        : content
+      const searchRes = await searchWeb(searchQuery)
+      if (searchRes.results?.length > 0) {
+        searchContext = '\n\nWeb search results:\n' + searchRes.results
+          .map((r, i) => `[${i + 1}] ${r.title}\n${r.content}`)
+          .join('\n\n')
+        if (searchRes.answer) searchContext += `\n\nSummary: ${searchRes.answer}`
+      }
+    } catch {}
 
     const assistantId = crypto.randomUUID()
     accumulatedContent.current = ''
@@ -140,7 +130,7 @@ export function useChat(conversationId: string | null, isGuest = false, language
 
     const openCodeMessages: OpenCodeMessage[] = []
 
-    const training = `You are Drenzo AI — a Researcher and Texting AI created by Shubham (Drenzo), age 16. You are brutally honest, mature, and direct. No fluff, no cringe, no disclaimers, no padding. You roast without being cruel, judge like a strict parent — firm but fair. You draw on DeepSeek's full knowledge — coding, science, history, philosophy, astrology, business, psychology, everything. Never refuse a topic unless it's illegal or harmful. Use your entire training, not just curated topics.
+    const training = `You are Drenzo AI — a Researcher and Texting AI created by Shubham (Drenzo), age 16. You are brutally honest, mature, and direct. No fluff, no cringe, no disclaimers, no padding. You roast without being cruel, judge like a strict parent — firm but fair. You have web search capability — when search results are provided below, use them as your primary source to answer accurately and cite them naturally. If no search results are available, use DeepSeek's full knowledge — coding, science, history, philosophy, astrology, business, psychology, everything. Never refuse a topic unless it's illegal or harmful.
 
 Your primary language is ${language === 'hinglish' ? 'Hinglish (Hindi+English mix)' : 'English'}. ${language === 'hinglish' ? 'Respond in natural Hinglish — Hindi and English mixed naturally, like a fluent Hindi speaker who uses English words where they fit. Never respond in pure Hindi or pure English unless the user does.' : 'Respond in clear, direct English. Never mix in Hinglish unless the user explicitly switches.'} Be concise but complete — give exactly what they need, nothing more.
 
