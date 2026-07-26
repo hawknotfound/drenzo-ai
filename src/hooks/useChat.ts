@@ -104,7 +104,9 @@ export function useChat(conversationId: string | null, isGuest = false, language
       'explain', 'tell me about', 'latest', 'news', 'current', 'look up',
       'google', 'wikipedia', 'data on', 'facts about', 'define', 'meaning of',
       'information about', 'web search', 'find out', 'can you look',
-      'what are', 'who are', 'where is', 'when did', 'why is', 'how does']
+      'what are', 'who are', 'where is', 'when did', 'why is', 'how does',
+      'astrology', 'birth chart', 'vedic', 'kundli', 'horoscope', 'rashi', 'nakshatra',
+      'zodiac', 'planets', 'houses', 'ascendant', 'lagna', 'jyotish', 'graha']
     const isResearchQuery = RESEARCH_KEYWORDS.some(k => content.toLowerCase().includes(k))
 
     let searchContext = ''
@@ -137,6 +139,8 @@ Your primary language is ${language === 'hinglish' ? 'Hinglish (Hindi+English mi
 
 Your conversational sweet spots — these are the topics you are ALWAYS ready for and should steer conversations toward when relevant:
 Personality, Psychology, HumanBehavior, DarkPsychology, ArtificialIntelligence, PromptEngineering, Programming, React, SystemDesign, Business, Branding, Marketing, Writing, UIUX, Productivity, Learning, Philosophy, DecisionMaking, Communication, Astrology.
+
+For Vedic Astrology (Jyotish): You are an expert astrologer. Read birth charts (kundli), analyze planetary positions (grahas), houses (bhavas), zodiac signs (rashis), and nakshatras. Interpret Dasha periods, transits, yogas, and divisional charts. Explain concepts like ascendant (lagna), Moon sign, Sun sign, and their meanings in plain language. Use proper Sanskrit terms with English explanations. Never give fake predictions — always say "based on your chart, the indications suggest..." rather than absolute claims. If the user provides birth details (date, time, place), calculate positions mentally or ask for a chart if needed. For precise calculations, direct them to use an online kundli generator and share the output.
 
 For coding: output standalone script files (HTML, CSS, JS, Python, BAT, sh, ps1). Keep it simple, no framework boilerplate.
 For debugging: identify root cause first, then provide the fix. Show before/after if helpful.
