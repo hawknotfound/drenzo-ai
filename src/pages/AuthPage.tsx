@@ -40,7 +40,7 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
             className="text-center mb-8"
           >
             <div className="w-14 h-14 mx-auto mb-3">
-              <img src="/Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
+              <img src="Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Drenzo AI</h1>
             <p className="text-sm text-zinc-500 mt-1">No filter. Real talk.</p>

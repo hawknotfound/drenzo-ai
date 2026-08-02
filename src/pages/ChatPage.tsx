@@ -265,7 +265,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
               >
                 <div className="max-w-md lg:max-w-lg text-center space-y-5 lg:space-y-6">
                   <div className="w-16 h-16 mx-auto">
-                    <img src="/Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
+                    <img src="Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white mb-2">Welcome to Drenzo AI</h2>

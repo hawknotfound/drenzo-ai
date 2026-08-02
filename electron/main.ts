@@ -1,20 +1,44 @@
-import { app, BrowserWindow, shell, protocol, Menu } from 'electron'
+import { app, BrowserWindow, shell, protocol, net, Menu } from 'electron'
 import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173'
 const AUTH_SCHEME = 'drenzo'
+const APP_SCHEME = 'app'
 const isDev = !!process.env.VITE_DEV_SERVER_URL || !app.isPackaged
+
+const distRoot = path.join(__dirname, '..', 'dist')
 
 let mainWindow: BrowserWindow | null = null
 
 protocol.registerSchemesAsPrivileged([
   { scheme: AUTH_SCHEME, privileges: { standard: false, secure: true, supportFetchAPI: false } },
+  {
+    scheme: APP_SCHEME,
+    privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true },
+  },
 ])
 
 function rendererUrl(search = ''): string {
-  const file = path.join(__dirname, '..', 'dist', 'index.html')
-  const base = isDev ? DEV_SERVER_URL : `file://${file}`
+  const base = isDev ? DEV_SERVER_URL : `${APP_SCHEME}://./index.html`
   return search ? `${base}${search}` : base
+}
+
+function registerAppProtocol(): void {
+  protocol.handle(APP_SCHEME, (request) => {
+    let rel = ''
+    try {
+      rel = decodeURIComponent(new URL(request.url).pathname).replace(/^\/+/, '')
+    } catch {
+      return new Response('Bad Request', { status: 400 })
+    }
+    if (!rel) rel = 'index.html'
+    const file = path.normalize(path.join(distRoot, rel))
+    if (file !== distRoot && !file.startsWith(distRoot + path.sep)) {
+      return new Response('Forbidden', { status: 403 })
+    }
+    return net.fetch(pathToFileURL(file).toString())
+  })
 }
 
 function handleAuthUrl(url: string): void {
@@ -102,6 +126,7 @@ if (!gotLock) {
 
   app.whenReady().then(() => {
     if (app.isPackaged) Menu.setApplicationMenu(null)
+    registerAppProtocol()
     mainWindow = createMainWindow()
 
     app.on('activate', () => {

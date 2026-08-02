@@ -23,7 +23,7 @@ function AppContent() {
     return (
       <div className="h-screen bg-[#0b0f19] flex flex-col items-center justify-center gap-6">
         <div className="w-20 h-20">
-          <img src="/Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
+          <img src="Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
         </div>
         <div className="flex gap-2">
           <span className="w-2 h-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }} />
