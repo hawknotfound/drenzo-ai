@@ -10,6 +10,7 @@ const isDev = !!process.env.VITE_DEV_SERVER_URL || !app.isPackaged
 const distRoot = path.join(__dirname, '..', 'dist')
 
 let mainWindow: BrowserWindow | null = null
+let googlePopup: BrowserWindow | null = null
 
 protocol.registerSchemesAsPrivileged([
   { scheme: AUTH_SCHEME, privileges: { standard: false, secure: true, supportFetchAPI: false } },
@@ -43,6 +44,8 @@ function registerAppProtocol(): void {
 
 function handleAuthUrl(url: string): void {
   if (!mainWindow || mainWindow.isDestroyed()) return
+  if (googlePopup && !googlePopup.isDestroyed()) googlePopup.close()
+  googlePopup = null
   let search = ''
   try {
     const parsed = new URL(url)
@@ -100,6 +103,10 @@ function createMainWindow(): BrowserWindow {
   win.webContents.on('will-navigate', (event, url) => {
     const allowed = isDev && url.startsWith(DEV_SERVER_URL)
     if (!allowed) event.preventDefault()
+  })
+
+  win.webContents.on('did-create-window', (window) => {
+    googlePopup = window
   })
 
   win.on('closed', () => {
