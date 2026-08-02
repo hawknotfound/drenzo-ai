@@ -1,5 +1,6 @@
 import type { KnowledgeFile, KnowledgeContent } from '@/types/knowledge'
 import { getFromCache, setToCache, invalidateCacheByPrefix } from '@/lib/utils/cache'
+import { apiUrl } from '@/lib/api'
 
 const CACHE_PREFIX = 'cloudinary:'
 const CACHE_TTL = 10 * 60 * 1000
@@ -18,7 +19,7 @@ async function ensureLookup(): Promise<Map<string, string>> {
   const cached = getFromCache<Map<string, string>>(cacheKey)
   if (cached) { fileLookup = cached; return cached }
 
-  const response = await fetch('/api/knowledge/list')
+  const response = await fetch(apiUrl('/api/knowledge/list'))
   if (!response.ok) throw new Error(`Knowledge list failed: ${response.statusText}`)
 
   const data = await response.json()
@@ -39,7 +40,7 @@ export async function listKnowledgeFiles(): Promise<KnowledgeFile[]> {
   const cached = getFromCache<KnowledgeFile[]>(cacheKey)
   if (cached) return cached
 
-  const response = await fetch('/api/knowledge/list')
+  const response = await fetch(apiUrl('/api/knowledge/list'))
   if (!response.ok) throw new Error(`Knowledge list failed: ${response.statusText}`)
 
   const data = await response.json()
@@ -74,7 +75,7 @@ export async function getRelevantKnowledge(filenames: string[]): Promise<Knowled
   }
 
   if (uncached.length > 0) {
-    const response = await fetch('/api/knowledge', {
+    const response = await fetch(apiUrl('/api/knowledge'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filenames: uncached }),

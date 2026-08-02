@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { handleCors } from '../_lib/cors'
 
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY
@@ -14,6 +15,7 @@ interface CloudinaryResource {
 }
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
+  if (handleCors(_req, res)) return
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
     return res.status(500).json({ error: 'Cloudinary not configured' })
   }

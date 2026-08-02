@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useAuthContext } from '@/providers/AuthProvider'
 import { useConversations } from '@/hooks/useConversations'
 import { useChat } from '@/hooks/useChat'
+import { useInstructions } from '@/hooks/useInstructions'
 import { BackgroundOrbs } from '@/components/ui-new/BackgroundOrbs'
 import { Sidebar } from '@/components/ui-new/Sidebar'
 import { TopBar } from '@/components/ui-new/TopBar'
@@ -46,6 +47,8 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     togglePin,
   } = useConversations(user?.id)
 
+  const instructionsApi = useInstructions(user?.id)
+
   const {
     messages,
     isStreaming,
@@ -59,7 +62,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     regenerate,
     clearError,
     editAndResend,
-  } = useChat(isGuest ? guestConvId.current : activeConversationId, !!isGuest, language)
+  } = useChat(isGuest ? guestConvId.current : activeConversationId, !!isGuest, language, instructionsApi.activeInstruction?.content)
 
   const handleNewChat = useCallback(async () => {
     setInputText('')
@@ -364,6 +367,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
         userEmail={user?.email}
         userId={user?.id}
         onSignOut={signOut}
+        instructionsApi={instructionsApi}
       />
     </div>
   )

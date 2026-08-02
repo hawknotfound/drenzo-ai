@@ -1,7 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
 import { createClient } from '@supabase/supabase-js'
+import { handleCors } from './_lib/cors'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (handleCors(req, res)) return
   const authHeader = req.headers.authorization
   if (!authHeader) return res.status(401).json({ error: 'Unauthorized' })
 

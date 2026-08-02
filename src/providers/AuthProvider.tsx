@@ -19,6 +19,9 @@ function getSiteUrl() {
   return window.location.origin
 }
 
+const IS_DESKTOP = !!import.meta.env.VITE_DESKTOP
+const AUTH_CALLBACK_URL = IS_DESKTOP ? 'drenzo://auth' : `${getSiteUrl()}/auth`
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -56,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: `${getSiteUrl()}/auth` },
+      options: { emailRedirectTo: AUTH_CALLBACK_URL },
     })
     if (error) throw error
   }
@@ -65,17 +68,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email,
-      options: { emailRedirectTo: `${getSiteUrl()}/auth` },
+      options: { emailRedirectTo: AUTH_CALLBACK_URL },
     })
     if (error) throw error
   }
 
   const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${getSiteUrl()}/auth` },
+      options: {
+        redirectTo: IS_DESKTOP ? 'drenzo://auth' : AUTH_CALLBACK_URL,
+        skipBrowserRedirect: IS_DESKTOP,
+      },
     })
     if (error) throw error
+    if (IS_DESKTOP && data?.url) window.open(data.url, '_blank')
   }
 
   const signOut = async () => {

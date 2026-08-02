@@ -21,10 +21,12 @@ export interface OpenCodeStreamCallbacks {
   onError: (error: Error) => void
 }
 
+import { apiUrl } from '@/lib/api'
+
 export async function* streamChat(
   request: OpenCodeRequest
 ): AsyncGenerator<StreamToken, void, unknown> {
-  const response = await fetch('/api/chat', {
+  const response = await fetch(apiUrl('/api/chat'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),

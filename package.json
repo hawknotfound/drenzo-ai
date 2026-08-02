@@ -3,13 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "electron-dist/main.cjs",
   "scripts": {
     "dev": "vite",
     "dev:api": "node dev-server.mjs",
     "dev:all": "node dev-server.mjs & vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "electron:dev": "cross-env VITE_DEV_SERVER_URL=http://localhost:5173 electron .",
+    "electron:build:main": "tsc -p electron/tsconfig.json && node -e \"const fs=require('fs');fs.renameSync('electron-dist/main.js','electron-dist/main.cjs');\"",
+    "electron:build": "cross-env VITE_API_BASE=https://drenzo-ai.vercel.app VITE_SITE_URL=https://drenzo-ai.vercel.app VITE_DESKTOP=true npm run build && npm run electron:build:main",
+    "electron:dist": "npm run electron:build && electron-builder --win"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.8",
@@ -38,10 +43,18 @@
     "@vercel/node": "^5.8.26",
     "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.5.4",
+    "cross-env": "^7.0.3",
+    "electron": "^37.10.3",
+    "electron-builder": "^26.15.3",
     "oxlint": "^1.71.0",
     "postcss": "^8.5.21",
     "tailwindcss": "^4.3.3",
     "typescript": "~6.0.2",
     "vite": "^8.1.1"
+  },
+  "allowScripts": {
+    "electron@37.10.3": true,
+    "esbuild@0.27.0": true,
+    "electron-winstaller@5.4.0": true
   }
 }

@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, isValidElement } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import {
-  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip, ChevronDown, ChevronRight, Pencil, Undo2
+  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip, ChevronDown, ChevronRight, Pencil, Undo2, Share2, Mail
 } from 'lucide-react';
 import type { ChatMessage } from '@/types/chat';
 
@@ -45,6 +45,73 @@ function exportChat(messages: ChatMessage[]) {
   a.download = `chat-export-${Date.now()}.txt`
   a.click()
   URL.revokeObjectURL(url)
+}
+
+function getCodeBlockInfo(child: React.ReactNode): { language: string; code: string } {
+  if (!isValidElement(child)) return { language: 'code', code: '' }
+  const props = child.props as { className?: string; children?: React.ReactNode }
+  const language = props.className?.match(/language-([\w-]+)/)?.[1] ?? 'code'
+  const code = String(props.children ?? '').replace(/\n$/, '')
+  return { language, code }
+}
+
+function CodeBlock({ language, code, children }: { language: string; code: string; children?: React.ReactNode }) {
+  const [copied, setCopied] = useState(false)
+  const [shared, setShared] = useState(false)
+
+  const copyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {}
+  }
+
+  const shareCode = async () => {
+    const text = `\`\`\`${language}\n${code}\n\`\`\``
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title: 'Code from Drenzo AI', text })
+        return
+      } catch {}
+    }
+    await copyCode()
+    setShared(true)
+    setTimeout(() => setShared(false), 2000)
+  }
+
+  const sendViaGmail = () => {
+    const subject = encodeURIComponent('Code from Drenzo AI')
+    const body = encodeURIComponent(`\`\`\`${language}\n${code}\n\`\`\``)
+    window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`, '_blank', 'noopener,noreferrer')
+  }
+
+  const toolBtn = 'p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 active:bg-white/15 transition-colors'
+
+  return (
+    <div className="my-3 overflow-hidden rounded-lg border border-white/10 bg-[#0d1117]">
+      <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-white/[0.05] border-b border-white/10">
+        <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 truncate">{language}</span>
+        <div className="flex items-center gap-0.5 shrink-0">
+          <button onClick={copyCode} className={toolBtn} title="Copy code" aria-label="Copy code">
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+          </button>
+          <button onClick={shareCode} className={toolBtn} title="Share code" aria-label="Share code">
+            {shared ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+          </button>
+          <button onClick={sendViaGmail} className={toolBtn} title="Send via Gmail" aria-label="Send via Gmail">
+            <Mail className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+      <pre className="!m-0 !rounded-none !border-0 !bg-transparent overflow-x-auto">{children}</pre>
+    </div>
+  )
+}
+
+function PreBlock({ children }: { children?: React.ReactNode }) {
+  const { language, code } = getCodeBlockInfo(children)
+  return <CodeBlock language={language} code={code}>{children}</CodeBlock>
 }
 
 export function ChatTimeline({
@@ -231,7 +298,7 @@ export function ChatTimeline({
                 ) : (
                   <div className="prose prose-invert prose-sm max-w-none [&_pre]:bg-[#0d1117] [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_code]:text-sm [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_table]:w-full [&_th]:text-left [&_th]:border-b [&_th]:border-white/20 [&_th]:pb-2 [&_td]:py-1 [&_blockquote]:border-l-blue-500 [&_blockquote]:text-zinc-400 [&_a]:text-blue-400 [&_a:hover]:text-blue-300 [&_hr]:border-white/10 [&_img]:rounded-lg [&_ul]:list-disc [&_ol]:list-decimal [&_li]:my-0.5">
                     {msg.role === 'assistant' ? (
-                      <Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]}>
+                      <Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]} components={{ pre: PreBlock }}>
                         {msg.content}
                       </Markdown>
                     ) : editingId === msg.id ? (

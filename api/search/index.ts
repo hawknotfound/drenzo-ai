@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { handleCors } from '../_lib/cors'
 
 const TAVILY_API_KEY = process.env.TAVILY_API_KEY
 
@@ -86,6 +87,7 @@ async function searchDuckDuckGo(query: string): Promise<{ results: SearchResult[
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (handleCors(req, res)) return
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
   const { query } = req.body

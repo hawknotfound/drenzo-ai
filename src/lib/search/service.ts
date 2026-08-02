@@ -10,8 +10,10 @@ export interface SearchResponse {
   note?: string
 }
 
+import { apiUrl } from '@/lib/api'
+
 export async function searchWeb(query: string): Promise<SearchResponse> {
-  const response = await fetch('/api/search', {
+  const response = await fetch(apiUrl('/api/search'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query }),

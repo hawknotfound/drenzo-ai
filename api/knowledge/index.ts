@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { handleCors } from '../_lib/cors'
 
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY
@@ -6,6 +7,7 @@ const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET
 const CLOUDINARY_FOLDER = process.env.CLOUDINARY_FOLDER || 'Drenzo AI'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (handleCors(req, res)) return
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
   if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
     return res.status(500).json({ error: 'Cloudinary not configured' })
