@@ -3,7 +3,9 @@ import { handleCors } from '../_lib/cors'
 
 const OPENCODE_API_URL = process.env.OPENCODE_API_URL || process.env.VITE_OPENCODE_API_URL || 'https://opencode.ai/zen/v1'
 const OPENCODE_API_KEY = process.env.OPENCODE_API_KEY || process.env.VITE_OPENCODE_API_KEY
-const OPENCODE_MODEL = process.env.OPENCODE_MODEL || process.env.VITE_OPENCODE_MODEL || 'mimo-v2.5-free'
+const RAW_OPENCODE_MODEL = process.env.OPENCODE_MODEL || process.env.VITE_OPENCODE_MODEL || 'mimo-v2.5-free'
+// deepseek-v4-flash-free was removed from the provider; fall back to a working free model
+const OPENCODE_MODEL = RAW_OPENCODE_MODEL === 'deepseek-v4-flash-free' ? 'mimo-v2.5-free' : RAW_OPENCODE_MODEL
 const OPENCODE_SESSION_ID = process.env.OPENCODE_SESSION_ID || 'drenzo-ai-free'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
