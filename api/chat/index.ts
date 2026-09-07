@@ -3,7 +3,8 @@ import { handleCors } from '../_lib/cors'
 
 const OPENCODE_API_URL = process.env.OPENCODE_API_URL || process.env.VITE_OPENCODE_API_URL || 'https://opencode.ai/zen/v1'
 const OPENCODE_API_KEY = process.env.OPENCODE_API_KEY || process.env.VITE_OPENCODE_API_KEY
-const OPENCODE_MODEL = process.env.OPENCODE_MODEL || process.env.VITE_OPENCODE_MODEL || 'deepseek-v4-flash-free'
+const OPENCODE_MODEL = process.env.OPENCODE_MODEL || process.env.VITE_OPENCODE_MODEL || 'mimo-v2.5-free'
+const OPENCODE_SESSION_ID = process.env.OPENCODE_SESSION_ID || 'drenzo-ai-free'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return
@@ -27,6 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${OPENCODE_API_KEY}`,
+        'session_id': OPENCODE_SESSION_ID,
       },
       body: JSON.stringify({
         model: OPENCODE_MODEL,
