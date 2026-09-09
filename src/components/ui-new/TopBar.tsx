@@ -1,89 +1,164 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Settings, Search, Sparkles, Cpu } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import {
+  ChevronDown, Settings2, Share2, Check, Zap, Menu,
+  Maximize2, Minimize2, Search
+} from 'lucide-react';
 
 interface TopBarProps {
   onOpenSettings: () => void;
   onOpenSearch: () => void;
-  conversationTitle?: string;
-  isGuest?: boolean;
+  onExportChat: () => void;
+  onToggleMobileMenu: () => void;
+  isFramed: boolean;
+  onToggleFramed: () => void;
 }
 
-export function TopBar({ onOpenSettings, onOpenSearch, conversationTitle }: TopBarProps) {
-  const [scrolled, setScrolled] = useState(false);
+const MODELS = [
+  { id: 'mimo-v2.5-free', name: 'Drenzo AI', badge: 'Free', description: 'Fast, capable model for everyday tasks' },
+];
+
+export function TopBar({
+  onOpenSettings, onOpenSearch, onExportChat,
+  onToggleMobileMenu, isFramed, onToggleFramed,
+}: TopBarProps) {
+  const [isModelOpen, setIsModelOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsModelOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
-    <div
-      className={`relative z-20 flex items-center justify-between w-full px-3 sm:px-5 py-3 select-none shrink-0 transition-all duration-300 ${
-        scrolled
-          ? 'border-b border-white/10 bg-[#0b0e16]/80 backdrop-blur-xl'
-          : 'border-b border-transparent bg-transparent'
-      }`}
-    >
-      {/* Left: conversation title (or brand) */}
-      <div className="flex items-center gap-2.5 min-w-0 flex-1">
-        {conversationTitle ? (
-          <motion.div
-            key={conversationTitle}
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex items-center gap-2 min-w-0"
+    <header className="relative z-30 flex items-center justify-between px-4 md:px-6 py-3.5 border-b border-[#1b1528]/80 select-none shrink-0">
+      {/* Left side: Mobile menu toggle & Model Selector */}
+      <div className="flex items-center gap-3">
+        {/* Mobile menu hamburger */}
+        <button
+          onClick={onToggleMobileMenu}
+          className="lg:hidden p-1.5 rounded-lg text-[#8b82a1] hover:text-white hover:bg-[#1c162e] transition-colors"
+          aria-label="Open navigation"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Model Selector Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => setIsModelOpen(!isModelOpen)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#151122] hover:bg-[#1e1830] border border-[#271f38] hover:border-[#3f315a] transition-all text-xs font-medium text-white shadow-sm cursor-pointer"
+            aria-haspopup="listbox"
+            aria-expanded={isModelOpen}
           >
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center shrink-0">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+            <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+            <span className="tracking-tight">{MODELS[0].name}</span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-[#8b82a1] transition-transform duration-200 ${
+                isModelOpen ? 'rotate-180 text-white' : ''
+              }`}
+            />
+          </button>
+
+          {/* Dropdown Menu */}
+          {isModelOpen && (
+            <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl bg-[#140f23] border border-[#2e2344] shadow-[0_12px_36px_rgba(0,0,0,0.6)] py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md">
+              <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#706782] border-b border-[#211933]">
+                Select AI Engine
+              </div>
+              <div className="max-h-72 overflow-y-auto py-1 space-y-0.5 px-1.5">
+                {MODELS.map((model) => {
+                  const isSelected = model.id === MODELS[0].id;
+                  return (
+                    <button
+                      key={model.id}
+                      onClick={() => setIsModelOpen(false)}
+                      className={`
+                        w-full flex items-start gap-2.5 px-2.5 py-2 rounded-xl text-left transition-all
+                        ${isSelected
+                          ? 'bg-[#251b3d] text-white border border-purple-500/30'
+                          : 'hover:bg-[#1a142c] text-[#a49bb8] hover:text-white'
+                        }
+                      `}
+                    >
+                      <div className="mt-0.5">
+                        <Zap className={`w-3.5 h-3.5 ${isSelected ? 'text-purple-300' : 'text-[#6e6680]'}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-white truncate">{model.name}</span>
+                          {model.badge && (
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-purple-950/80 text-purple-300 border border-purple-500/30 font-medium">
+                              {model.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-[#867d9c] mt-0.5 line-clamp-1">{model.description}</p>
+                      </div>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-purple-400 mt-1" />}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold text-white truncate">{conversationTitle}</h2>
-            </div>
-          </motion.div>
-        ) : (
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border border-blue-500/20 flex items-center justify-center shrink-0">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-            </div>
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold text-white">Drenzo AI</h2>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Center: model badge */}
-      <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
-        <Cpu className="w-3 h-3 text-emerald-400" />
-        <span className="text-[11px] font-medium text-zinc-300">Drenzo Model</span>
-        <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[9px] font-semibold uppercase tracking-wider border border-emerald-500/20">
-          Free
-        </span>
-      </div>
-
-      {/* Right: actions */}
-      <div className="flex items-center gap-1 shrink-0">
+      {/* Right side: Search, Frame Toggle, Settings, Export */}
+      <div className="flex items-center gap-2 md:gap-2.5">
+        {/* Search */}
         <button
           onClick={onOpenSearch}
-          className="p-2 sm:p-2 rounded-lg hover:bg-white/5 active:bg-white/10 text-zinc-400 hover:text-white transition-all active:scale-95"
-          title="Search (Ctrl+K)"
-          aria-label="Search"
+          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[#151122]/70 hover:bg-[#1e1830] border border-[#251e36] text-xs text-[#a097b5] hover:text-white transition-colors"
+          title="Search conversations (Ctrl+K)"
         >
-          <Search className="w-4 h-4" />
+          <Search className="w-3.5 h-3.5" />
         </button>
+
+        {/* Frame Toggle */}
+        <button
+          onClick={onToggleFramed}
+          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-[#151122]/70 hover:bg-[#1e1830] border border-[#251e36] text-xs text-[#a097b5] hover:text-white transition-colors"
+          title={isFramed ? 'Switch to Fullscreen' : 'Switch to Framed'}
+        >
+          {isFramed ? (
+            <>
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span className="hidden md:inline text-[11px]">Full</span>
+            </>
+          ) : (
+            <>
+              <Minimize2 className="w-3.5 h-3.5" />
+              <span className="hidden md:inline text-[11px]">Frame</span>
+            </>
+          )}
+        </button>
+
+        {/* Settings */}
         <button
           onClick={onOpenSettings}
-          className="p-2 sm:p-2 rounded-lg hover:bg-white/5 active:bg-white/10 text-zinc-400 hover:text-white transition-all active:scale-95"
-          title="Settings (Ctrl+Shift+,)"
-          aria-label="Settings"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#151122] hover:bg-[#1e1830] border border-[#251e36] hover:border-[#3f315a] transition-all text-xs font-medium text-white shadow-sm cursor-pointer"
+          title="Settings"
         >
-          <Settings className="w-4 h-4" />
+          <span className="hidden sm:inline">Configuration</span>
+          <Settings2 className="w-3.5 h-3.5 text-[#988fae]" />
+        </button>
+
+        {/* Export */}
+        <button
+          onClick={onExportChat}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#151122] hover:bg-[#1e1830] border border-[#251e36] hover:border-[#3f315a] transition-all text-xs font-medium text-white shadow-sm cursor-pointer"
+          title="Export chat"
+        >
+          <span className="hidden sm:inline">Export</span>
+          <Share2 className="w-3.5 h-3.5 text-[#988fae]" />
         </button>
       </div>
-    </div>
+    </header>
   );
 }

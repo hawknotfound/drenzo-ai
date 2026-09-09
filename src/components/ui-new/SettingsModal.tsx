@@ -97,8 +97,8 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
   if (!isOpen) return null;
 
   const radioDot = (isActive: boolean) => (
-    <span className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${isActive ? 'border-blue-400' : 'border-zinc-600'}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-blue-400' : 'bg-transparent'}`} />
+    <span className={`w-3.5 h-3.5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${isActive ? 'border-purple-400' : 'border-[#3a2f52]'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-purple-400' : 'bg-transparent'}`} />
     </span>
   )
 
@@ -109,23 +109,26 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.15 }}
-        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-md select-none"
+        className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm select-none"
       >
         <motion.div
           initial={{ opacity: 0, y: 48 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 48 }}
           transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-          className="relative w-full sm:max-w-lg xl:max-w-xl sm:rounded-2xl rounded-t-2xl bg-[#121622] sm:border border-white/15 shadow-2xl sm:overflow-hidden max-h-[92dvh] sm:max-h-[70vh] flex flex-col"
+          className="relative w-full sm:max-w-lg xl:max-w-xl sm:rounded-2xl rounded-t-2xl bg-[#130E20] sm:border border-[#2F2348] shadow-[0_20px_60px_rgba(0,0,0,0.8)] sm:overflow-hidden max-h-[92dvh] sm:max-h-[70vh] flex flex-col"
         >
-          <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-white/10 bg-[#161a26] shrink-0">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[#221838] bg-[#171026] shrink-0">
             <div className="flex items-center gap-2.5">
-              <Settings className="w-5 h-5 text-blue-400" />
-              <h2 className="text-base font-bold text-white">Settings</h2>
+              <div className="w-7 h-7 rounded-lg bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-300">
+                <Settings className="w-4 h-4" />
+              </div>
+              <h2 className="text-sm font-semibold text-white">Settings</h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 active:bg-white/15 transition-colors"
+              className="p-1.5 rounded-lg text-[#7C7391] hover:text-white hover:bg-[#1E1730] transition-colors"
               aria-label="Close settings"
             >
               <X className="w-4 h-4" />
@@ -133,12 +136,13 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
           </div>
 
           <div className="p-4 sm:p-6 space-y-5 sm:space-y-6 overflow-y-auto custom-scrollbar">
+            {/* Account */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span className="w-1 h-4 rounded-full bg-blue-500" />
+                <span className="w-1 h-4 rounded-full bg-purple-500" />
                 Account
               </h3>
-              <p className="text-xs text-zinc-400">{userEmail || 'Not signed in'}</p>
+              <p className="text-xs text-[#867D9C]">{userEmail || 'Not signed in'}</p>
               {isFounder(userEmail) && (
                 <div className="flex items-center gap-1.5 mt-1">
                   <Crown className="w-3 h-3 text-purple-400" />
@@ -154,12 +158,13 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               </button>
             </div>
 
+            {/* Instructions */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span className="w-1 h-4 rounded-full bg-blue-500" />
+                <span className="w-1 h-4 rounded-full bg-purple-500" />
                 Instructions
                 {activeId && (
-                  <span className="text-[11px] text-blue-400 font-normal ml-auto">
+                  <span className="text-[11px] text-purple-400 font-normal ml-auto">
                     Active: {instructions.find(i => i.id === activeId)?.title ?? 'Custom'}
                   </span>
                 )}
@@ -167,17 +172,17 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
 
               <button
                 onClick={() => selectInstruction(null)}
-                className={`w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-colors ${activeId === null ? 'border-blue-500/40 bg-blue-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}
+                className={`w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-colors ${activeId === null ? 'border-purple-500/40 bg-purple-500/10' : 'border-[#2c2240] bg-[#181226] hover:bg-[#1e1730]'}`}
               >
                 {radioDot(activeId === null)}
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-white flex items-center gap-1.5">
                     Default
-                    <Lock className="w-3 h-3 text-zinc-500" />
+                    <Lock className="w-3 h-3 text-[#6e6680]" />
                   </p>
-                  <p className="text-[11px] text-zinc-500 truncate">Drenzo's standard personality — no custom behavior</p>
+                  <p className="text-[11px] text-[#6e6680] truncate">Drenzo's standard personality — no custom behavior</p>
                 </div>
-                {activeId === null && <Check className="w-4 h-4 text-blue-400 shrink-0" />}
+                {activeId === null && <Check className="w-4 h-4 text-purple-400 shrink-0" />}
               </button>
 
               {instructions.map(ins => {
@@ -185,19 +190,19 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                 return (
                   <div
                     key={ins.id}
-                    className={`w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-colors ${isActive ? 'border-blue-500/40 bg-blue-500/10' : 'border-white/10 bg-white/5 hover:bg-white/10'}`}
+                    className={`w-full text-left flex items-center gap-2.5 px-3 py-2.5 rounded-xl border transition-colors ${isActive ? 'border-purple-500/40 bg-purple-500/10' : 'border-[#2c2240] bg-[#181226] hover:bg-[#1e1730]'}`}
                   >
                     <button onClick={() => selectInstruction(ins.id)} className="flex items-center gap-2.5 flex-1 min-w-0">
                       {radioDot(isActive)}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium text-white truncate">{ins.title}</p>
-                        <p className="text-[11px] text-zinc-500 truncate">{ins.content}</p>
+                        <p className="text-[11px] text-[#6e6680] truncate">{ins.content}</p>
                       </div>
                     </button>
-                    {isActive && <Check className="w-4 h-4 text-blue-400 shrink-0" />}
+                    {isActive && <Check className="w-4 h-4 text-purple-400 shrink-0" />}
                     <button
                       onClick={() => startEdit(ins.id, ins.title, ins.content)}
-                      className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 active:bg-white/15 transition-colors shrink-0"
+                      className="p-1.5 rounded-lg text-[#7c7391] hover:text-white hover:bg-[#251d38] transition-colors shrink-0"
                       aria-label={`Edit ${ins.title}`}
                       title="Edit"
                     >
@@ -205,7 +210,7 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                     </button>
                     <button
                       onClick={() => handleDelete(ins.id)}
-                      className={`p-1.5 rounded-lg transition-colors shrink-0 ${confirmingDeleteId === ins.id ? 'bg-red-500/20 text-red-400' : 'text-zinc-400 hover:text-red-400 hover:bg-red-500/10'}`}
+                      className={`p-1.5 rounded-lg transition-colors shrink-0 ${confirmingDeleteId === ins.id ? 'bg-red-500/20 text-red-400' : 'text-[#7c7391] hover:text-red-400 hover:bg-red-500/10'}`}
                       aria-label={`Delete ${ins.title}`}
                       title={confirmingDeleteId === ins.id ? 'Click again to confirm' : 'Delete'}
                     >
@@ -216,8 +221,8 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               })}
 
               {(creating || editingId) && (
-                <div className="space-y-2.5 px-3 py-3 rounded-xl border border-white/10 bg-[#0d1117]">
-                  <p className="text-[11px] font-semibold text-zinc-400">
+                <div className="space-y-2.5 px-3 py-3 rounded-xl border border-[#2c2240] bg-[#0E0A17]">
+                  <p className="text-[11px] font-semibold text-[#867D9C]">
                     {editingId ? 'Edit instruction' : 'New instruction'}
                   </p>
                   <input
@@ -225,26 +230,26 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Title — e.g. Always answer in Hindi"
-                    className="w-full bg-[#121622] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50"
+                    className="w-full bg-[#1B142B] border border-[#2D2244] rounded-lg px-3 py-2 text-xs text-white placeholder-[#706785] focus:outline-none focus:border-purple-500/50"
                   />
                   <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     placeholder="What should Drenzo always know or do? e.g. Call me boss, never use emojis, keep answers under 5 lines…"
                     rows={3}
-                    className="w-full bg-[#121622] border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 resize-none"
+                    className="w-full bg-[#1B142B] border border-[#2D2244] rounded-lg px-3 py-2 text-xs text-white placeholder-[#706785] focus:outline-none focus:border-purple-500/50 resize-none"
                   />
                   <div className="flex items-center gap-2 pt-1">
                     <button
                       onClick={handleSave}
                       disabled={!title.trim() || !content.trim()}
-                      className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium transition-colors"
+                      className="flex-1 py-2 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium transition-colors"
                     >
                       Save
                     </button>
                     <button
                       onClick={cancelForm}
-                      className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 text-xs font-medium transition-colors"
+                      className="px-4 py-2 rounded-lg bg-[#151122] hover:bg-[#1e1830] border border-[#251e36] text-[#A59DBA] text-xs font-medium transition-colors"
                     >
                       Cancel
                     </button>
@@ -255,7 +260,7 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               {!creating && !editingId && (
                 <button
                   onClick={startCreate}
-                  className="flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl border border-dashed border-white/20 text-zinc-300 text-xs font-medium hover:border-blue-500/50 hover:text-blue-400 active:bg-white/5 transition-colors"
+                  className="flex items-center justify-center gap-1.5 w-full py-2.5 px-3 rounded-xl border border-dashed border-[#3a2f52] text-[#9b92b0] text-xs font-medium hover:border-purple-500/50 hover:text-purple-400 active:bg-[#1e1730] transition-colors"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   New Instruction
@@ -263,12 +268,13 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               )}
             </div>
 
+            {/* API Key */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span className="w-1 h-4 rounded-full bg-blue-500" />
+                <span className="w-1 h-4 rounded-full bg-purple-500" />
                 API Key
               </h3>
-              <p className="text-[11px] text-zinc-500 leading-relaxed">
+              <p className="text-[11px] text-[#6e6680] leading-relaxed">
                 Use your own OpenCode Zen API key to avoid shared rate limits. Drenzo works without it — this is optional.
               </p>
               <div className="space-y-2">
@@ -278,12 +284,12 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                     value={userApiKey}
                     onChange={(e) => { setUserApiKey(e.target.value); setApiKeySaved(false) }}
                     placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
-                    className="w-full bg-[#121622] border border-white/10 rounded-lg pl-3 pr-10 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 font-mono"
+                    className="w-full bg-[#1B142B] border border-[#2D2244] rounded-lg pl-3 pr-10 py-2 text-xs text-white placeholder-[#706785] focus:outline-none focus:border-purple-500/50 font-mono"
                   />
                   <button
                     type="button"
                     onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-zinc-300 transition-colors"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#706785] hover:text-[#9b92b0] transition-colors"
                     aria-label={showApiKey ? 'Hide key' : 'Show key'}
                   >
                     {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
@@ -304,8 +310,8 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                       window.dispatchEvent(new Event('drenzo-apikey-saved'))
                     }}
                     className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${apiKeySaved
-                      ? 'bg-green-500/20 border border-green-500/40 text-green-400'
-                      : 'bg-blue-600 hover:bg-blue-500 text-white'
+                      ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400'
+                      : 'bg-[#8B5CF6] hover:bg-[#7C3AED] text-white'
                     }`}
                   >
                     {apiKeySaved ? 'Saved' : 'Save Key'}
@@ -317,29 +323,30 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                         setUserApiKey('')
                         setApiKeySaved(false)
                       }}
-                      className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 text-xs font-medium transition-colors"
+                      className="px-4 py-2 rounded-lg bg-[#151122] hover:bg-[#1e1830] border border-[#251e36] text-[#A59DBA] text-xs font-medium transition-colors"
                     >
                       Clear
                     </button>
                   )}
                 </div>
               </div>
-              <div className="px-3 py-2.5 rounded-xl bg-[#0d1117] border border-white/10 space-y-1.5">
-                <p className="text-[11px] font-semibold text-zinc-300">How to get your key:</p>
-                <ol className="text-[11px] text-zinc-500 space-y-1 list-decimal list-inside leading-relaxed">
-                  <li>Go to <span className="text-blue-400">opencode.ai</span> and sign in</li>
-                  <li>Open Settings → API Keys (or visit <span className="text-blue-400">opencode.ai/keys</span>)</li>
-                  <li>Copy your API key (starts with <span className="text-zinc-400 font-mono">sk-</span>)</li>
+              <div className="px-3 py-2.5 rounded-xl bg-[#0E0A17] border border-[#2c2240] space-y-1.5">
+                <p className="text-[11px] font-semibold text-[#D1CAE3]">How to get your key:</p>
+                <ol className="text-[11px] text-[#867D9C] space-y-1 list-decimal list-inside leading-relaxed">
+                  <li>Go to <span className="text-purple-400">opencode.ai</span> and sign in</li>
+                  <li>Open Settings → API Keys (or visit <span className="text-purple-400">opencode.ai/keys</span>)</li>
+                  <li>Copy your API key (starts with <span className="text-[#9b92b0] font-mono">sk-</span>)</li>
                   <li>Paste it above and hit Save</li>
                 </ol>
-                <p className="text-[10px] text-zinc-600">Your key stays in your browser only — never stored on our servers.</p>
+                <p className="text-[10px] text-[#6e6680]">Your key stays in your browser only — never stored on our servers.</p>
               </div>
             </div>
 
+            {/* Temperature */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span className="w-1 h-4 rounded-full bg-blue-500" />
-                Temperature <span className="text-xs text-zinc-500 font-normal">({settings.temperature.toFixed(1)})</span>
+                <span className="w-1 h-4 rounded-full bg-purple-500" />
+                Temperature <span className="text-xs text-[#6e6680] font-normal">({settings.temperature.toFixed(1)})</span>
               </h3>
               <input
                 type="range"
@@ -348,18 +355,19 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                 step="0.1"
                 value={settings.temperature}
                 onChange={(e) => updateSettings({ temperature: parseFloat(e.target.value) })}
-                className="w-full h-2 accent-blue-500 cursor-pointer"
+                className="w-full h-1.5 accent-purple-500 cursor-pointer bg-[#241A3B] rounded-lg"
               />
-              <div className="flex justify-between text-[11px] text-zinc-500">
+              <div className="flex justify-between text-[11px] text-[#6e6680]">
                 <span>Precise (0)</span>
                 <span>Creative (2)</span>
               </div>
             </div>
 
+            {/* Max Tokens */}
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                <span className="w-1 h-4 rounded-full bg-blue-500" />
-                Max Tokens <span className="text-xs text-zinc-500 font-normal">({settings.max_tokens})</span>
+                <span className="w-1 h-4 rounded-full bg-purple-500" />
+                Max Tokens <span className="text-xs text-[#6e6680] font-normal">({settings.max_tokens})</span>
               </h3>
               <input
                 type="range"
@@ -368,9 +376,9 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                 step="256"
                 value={settings.max_tokens}
                 onChange={(e) => updateSettings({ max_tokens: parseInt(e.target.value) })}
-                className="w-full h-2 accent-blue-500 cursor-pointer"
+                className="w-full h-1.5 accent-purple-500 cursor-pointer bg-[#241A3B] rounded-lg"
               />
-              <div className="flex justify-between text-[11px] text-zinc-500">
+              <div className="flex justify-between text-[11px] text-[#6e6680]">
                 <span>256</span>
                 <span>8192</span>
               </div>

@@ -4,7 +4,7 @@ import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import {
-  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Download, Paperclip, ChevronDown, ChevronRight, Pencil, Undo2, Share2, Mail
+  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Paperclip, ChevronDown, ChevronRight, Pencil, Undo2, Share2, Mail
 } from 'lucide-react';
 import type { ChatMessage } from '@/types/chat';
 
@@ -32,19 +32,6 @@ function relativeTime(dateStr: string | undefined): string {
   const days = Math.floor(hours / 24)
   if (days < 7) return `${days}d ago`
   return new Date(dateStr).toLocaleDateString()
-}
-
-function exportChat(messages: ChatMessage[]) {
-  const text = messages
-    .map(m => `[${m.role === 'user' ? 'You' : 'Drenzo AI'}]\n${m.content}`)
-    .join('\n\n---\n\n')
-  const blob = new Blob([text], { type: 'text/plain' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `chat-export-${Date.now()}.txt`
-  a.click()
-  URL.revokeObjectURL(url)
 }
 
 function getCodeBlockInfo(child: React.ReactNode): { language: string; code: string } {
@@ -86,14 +73,13 @@ function CodeBlock({ language, code, children }: { language: string; code: strin
     window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`, '_blank', 'noopener,noreferrer')
   }
 
-  const toolBtn = 'p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 active:bg-white/15 transition-all'
+  const toolBtn = 'p-1.5 rounded-md text-[#887e9e] hover:text-white hover:bg-[#251d38] active:bg-[#2e2248] transition-colors'
 
   return (
-    <div className="my-3 overflow-hidden rounded-xl border border-white/10 bg-[#0a0d14] shadow-lg">
-      <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-gradient-to-b from-white/[0.04] to-transparent border-b border-white/10">
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-400/60 shrink-0" />
-          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 truncate">{language}</span>
+    <div className="my-3 overflow-hidden rounded-xl border border-[#332452] bg-[#0E0A17]">
+      <div className="flex items-center justify-between gap-2 px-3 py-1.5 bg-[#171026] border-b border-[#332452]">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[#9D93B5] truncate">{language}</span>
         </div>
         <div className="flex items-center gap-0.5 shrink-0">
           <button onClick={copyCode} className={toolBtn} title="Copy code" aria-label="Copy code">
@@ -107,7 +93,7 @@ function CodeBlock({ language, code, children }: { language: string; code: strin
           </button>
         </div>
       </div>
-      <pre className="!m-0 !rounded-none !border-0 !bg-transparent overflow-x-auto">{children}</pre>
+      <pre className="!m-0 !rounded-none !border-0 !bg-transparent overflow-x-auto p-3 text-xs font-mono text-[#C4BBDB]">{children}</pre>
     </div>
   )
 }
@@ -127,7 +113,6 @@ export function ChatTimeline({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
   const [originalText, setOriginalText] = useState('');
-  const [inputFocused, setInputFocused] = useState(false);
   const editRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -218,136 +203,78 @@ export function ChatTimeline({
     input.click()
   }
 
-  const charCount = inputText.length;
-  const canSend = inputText.trim().length > 0 && !isStreaming;
-
   return (
-    <div className="flex flex-col h-full w-full max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-3 sm:px-4 lg:px-6 select-none">
+    <div className="flex flex-col h-full w-full max-w-3xl mx-auto px-3 sm:px-4 py-4 select-none">
+      {/* Messages */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto space-y-5 sm:space-y-7 lg:space-y-8 py-4 sm:py-6 lg:py-8 pr-1 sm:pr-2 lg:pr-4 custom-scrollbar"
+        className="flex-1 overflow-y-auto space-y-6 py-4 pr-1 custom-scrollbar"
       >
-        {messages.length > 0 && (
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={() => exportChat(messages)}
-              className="group flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-zinc-400 hover:text-white text-xs transition-all active:scale-95"
-              title="Export chat"
-            >
-              <Download className="w-3.5 h-3.5 group-hover:-translate-y-0.5 transition-transform" />
-              <span>Export</span>
-            </button>
-          </div>
-        )}
         <AnimatePresence initial={false}>
-          {messages.map((msg, idx) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col space-y-2.5"
-            >
-              {/* Message header */}
-              <div className="flex items-center gap-2.5 px-1">
-                {msg.role === 'user' ? (
-                  <div className="relative w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-blue-500/20 ring-1 ring-white/10">
-                    <User className="w-3.5 h-3.5" />
-                  </div>
-                ) : (
-                  <div className="relative w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-indigo-500/30 ring-1 ring-white/10">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-[#090b10]" />
-                  </div>
-                )}
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-semibold text-white flex items-center gap-1.5">
-                    {msg.role === 'user' ? 'You' : 'Drenzo AI'}
-                    {msg.role === 'user' && isFounderProp && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold uppercase tracking-wider">
-                        Founder
-                      </span>
-                    )}
-                    {msg.role === 'assistant' && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 font-bold uppercase tracking-wider">
-                        AI
-                      </span>
-                    )}
-                  </span>
-                  <span className="text-[10px] text-zinc-500">·</span>
-                  <span className="text-[11px] text-zinc-500">{relativeTime(msg.created_at)}</span>
-                </div>
-                {idx === messages.length - 1 && msg.role === 'assistant' && !isStreaming && (
-                  <span className="text-[10px] text-zinc-600 ml-auto uppercase tracking-wider font-semibold">
-                    New
-                  </span>
-                )}
-              </div>
-
-              {/* Message body */}
-              <div
-                className={`group relative p-4 sm:p-5 rounded-2xl text-sm lg:text-[15px] leading-relaxed ${
-                  msg.role === 'user'
-                    ? 'bg-gradient-to-br from-blue-600/20 to-indigo-600/10 border border-blue-500/25 text-zinc-100 ml-auto max-w-[88%] sm:max-w-[78%] lg:max-w-[68%] shadow-lg shadow-blue-500/5'
-                    : 'glass text-zinc-200 w-full shadow-xl shadow-black/10'
-                }`}
+          {messages.map((msg) => {
+            const isUser = msg.role === 'user';
+            return (
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.25 }}
+                className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}
               >
-                {msg.role === 'assistant' && !msg.content && isStreaming ? (
-                  <div className="flex items-center gap-3 py-2">
-                    <motion.div
-                      animate={{ scale: [1, 1.15, 1], rotate: [0, 5, -5, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      <Brain className="w-4 h-4 text-blue-400" />
-                    </motion.div>
-                    <div className="flex items-center gap-1">
-                      <motion.span
-                        animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
-                        transition={{ duration: 1.2, repeat: Infinity, delay: 0 }}
-                        className="w-1.5 h-1.5 rounded-full bg-blue-400"
-                      />
-                      <motion.span
-                        animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
-                        transition={{ duration: 1.2, repeat: Infinity, delay: 0.2 }}
-                        className="w-1.5 h-1.5 rounded-full bg-blue-400"
-                      />
-                      <motion.span
-                        animate={{ opacity: [0.3, 1, 0.3], y: [0, -2, 0] }}
-                        transition={{ duration: 1.2, repeat: Infinity, delay: 0.4 }}
-                        className="w-1.5 h-1.5 rounded-full bg-blue-400"
-                      />
-                    </div>
-                    <span className="text-xs text-zinc-400 font-medium">Thinking</span>
+                {/* Avatar */}
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1 shadow-sm ${
+                    isUser
+                      ? 'bg-[#352554] text-purple-200 border border-purple-400/40'
+                      : 'bg-gradient-to-br from-[#7e22ce] to-[#3b0764] text-white shadow-[0_0_10px_rgba(147,51,234,0.4)]'
+                  }`}
+                >
+                  {isUser ? <User className="w-3.5 h-3.5" /> : <Sparkles className="w-3.5 h-3.5" />}
+                </div>
+
+                {/* Bubble Content */}
+                <div
+                  className={`flex-1 max-w-[90%] sm:max-w-[85%] rounded-2xl p-3 sm:p-4 text-sm leading-relaxed ${
+                    isUser
+                      ? 'bg-[#221838] border border-[#352654] text-white'
+                      : 'bg-[#140E22]/90 border border-[#261C3B] text-[#E2DCF0]'
+                  }`}
+                >
+                  {/* Header Info */}
+                  <div className="flex items-center justify-between mb-1.5 text-[11px] text-[#867D9C]">
+                    <span className="font-semibold text-purple-300">
+                      {isUser ? (
+                        <>You{isFounderProp && <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-400 border border-purple-500/30 font-medium">Founder</span>}</>
+                      ) : 'Drenzo AI'}
+                    </span>
+                    <span>{relativeTime(msg.created_at)}</span>
                   </div>
-                ) : (
-                  <div className="prose prose-invert prose-sm max-w-none [&_pre]:bg-[#0a0d14] [&_pre]:border [&_pre]:border-white/10 [&_pre]:rounded-lg [&_code]:text-sm [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_table]:w-full [&_th]:text-left [&_th]:border-b [&_th]:border-white/20 [&_th]:pb-2 [&_td]:py-1 [&_blockquote]:border-l-blue-500 [&_blockquote]:text-zinc-400 [&_a]:text-blue-400 [&_a:hover]:text-blue-300 [&_hr]:border-white/10 [&_img]:rounded-lg [&_ul]:list-disc [&_ol]:list-decimal [&_li]:my-0.5">
-                    {msg.role === 'assistant' ? (
-                      <Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]} components={{ pre: PreBlock }}>
-                        {msg.content}
-                      </Markdown>
-                    ) : editingId === msg.id ? (
+
+                  {/* Content */}
+                  {isUser ? (
+                    editingId === msg.id ? (
                       <div className="space-y-2">
                         <textarea
                           ref={editRef}
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
                           onKeyDown={handleEditKeyDown}
-                          className="w-full bg-[#0d1117]/80 border border-blue-500/50 rounded-lg p-3 text-white text-sm focus:outline-none resize-none custom-scrollbar"
+                          className="w-full bg-[#0E0A17]/80 border border-purple-500/50 rounded-lg p-3 text-white text-sm focus:outline-none resize-none custom-scrollbar"
                           rows={4}
                         />
                         <div className="flex items-center gap-2 justify-end">
                           <button
                             onClick={revertEdit}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white text-xs transition-all"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#151122] hover:bg-[#1e1830] text-[#867D9C] hover:text-white text-xs transition-all"
                           >
                             <Undo2 className="w-3.5 h-3.5" />
                             Revert
                           </button>
                           <button
                             onClick={saveEdit}
-                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs transition-all active:scale-95"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs transition-all active:scale-95"
                           >
                             <Check className="w-3.5 h-3.5" />
                             Save
@@ -356,76 +283,134 @@ export function ChatTimeline({
                       </div>
                     ) : (
                       <div className="whitespace-pre-wrap font-sans">{msg.content}</div>
-                    )}
-                    {msg.role === 'assistant' && isStreaming && msg.content && (
-                      <motion.span
-                        animate={{ opacity: [1, 0] }}
-                        transition={{ duration: 0.6, repeat: Infinity }}
-                        className="inline-block w-0.5 h-4 bg-blue-400 ml-0.5 align-text-bottom rounded-full"
-                      />
-                    )}
-                  </div>
-                )}
+                    )
+                  ) : (
+                    <div className="prose prose-invert prose-sm max-w-none [&_pre]:bg-[#0E0A17] [&_pre]:border [&_pre]:border-[#332452] [&_pre]:rounded-xl [&_code]:text-sm [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_table]:w-full [&_th]:text-left [&_th]:border-b [&_th]:border-[#332452] [&_th]:pb-2 [&_td]:py-1 [&_blockquote]:border-l-purple-500 [&_blockquote]:text-[#867D9C] [&_a]:text-purple-400 [&_a:hover]:text-purple-300 [&_hr]:border-[#271D3A] [&_img]:rounded-xl [&_ul]:list-disc [&_ol]:list-decimal [&_li]:my-0.5">
+                      {editingId === msg.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            ref={editRef}
+                            value={editText}
+                            onChange={(e) => setEditText(e.target.value)}
+                            onKeyDown={handleEditKeyDown}
+                            className="w-full bg-[#0E0A17]/80 border border-purple-500/50 rounded-lg p-3 text-white text-sm focus:outline-none resize-none custom-scrollbar"
+                            rows={4}
+                          />
+                          <div className="flex items-center gap-2 justify-end">
+                            <button
+                              onClick={revertEdit}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#151122] hover:bg-[#1e1830] text-[#867D9C] hover:text-white text-xs transition-all"
+                            >
+                              <Undo2 className="w-3.5 h-3.5" />
+                              Revert
+                            </button>
+                            <button
+                              onClick={saveEdit}
+                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs transition-all active:scale-95"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              Save
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <Markdown rehypePlugins={[rehypeHighlight]} remarkPlugins={[remarkGfm]} components={{ pre: PreBlock }}>
+                            {msg.content}
+                          </Markdown>
+                          {isStreaming && msg.id === messages[messages.length - 1]?.id && (
+                            <motion.span
+                              animate={{ opacity: [1, 0] }}
+                              transition={{ duration: 0.6, repeat: Infinity }}
+                              className="inline-block w-0.5 h-4 bg-purple-400 ml-0.5 align-text-bottom"
+                            />
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
 
-                {/* Message actions */}
-                {msg.role === 'assistant' && !isStreaming && msg.content && (
-                  <div className="flex items-center gap-1 pt-3 mt-3 border-t border-white/5 text-zinc-400">
-                    <ActionButton
-                      onClick={() => handleCopy(msg.content, msg.id)}
-                      active={copiedId === msg.id}
-                      activeIcon={<Check className="w-3.5 h-3.5 text-emerald-400" />}
-                      icon={<Copy className="w-3.5 h-3.5" />}
-                      label="Copy"
-                    />
-                    <ActionButton
-                      onClick={onRegenerate}
-                      icon={<RotateCw className="w-3.5 h-3.5" />}
-                      label="Regenerate"
-                    />
-                  </div>
-                )}
-                {msg.role === 'user' && !editingId && !isStreaming && (
-                  <div className="flex items-center gap-1 pt-3 mt-3 border-t border-white/5 text-zinc-400">
-                    <ActionButton
-                      onClick={() => handleCopy(msg.content, `user-${msg.id}`)}
-                      active={copiedId === `user-${msg.id}`}
-                      activeIcon={<Check className="w-3.5 h-3.5 text-emerald-400" />}
-                      icon={<Copy className="w-3.5 h-3.5" />}
-                      label="Copy"
-                    />
-                    <ActionButton
-                      onClick={() => startEditing(msg)}
-                      icon={<Pencil className="w-3.5 h-3.5" />}
-                      label="Edit"
-                    />
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                  {/* Action Buttons */}
+                  {!isUser && !isStreaming && msg.content && (
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#1F1730] text-[11px] text-[#7E7494]">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleCopy(msg.content, msg.id)}
+                          className="flex items-center gap-1 hover:text-white transition-colors p-1 rounded"
+                          title="Copy response"
+                        >
+                          {copiedId === msg.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          <span>{copiedId === msg.id ? 'Copied' : 'Copy'}</span>
+                        </button>
+                      </div>
+                      <button
+                        onClick={onRegenerate}
+                        className="flex items-center gap-1 hover:text-white transition-colors p-1 rounded text-purple-300"
+                        title="Regenerate this response"
+                      >
+                        <RotateCw className="w-3.5 h-3.5" />
+                        <span>Regenerate</span>
+                      </button>
+                    </div>
+                  )}
+                  {isUser && !editingId && !isStreaming && (
+                    <div className="flex items-center gap-3 pt-3 mt-2 border-t border-[#1F1730] text-[#7E7494] text-xs">
+                      <button
+                        onClick={() => handleCopy(msg.content, `user-${msg.id}`)}
+                        className="flex items-center gap-1.5 p-1 hover:text-white active:text-emerald-400 transition-colors rounded-lg hover:bg-[#1e1730]"
+                      >
+                        {copiedId === `user-${msg.id}` ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      </button>
+                      <button
+                        onClick={() => startEditing(msg)}
+                        className="flex items-center gap-1.5 p-1 hover:text-white active:text-purple-400 transition-colors rounded-lg hover:bg-[#1e1730]"
+                        title="Edit message"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )
+          })}
         </AnimatePresence>
+
+        {/* Loading Indicator */}
+        {isStreaming && messages.length > 0 && messages[messages.length - 1].role === 'assistant' && !messages[messages.length - 1].content && (
+          <div className="flex items-start gap-3 animate-in fade-in duration-150">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#7e22ce] to-[#3b0764] flex items-center justify-center text-white shadow-[0_0_12px_rgba(147,51,234,0.5)] animate-pulse">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
+            <div className="rounded-2xl px-4 py-3 bg-[#140E22] border border-[#261C3B] text-xs text-[#9F95B5] flex items-center gap-2">
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+              <span>Drenzo is thinking...</span>
+            </div>
+          </div>
+        )}
+
         <div ref={bottomRef} />
       </div>
 
-      {/* Thinking panel */}
+      {/* Thinking Panel */}
       {thinking && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="shrink-0 mx-3 sm:mx-4 mb-2 rounded-xl bg-[#0d1117]/80 border border-zinc-700/30 overflow-hidden backdrop-blur-md"
-        >
+        <div className="shrink-0 mx-1 mb-2 rounded-xl bg-[#140E22]/80 border border-[#261C3B] overflow-hidden">
           <button
             onClick={() => setShowThinking(!showThinking)}
-            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="flex items-center gap-2 w-full px-3 py-2 text-xs text-[#867D9C] hover:text-[#E2DCF0] transition-colors"
           >
             {showThinking ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-            <Brain className="w-3.5 h-3.5 text-blue-400" />
+            <Brain className="w-3.5 h-3.5 text-purple-400" />
             <span className="font-medium">Model thinking</span>
             {isStreaming && (
               <motion.span
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ duration: 1.2, repeat: Infinity }}
-                className="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 ml-1"
+                className="inline-block w-1.5 h-1.5 rounded-full bg-purple-400 ml-1"
               />
             )}
           </button>
@@ -433,26 +418,20 @@ export function ChatTimeline({
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
-              className="px-3 pb-3 text-[11px] text-zinc-500 leading-relaxed whitespace-pre-wrap font-mono max-h-40 overflow-y-auto custom-scrollbar border-t border-zinc-800/50 pt-2"
+              className="px-3 pb-3 text-[11px] text-[#6e6680] leading-relaxed whitespace-pre-wrap font-mono max-h-40 overflow-y-auto custom-scrollbar border-t border-[#261C3B] pt-2"
             >
               {thinking}
             </motion.div>
           )}
-        </motion.div>
+        </div>
       )}
 
-      {/* Input area */}
-      <div className="pt-2 pb-3 sm:pb-4 shrink-0 px-3 sm:px-0">
-        <div
-          className={`relative flex items-end rounded-2xl glass border transition-all duration-200 ${
-            inputFocused
-              ? 'border-blue-500/50 shadow-lg shadow-blue-500/10'
-              : 'border-white/10 hover:border-white/20'
-          }`}
-        >
+      {/* Input Area */}
+      <div className="pt-2 pb-3 sm:pb-4 shrink-0">
+        <div className="relative flex items-center rounded-2xl bg-[#161124]/90 border border-[#2c2240] focus-within:border-purple-500/60 focus-within:ring-4 focus-within:ring-purple-500/15 backdrop-blur-2xl shadow-xl transition-all duration-300">
           <button
             onClick={handleAttach}
-            className="ml-2 sm:ml-3 mb-2 sm:mb-2.5 p-2.5 sm:p-2 rounded-lg text-zinc-500 hover:text-zinc-300 hover:bg-white/5 active:bg-white/10 transition-all"
+            className="ml-2 sm:ml-3 p-2.5 sm:p-2 rounded-lg text-[#6e6680] hover:text-[#9b92b0] hover:bg-[#1e1730] active:bg-[#251d38] transition-all"
             title="Attach a file"
           >
             <Paperclip className="w-5 h-5 sm:w-4 sm:h-4" />
@@ -461,74 +440,28 @@ export function ChatTimeline({
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={handleKeyDown}
-            onFocus={() => setInputFocused(true)}
-            onBlur={() => setInputFocused(false)}
             placeholder="Send a follow-up message..."
             rows={1}
-            className="w-full py-4 sm:py-3.5 px-2 sm:px-3 bg-transparent text-white placeholder-zinc-500 text-sm focus:outline-none resize-none custom-scrollbar"
+            className="w-full py-4 sm:py-3.5 px-2 sm:px-3 bg-transparent text-white placeholder-[#6e6680] text-sm focus:outline-none resize-none custom-scrollbar"
           />
-          {charCount > 0 && (
-            <div className="absolute right-16 sm:right-14 bottom-2 text-[10px] text-zinc-500 font-mono">
-              {charCount.toLocaleString()}
-            </div>
-          )}
           <button
             onClick={() => {
-              if (canSend) {
+              if (inputText.trim() && !isStreaming) {
                 onSendMessage(inputText.trim());
                 setInputText('');
               }
             }}
-            disabled={!canSend}
-            className={`mr-2 sm:mr-2 mb-2 sm:mb-2.5 p-2.5 sm:p-2 rounded-xl transition-all ${
-              canSend
-                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-400 hover:to-indigo-500 text-white shadow-lg shadow-blue-500/30 cursor-pointer active:scale-95'
-                : 'bg-white/5 text-zinc-600 cursor-not-allowed'
+            disabled={!inputText.trim() || isStreaming}
+            className={`mr-2 sm:mr-2 p-2.5 sm:p-2 rounded-xl transition-all ${
+              inputText.trim() && !isStreaming
+                ? 'bg-[#8B5CF6] hover:bg-[#7C3AED] text-white cursor-pointer active:scale-95 shadow-md shadow-purple-500/30'
+                : 'bg-[#1e1730] text-[#6e6680] cursor-not-allowed'
             }`}
           >
-            {isStreaming ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              >
-                <svg className="w-5 h-5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeDasharray="32" />
-                </svg>
-              </motion.div>
-            ) : (
-              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
-            )}
+            <Send className="w-5 h-5 sm:w-4 sm:h-4" />
           </button>
         </div>
-        <p className="text-center text-[10px] text-zinc-600 mt-2">
-          Drenzo can make mistakes. Verify important info.
-        </p>
       </div>
     </div>
-  );
-}
-
-function ActionButton({
-  onClick, icon, activeIcon, label, active
-}: {
-  onClick: () => void;
-  icon: React.ReactNode;
-  activeIcon?: React.ReactNode;
-  label: string;
-  active?: boolean;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      title={label}
-      className={`group relative flex items-center gap-1.5 px-2 py-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/5 active:bg-white/10 transition-all ${
-        active ? 'text-emerald-400' : ''
-      }`}
-    >
-      {active && activeIcon ? activeIcon : icon}
-      <span className="text-[10px] font-medium uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity hidden sm:inline">
-        {label}
-      </span>
-    </button>
   );
 }

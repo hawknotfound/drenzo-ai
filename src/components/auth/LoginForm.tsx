@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, AlertCircle, Check } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 
@@ -59,83 +57,65 @@ export function LoginForm({ onLogin, onSwitchToSignUp, onResendConfirmation }: L
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-start gap-2.5 p-3 rounded-xl bg-red-500/10 border border-red-500/30 backdrop-blur-sm"
-        >
-          <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-red-300 font-medium">{error}</p>
-            {errorType === 'unconfirmed' && (
-              <div className="pt-1.5">
-                {resent ? (
-                  <p className="text-xs text-emerald-400 flex items-center gap-1">
-                    <Check className="w-3 h-3" />
-                    Confirmation email sent! Check your inbox (and spam).
-                  </p>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    disabled={resending || !email}
-                    className="text-xs text-blue-400 hover:text-blue-300 underline underline-offset-2 disabled:opacity-50"
-                  >
-                    {resending ? 'Sending...' : 'Resend confirmation email'}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
-
-      <div className="space-y-2">
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-            placeholder="you@example.com"
-            className="pl-10"
-          />
+      <div className="text-center mb-6">
+        <div className="w-12 h-12 rounded-xl bg-neutral-800 flex items-center justify-center mx-auto mb-3">
+          <svg className="w-6 h-6 text-neutral-100" viewBox="0 0 32 32" fill="none">
+            <rect x="8" y="10" width="4" height="12" rx="1" fill="currentColor" opacity="0.9"/>
+            <rect x="14" y="10" width="4" height="12" rx="1" fill="currentColor" opacity="0.6"/>
+            <rect x="20" y="10" width="4" height="12" rx="1" fill="currentColor" opacity="0.3"/>
+          </svg>
         </div>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-            placeholder="Your password"
-            className="pl-10"
-          />
-        </div>
+        <h1 className="text-xl font-semibold text-neutral-100">Welcome back</h1>
+        <p className="text-sm text-neutral-500 mt-1">Sign in to Drenzo AI</p>
       </div>
 
-      <Button type="submit" className="w-full" size="md" loading={loading}>
-        {loading ? 'Signing in...' : (
-          <>
-            Sign in
-            <ArrowRight className="w-4 h-4" />
-          </>
-        )}
+      {error && (
+        <div className="p-3 rounded-lg bg-red-900/20 border border-red-800/30 space-y-2">
+          <p className="text-sm text-red-400">{error}</p>
+          {errorType === 'unconfirmed' && (
+            <div className="pt-1">
+              {resent ? (
+                <p className="text-xs text-emerald-400">Confirmation email sent! Check your inbox (and spam).</p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resending || !email}
+                  className="text-xs text-blue-400 hover:text-blue-300 underline underline-offset-2 disabled:opacity-50"
+                >
+                  {resending ? 'Sending...' : 'Resend confirmation email'}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      <Input
+        id="email"
+        label="Email"
+        type="email"
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        required
+        autoComplete="email"
+      />
+      <Input
+        id="password"
+        label="Password"
+        type="password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        required
+        autoComplete="current-password"
+      />
+      <Button type="submit" className="w-full" loading={loading}>
+        Sign in
       </Button>
 
-      <p className="text-center text-sm text-zinc-500">
+      <p className="text-center text-sm text-neutral-500">
         Don't have an account?{' '}
-        <button
-          type="button"
-          onClick={onSwitchToSignUp}
-          className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
-        >
+        <button type="button" onClick={onSwitchToSignUp} className="text-neutral-300 hover:text-neutral-100 underline underline-offset-2">
           Sign up
         </button>
       </p>

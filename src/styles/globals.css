@@ -13,7 +13,7 @@
   --color-neutral-900: #0d0d0d;
   --color-neutral-950: #0a0a0a;
 
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   --duration-fast: 150ms;
@@ -22,6 +22,19 @@
 
   --ease-out: cubic-bezier(0.25, 0.1, 0.25, 1);
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: #B497BD;
+    color: #E2DCF0;
+    overflow-x: hidden;
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
 }
 
 *,
@@ -34,20 +47,6 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  font-family: var(--font-sans);
-  background-color: #09090f;
-  color: #f3f4f6;
-  overflow-x: hidden;
-  /* Subtle purple dark tint base */
-  background-image:
-    radial-gradient(ellipse 80% 50% at 30% -10%, rgba(139, 92, 246, 0.06), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(99, 102, 241, 0.04), transparent),
-    radial-gradient(ellipse 60% 40% at 20% 90%, rgba(168, 85, 247, 0.04), transparent);
 }
 
 img {
@@ -56,162 +55,80 @@ img {
 }
 
 ::selection {
-  background-color: rgba(59, 130, 246, 0.4);
-  color: #ffffff;
+  background-color: rgba(139, 92, 246, 0.3);
+  color: #E2DCF0;
 }
 
-/* Better focus rings across the app */
-*:focus-visible {
-  outline: 2px solid rgba(59, 130, 246, 0.5);
-  outline-offset: 2px;
-  border-radius: 6px;
+/* Custom scrollbar — cosmic purple theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-/* Refined scrollbar */
-*::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-*::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-*::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.08);
+::-webkit-scrollbar-thumb {
+  background: #281f3b;
   border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
 }
 
-*::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(59, 130, 246, 0.5);
-  background-clip: padding-box;
-  border: 2px solid transparent;
+::-webkit-scrollbar-thumb:hover {
+  background: #43355e;
 }
 
-/* Thin scrollbar variant for compact areas */
-.scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-/* Prose overrides */
-.prose {
-  --tw-prose-body: var(--color-neutral-200);
-  --tw-prose-headings: var(--color-neutral-100);
-  --tw-prose-links: var(--color-neutral-100);
-  --tw-prose-bold: var(--color-neutral-100);
-  --tw-prose-code: var(--color-amber-300);
-  --tw-prose-pre-bg: var(--color-neutral-900);
-}
-
-/* Typing cursor blink */
-@keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
-}
-
-.typing-cursor {
-  animation: blink 1s infinite;
-}
-
-/* Shimmer effect for loading states */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.03) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.03) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s ease-in-out infinite;
-}
-
-/* Slow drift for ambient orbs */
-@keyframes drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -30px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.95); }
-}
-
-@keyframes drift-slow {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-40px, 30px) scale(1.15); }
-}
-
-.animate-drift {
-  animation: drift 20s ease-in-out infinite;
-}
-
-.animate-drift-slow {
-  animation: drift-slow 28s ease-in-out infinite;
-}
-
-/* Fade in from bottom */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up 0.35s var(--ease-out) both;
-}
-
-/* Pulse glow */
-@keyframes pulse-glow {
+/* Cosmic Glowing Orb Keyframes */
+@keyframes orbFloat {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    transform: translateY(0px) scale(1);
   }
   50% {
-    box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
+    transform: translateY(-5px) scale(1.02);
   }
 }
 
-.pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+@keyframes orbGlowPulse {
+  0%, 100% {
+    opacity: 0.6;
+    filter: blur(28px);
+  }
+  50% {
+    opacity: 0.9;
+    filter: blur(36px);
+  }
 }
 
-/* Gradient text */
-.text-gradient {
-  background: linear-gradient(135deg, #60a5fa 0%, #818cf8 50%, #c084fc 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+@keyframes orbSwirl {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-/* Glass surface */
-.glass {
-  background: rgba(22, 26, 37, 0.6);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.animate-orb-float {
+  animation: orbFloat 6s ease-in-out infinite;
 }
 
-.glass-strong {
-  background: rgba(17, 21, 30, 0.85);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.animate-orb-glow {
+  animation: orbGlowPulse 4s ease-in-out infinite alternate;
 }
 
-/* Subtle inner border for elevated cards */
-.ring-subtle {
-  box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
+.animate-orb-swirl {
+  animation: orbSwirl 20s linear infinite;
+}
+
+/* Prose overrides for markdown rendering */
+.prose {
+  --tw-prose-body: #d4d4d4;
+  --tw-prose-headings: #E2DCF0;
+  --tw-prose-links: #E2DCF0;
+  --tw-prose-bold: #E2DCF0;
+  --tw-prose-code: #c4b5fd;
+  --tw-prose-pre-bg: #130E20;
+  --tw-prose-pre-border: #271D3A;
 }
 
 @media (prefers-reduced-motion: reduce) {
