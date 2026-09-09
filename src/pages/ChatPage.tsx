@@ -47,7 +47,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isExportOpen, setIsExportOpen] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(() => {
-    if (isGuest) return false
+    if (isGuest) return true
     return !localStorage.getItem(ONBOARDING_KEY)
   })
   const [showApiKeyBanner, setShowApiKeyBanner] = useState(() => {
@@ -139,9 +139,13 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
 
   const handleDismissOnboarding = useCallback(() => {
     setShowOnboarding(false)
-    localStorage.setItem(ONBOARDING_KEY, 'true')
-    showToast('Welcome to Drenzo AI', 'Start typing or pick a prompt suggestion below', 'success')
-  }, [showToast])
+    if (!isGuest) {
+      localStorage.setItem(ONBOARDING_KEY, 'true')
+      showToast('Welcome to Drenzo AI', 'Start typing or pick a prompt suggestion below', 'success')
+    } else {
+      showToast('Free Trial', 'You have 3 free chats — sign in for unlimited', 'success')
+    }
+  }, [showToast, isGuest])
 
   const handleExportChat = useCallback(() => {
     setIsExportOpen(true)
