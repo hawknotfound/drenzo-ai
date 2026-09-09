@@ -88,6 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
+    localStorage.removeItem('drenzo_onboarding_seen')
   }
 
   return (
