@@ -4,7 +4,7 @@ import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import {
-  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Paperclip, ChevronDown, ChevronRight, Pencil, Undo2, Share2, Mail
+  Send, Sparkles, Copy, Check, RotateCw, User, Brain, Paperclip, ChevronDown, ChevronRight, Pencil, Undo2, Share2, Mail, Code2
 } from 'lucide-react';
 import type { ChatMessage } from '@/types/chat';
 
@@ -342,6 +342,25 @@ export function ChatTimeline({
                           {copiedId === msg.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                           <span>{copiedId === msg.id ? 'Copied' : 'Copy'}</span>
                         </button>
+                        {isFounderProp && (
+                          <button
+                            onClick={() => {
+                              const json = JSON.stringify({
+                                id: msg.id,
+                                role: msg.role,
+                                content: msg.content,
+                                created_at: msg.created_at,
+                                metadata: msg.metadata,
+                              }, null, 2);
+                              navigator.clipboard.writeText(json);
+                            }}
+                            className="flex items-center gap-1 hover:text-amber-400 transition-colors p-1 rounded"
+                            title="Copy as JSON (Developer)"
+                          >
+                            <Code2 className="w-3.5 h-3.5" />
+                            <span>JSON</span>
+                          </button>
+                        )}
                       </div>
                       <button
                         onClick={onRegenerate}
@@ -421,6 +440,12 @@ export function ChatTimeline({
               className="px-3 pb-3 text-[11px] text-[#6e6680] leading-relaxed whitespace-pre-wrap font-mono max-h-40 overflow-y-auto custom-scrollbar border-t border-[#261C3B] pt-2"
             >
               {thinking}
+              {isFounderProp && (
+                <div className="mt-2 pt-2 border-t border-[#261C3B] text-[10px] text-amber-400/60 flex items-center gap-1.5">
+                  <Code2 className="w-3 h-3" />
+                  <span>Debug: {thinking.length} chars | streaming: {isStreaming ? 'true' : 'false'}</span>
+                </div>
+              )}
             </motion.div>
           )}
         </div>

@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, X, LogOut, Crown, Plus, Pencil, Trash2, Check, Lock, Eye, EyeOff } from 'lucide-react';
+import { Settings, X, LogOut, Crown, Plus, Pencil, Trash2, Check, Lock, Eye, EyeOff, Terminal, Copy, Download, AlertTriangle } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { useInstructions } from '@/hooks/useInstructions';
 import { isFounder } from '@/lib/config';
-
 import { USER_API_KEY_STORAGE } from '@/lib/constants';
 
 type InstructionsApi = ReturnType<typeof useInstructions>
@@ -347,11 +346,12 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                 <span className="w-1 h-4 rounded-full bg-purple-500" />
                 Temperature <span className="text-xs text-[#6e6680] font-normal">({settings.temperature.toFixed(1)})</span>
+                {isFounder(userEmail) && <span className="text-[10px] text-purple-400 font-normal ml-1">(Extended)</span>}
               </h3>
               <input
                 type="range"
                 min="0"
-                max="2"
+                max={isFounder(userEmail) ? '4' : '2'}
                 step="0.1"
                 value={settings.temperature}
                 onChange={(e) => updateSettings({ temperature: parseFloat(e.target.value) })}
@@ -359,7 +359,7 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               />
               <div className="flex justify-between text-[11px] text-[#6e6680]">
                 <span>Precise (0)</span>
-                <span>Creative (2)</span>
+                <span>{isFounder(userEmail) ? 'Chaotic (4)' : 'Creative (2)'}</span>
               </div>
             </div>
 
@@ -368,11 +368,12 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               <h3 className="text-sm font-semibold text-white flex items-center gap-2">
                 <span className="w-1 h-4 rounded-full bg-purple-500" />
                 Max Tokens <span className="text-xs text-[#6e6680] font-normal">({settings.max_tokens})</span>
+                {isFounder(userEmail) && <span className="text-[10px] text-purple-400 font-normal ml-1">(Extended)</span>}
               </h3>
               <input
                 type="range"
                 min="256"
-                max="8192"
+                max={isFounder(userEmail) ? '16384' : '8192'}
                 step="256"
                 value={settings.max_tokens}
                 onChange={(e) => updateSettings({ max_tokens: parseInt(e.target.value) })}
@@ -380,9 +381,102 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
               />
               <div className="flex justify-between text-[11px] text-[#6e6680]">
                 <span>256</span>
-                <span>8192</span>
+                <span>{isFounder(userEmail) ? '16384' : '8192'}</span>
               </div>
             </div>
+
+            {/* Developer Panel (Founder only) */}
+            {isFounder(userEmail) && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                  <span className="w-1 h-4 rounded-full bg-amber-500" />
+                  <Terminal className="w-3.5 h-3.5 text-amber-400" />
+                  Developer
+                  <span className="text-[10px] text-amber-400 font-normal ml-1">Owner</span>
+                </h3>
+
+                {/* System Info */}
+                <div className="px-3 py-2.5 rounded-xl bg-[#0E0A17] border border-[#2c2240] space-y-2">
+                  <p className="text-[11px] font-semibold text-[#D1CAE3]">System Info</p>
+                  <div className="grid grid-cols-2 gap-2 text-[11px]">
+                    <div>
+                      <span className="text-[#6e6680]">User ID</span>
+                      <p className="text-[#9b92b0] font-mono truncate">{userId || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="text-[#6e6680]">Model</span>
+                      <p className="text-[#9b92b0] font-mono">mimo-v2.5-free</p>
+                    </div>
+                    <div>
+                      <span className="text-[#6e6680]">API Endpoint</span>
+                      <p className="text-[#9b92b0] font-mono truncate">opencode.ai/zen/v1</p>
+                    </div>
+                    <div>
+                      <span className="text-[#6e6680]">Session</span>
+                      <p className="text-[#9b92b0] font-mono">drenzo-ai-free</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => {
+                      const data = {
+                        settings: { temperature: settings.temperature, max_tokens: settings.max_tokens },
+                        apiKey: localStorage.getItem(USER_API_KEY_STORAGE) ? 'SET' : 'NOT SET',
+                        onboarding: localStorage.getItem('drenzo_onboarding_seen'),
+                        exportDate: new Date().toISOString(),
+                      };
+                      navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+                    }}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#151122] hover:bg-[#1e1830] border border-[#251e36] text-xs text-[#9b92b0] hover:text-white transition-colors"
+                  >
+                    <Copy className="w-3 h-3" />
+                    <span>Copy Config</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      const ls: Record<string, string> = {};
+                      for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key) ls[key] = localStorage.getItem(key) || '';
+                      }
+                      const blob = new Blob([JSON.stringify(ls, null, 2)], { type: 'application/json' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `drenzo-dev-export-${Date.now()}.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#151122] hover:bg-[#1e1830] border border-[#251e36] text-xs text-[#9b92b0] hover:text-white transition-colors"
+                  >
+                    <Download className="w-3 h-3" />
+                    <span>Export Data</span>
+                  </button>
+                </div>
+
+                {/* Danger Zone */}
+                <div className="px-3 py-2.5 rounded-xl bg-red-500/5 border border-red-500/20 space-y-2">
+                  <div className="flex items-center gap-1.5">
+                    <AlertTriangle className="w-3 h-3 text-red-400" />
+                    <p className="text-[11px] font-semibold text-red-400">Danger Zone</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (confirm('Clear ALL localStorage data? This cannot be undone.')) {
+                        localStorage.clear();
+                        window.location.reload();
+                      }
+                    }}
+                    className="w-full py-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-medium transition-colors"
+                  >
+                    Clear All Local Data
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>
