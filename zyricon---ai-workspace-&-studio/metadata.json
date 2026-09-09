@@ -1,0 +1,6 @@
+{
+  "name": "Zyricon - AI Workspace & Studio",
+  "description": "Next-generation AI assistant and creative workspace for conversation, image generation, presentations, and code assistance.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

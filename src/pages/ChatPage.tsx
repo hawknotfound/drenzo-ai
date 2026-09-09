@@ -10,6 +10,7 @@ import { Sidebar } from '@/components/ui-new/Sidebar'
 import { TopBar } from '@/components/ui-new/TopBar'
 import { HeroState } from '@/components/ui-new/HeroState'
 import { ChatTimeline } from '@/components/ui-new/ChatTimeline'
+import { AppIntro } from '@/components/ui-new/AppIntro'
 import { SearchModal } from '@/components/ui-new/SearchModal'
 import { SettingsModal } from '@/components/ui-new/SettingsModal'
 import { ExportModal } from '@/components/ui-new/ExportModal'
@@ -394,49 +395,9 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
               </motion.div>
             )}
 
-            {/* Onboarding overlay */}
+            {/* App Intro animation (first-time users) */}
             {showOnboarding && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="absolute inset-0 z-30 bg-[#0B0912]/90 backdrop-blur-md flex items-center justify-center p-4"
-              >
-                <div className="max-w-md lg:max-w-lg text-center space-y-5 lg:space-y-6">
-                  <div className="w-16 h-16 mx-auto">
-                    <img src="Logo.png" alt="DRENZO AI" draggable={false} onContextMenu={(e) => e.preventDefault()} className="w-full h-full object-contain" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold text-white mb-2">Welcome to Drenzo AI</h2>
-                    <p className="text-sm text-zinc-400 leading-relaxed">
-                      A researcher and texting AI — brutally honest, mature, and direct. No fluff, no cringe, just real talk.
-                    </p>
-                  </div>
-                  <ul className="text-left space-y-2 text-sm text-zinc-400">
-                    <li className="flex items-center gap-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
-                      <span><kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 text-xs font-mono">Ctrl+K</kbd> Search conversations</span>
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
-                      <span><kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 text-xs font-mono">Ctrl+N</kbd> New conversation</span>
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
-                      <span><kbd className="px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 text-xs font-mono">Ctrl+Shift+,</kbd> Open settings</span>
-                    </li>
-                    <li className="flex items-center gap-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-500 shrink-0" />
-                      <span>Pin, rename, or delete conversations from sidebar</span>
-                    </li>
-                  </ul>
-                  <button
-                    onClick={handleDismissOnboarding}
-                    className="px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium transition-all active:scale-[0.98]"
-                  >
-                    Get Started
-                  </button>
-                </div>
-              </motion.div>
+              <AppIntro onComplete={handleDismissOnboarding} />
             )}
           </div>
         </main>
