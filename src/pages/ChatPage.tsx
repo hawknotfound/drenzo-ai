@@ -168,7 +168,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const conversationTitle = activeConv?.title
 
   return (
-    <div className="h-screen flex bg-[#090b10] overflow-hidden relative">
+    <div className="h-screen flex bg-[#09090f] overflow-hidden relative">
       <BackgroundOrbs />
 
       <div className="relative z-10 flex w-full h-full">
@@ -341,7 +341,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute inset-0 z-30 bg-[#090b10]/90 backdrop-blur-md flex items-center justify-center p-4"
+                className="absolute inset-0 z-30 bg-[#09090f]/90 backdrop-blur-md flex items-center justify-center p-4"
               >
                 <motion.div
                   initial={{ scale: 0.95, opacity: 0 }}
@@ -383,7 +383,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute inset-0 z-30 bg-[#090b10]/90 backdrop-blur-md flex items-center justify-center p-4"
+                className="absolute inset-0 z-30 bg-[#09090f]/90 backdrop-blur-md flex items-center justify-center p-4"
               >
                 <motion.div
                   initial={{ scale: 0.95, opacity: 0, y: 20 }}

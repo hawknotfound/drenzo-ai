@@ -40,14 +40,14 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background-color: #090b10;
+  background-color: #09090f;
   color: #f3f4f6;
   overflow-x: hidden;
-  /* Subtle film grain for premium feel */
+  /* Subtle purple dark tint base */
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.08), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(99, 102, 241, 0.05), transparent),
-    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(139, 92, 246, 0.04), transparent);
+    radial-gradient(ellipse 80% 50% at 30% -10%, rgba(139, 92, 246, 0.06), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 60%, rgba(99, 102, 241, 0.04), transparent),
+    radial-gradient(ellipse 60% 40% at 20% 90%, rgba(168, 85, 247, 0.04), transparent);
 }
 
 img {

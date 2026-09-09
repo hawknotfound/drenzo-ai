@@ -28,7 +28,7 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
   }
 
   return (
-    <div className="fixed inset-0 overflow-y-auto bg-[#090b10]">
+    <div className="fixed inset-0 overflow-y-auto bg-[#09090f]">
       <BackgroundOrbs />
 
       <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-6">

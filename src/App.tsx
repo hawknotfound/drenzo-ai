@@ -21,7 +21,7 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="h-screen bg-[#090b10] flex flex-col items-center justify-center gap-6 relative overflow-hidden">
+      <div className="h-screen bg-[#09090f] flex flex-col items-center justify-center gap-6 relative overflow-hidden">
         {/* Subtle ambient glow */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-violet-500/10 blur-3xl" />
