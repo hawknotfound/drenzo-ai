@@ -301,6 +301,7 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                         setUserApiKey('')
                       }
                       setApiKeySaved(true)
+                      window.dispatchEvent(new Event('drenzo-apikey-saved'))
                     }}
                     className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${apiKeySaved
                       ? 'bg-green-500/20 border border-green-500/40 text-green-400'

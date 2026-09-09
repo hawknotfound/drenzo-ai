@@ -13,7 +13,10 @@ import { SearchModal } from '@/components/ui-new/SearchModal'
 import { SettingsModal } from '@/components/ui-new/SettingsModal'
 import { isFounder } from '@/lib/config'
 import { LanguageSwitch } from '@/components/ui-new/LanguageSwitch'
-import { LogIn, UserPlus, MessageSquare, PanelLeft, Plus, Search, Settings } from 'lucide-react'
+import { LogIn, UserPlus, MessageSquare, PanelLeft, Plus, Search, Settings, KeyRound, X } from 'lucide-react'
+
+const USER_API_KEY_STORAGE = 'drenzo_user_api_key'
+const API_KEY_BANNER_DISMISSED = 'drenzo_api_key_banner_dismissed'
 
 interface ChatPageProps {
   isGuest?: boolean
@@ -34,6 +37,14 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const [showOnboarding, setShowOnboarding] = useState(() => {
     if (isGuest) return false
     return !localStorage.getItem(ONBOARDING_KEY)
+  })
+  const [showApiKeyBanner, setShowApiKeyBanner] = useState(() => {
+    if (isGuest) return false
+    try {
+      if (localStorage.getItem(USER_API_KEY_STORAGE)) return false
+      if (localStorage.getItem(API_KEY_BANNER_DISMISSED)) return false
+    } catch {}
+    return true
   })
 
   const guestConvId = useRef(isGuest ? crypto.randomUUID() : null)
@@ -135,6 +146,19 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isGuest, isSearchOpen, isSettingsOpen, handleNewChat])
 
+  useEffect(() => {
+    if (!showApiKeyBanner) return
+    const handler = () => {
+      try {
+        if (localStorage.getItem(USER_API_KEY_STORAGE)) {
+          setShowApiKeyBanner(false)
+        }
+      } catch {}
+    }
+    window.addEventListener('drenzo-apikey-saved', handler)
+    return () => window.removeEventListener('drenzo-apikey-saved', handler)
+  }, [showApiKeyBanner])
+
   const hasConversation = (isGuest ? messages.length > 0 : activeConversationId && messages.length > 0)
   const guestRemaining = Math.max(0, 3 - guestMessagesUsed)
   const userEmail = user?.email
@@ -168,6 +192,25 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
             <div className="px-3 sm:px-4 py-2.5 sm:py-2 bg-blue-900/20 border-b border-blue-800/30 text-center flex items-center justify-center gap-2">
               <MessageSquare className="w-3.5 h-3.5 sm:w-3 sm:h-3 text-blue-400 shrink-0" />
               <p className="text-xs text-blue-400">{guestRemaining} free chat{guestRemaining !== 1 ? 's' : ''} remaining — <button onClick={onExitGuest} className="underline hover:text-blue-300 active:text-blue-200">sign in</button> for unlimited</p>
+            </div>
+          )}
+
+          {!isGuest && showApiKeyBanner && (
+            <div className="px-3 sm:px-4 py-2.5 sm:py-2 bg-blue-900/20 border-b border-blue-800/30 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <KeyRound className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400 shrink-0" />
+                <p className="text-xs text-blue-300 truncate">Use your own API key for better rate limits — <button onClick={() => setIsSettingsOpen(true)} className="underline hover:text-blue-200 active:text-blue-100 font-medium">Settings → API Key</button></p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowApiKeyBanner(false)
+                  localStorage.setItem(API_KEY_BANNER_DISMISSED, 'true')
+                }}
+                className="p-1 text-blue-400/60 hover:text-blue-300 active:text-blue-200 transition-colors shrink-0"
+                aria-label="Dismiss"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
 
