@@ -11,7 +11,7 @@ export function GlowingOrb({ size = 68, onClick }: GlowingOrbProps) {
 
   const handleClick = () => {
     setIsPulsing(true);
-    setTimeout(() => setIsPulsing(false), 800);
+    setTimeout(() => setIsPulsing(false), 2000);
     if (onClick) onClick();
   };
 
@@ -31,7 +31,7 @@ export function GlowingOrb({ size = 68, onClick }: GlowingOrbProps) {
     >
       {/* Outer ambient cosmic halo */}
       <div
-        className="absolute rounded-full pointer-events-none transition-all duration-700 ease-out"
+        className="absolute rounded-full pointer-events-none transition-all duration-[2000ms] ease-out"
         style={{
           width: size * 1.8,
           height: size * 1.8,
@@ -52,7 +52,7 @@ export function GlowingOrb({ size = 68, onClick }: GlowingOrbProps) {
 
       {/* Floating 3D Orb container */}
       <div
-        className={`relative transition-transform duration-500 ease-out animate-orb-float ${
+        className={`relative transition-transform duration-[1500ms] ease-out ${
           isHovered ? 'scale-105' : ''
         }`}
         style={{ width: size, height: size }}

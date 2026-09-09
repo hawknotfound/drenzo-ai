@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Folder, ArrowLeft, Plus, FileText, Download, Trash2 } from 'lucide-react';
+import { Folder, ArrowLeft, Plus, FileText, Trash2 } from 'lucide-react';
 
 interface WorkspaceViewProps {
   onBack: () => void;
@@ -49,7 +49,7 @@ export function WorkspaceView({ onBack }: WorkspaceViewProps) {
           <h2 className="text-base font-bold text-white">Drenzo Workspace</h2>
           <p className="text-xs text-[#958CAE] mt-1">Shared files, system prompts, and creative outputs.</p>
           <div className="flex items-center gap-3 mt-3 text-[11px] text-[#786F8F]">
-            <span>{files.length} Files</span><span>•</span><span>Active Sync</span>
+            <span>{files.length} Files</span>
           </div>
         </div>
       </div>
@@ -68,9 +68,6 @@ export function WorkspaceView({ onBack }: WorkspaceViewProps) {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <button className="p-1.5 rounded-lg text-[#7C7391] hover:text-white hover:bg-[#1E1730] transition-colors" title="Download">
-                <Download className="w-3.5 h-3.5" />
-              </button>
               <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg text-[#7C7391] hover:text-red-400 hover:bg-red-950/30 transition-colors" title="Delete">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

@@ -3,8 +3,6 @@ import { supabase } from '@/lib/supabase/client'
 import type { AppSettings } from '@/types/settings'
 
 const DEFAULTS: AppSettings = {
-  theme: 'dark',
-  model: 'deepseek-v4-flash-free',
   temperature: 0.7,
   max_tokens: 4096,
 }
@@ -23,8 +21,6 @@ export function useSettings(userId: string | undefined) {
       .then(({ data, error }) => {
         if (!error && data) {
           setSettings({
-            theme: data.theme,
-            model: data.model,
             temperature: data.temperature,
             max_tokens: data.max_tokens,
           })

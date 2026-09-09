@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Library, ArrowLeft, Search, Copy, ArrowUpRight, Check } from 'lucide-react';
+import { Library, ArrowLeft, Search, Copy, ArrowUpRight, Check, Sparkles } from 'lucide-react';
+import { useToast } from '@/hooks/useToast';
 
 interface LibraryViewProps {
   onBack: () => void;
@@ -21,17 +22,29 @@ export function LibraryView({ onBack, onUseTemplate }: LibraryViewProps) {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const { showToast } = useToast();
 
   const filtered = TEMPLATES.filter(t => {
     const matchesCategory = selectedCategory === 'All' || t.category === selectedCategory;
-    const matchesSearch = t.title.toLowerCase().includes(search.toLowerCase()) || t.description.toLowerCase().includes(search.toLowerCase());
+    const q = search.toLowerCase();
+    const matchesSearch = !q ||
+      t.title.toLowerCase().includes(q) ||
+      t.description.toLowerCase().includes(q) ||
+      t.tags.some(tag => tag.toLowerCase().includes(q)) ||
+      t.prompt.toLowerCase().includes(q);
     return matchesCategory && matchesSearch;
   });
 
   const handleCopy = (id: string, prompt: string) => {
     navigator.clipboard.writeText(prompt);
     setCopiedId(id);
+    showToast('Prompt copied', 'success');
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const categoryCount = (cat: string) => {
+    if (cat === 'All') return TEMPLATES.length;
+    return TEMPLATES.filter(t => t.category === cat).length;
   };
 
   return (
@@ -48,7 +61,7 @@ export function LibraryView({ onBack, onUseTemplate }: LibraryViewProps) {
       <div className="relative">
         <Search className="w-4 h-4 text-[#7A718F] absolute left-3.5 top-1/2 -translate-y-1/2" />
         <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search templates..."
+          placeholder="Search templates, tags, or prompts..."
           className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#130E20] border border-[#2A1E3E] text-xs text-white placeholder-[#716885] focus:border-purple-500 outline-none" />
       </div>
 
@@ -56,39 +69,52 @@ export function LibraryView({ onBack, onUseTemplate }: LibraryViewProps) {
         {CATEGORIES.map((cat) => (
           <button key={cat} onClick={() => setSelectedCategory(cat)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap ${selectedCategory === cat ? 'bg-[#8B5CF6] text-white shadow-md' : 'bg-[#150F22] border border-[#271E3A] text-[#8E85A3] hover:text-white'}`}>
-            {cat}
+            {cat} <span className="ml-1 opacity-60">{categoryCount(cat)}</span>
           </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filtered.map((item) => (
-          <div key={item.id} className="p-4 rounded-2xl bg-[#130E20] border border-[#271D3A] hover:border-[#4B376E] transition-all flex flex-col justify-between group">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-950/80 border border-purple-500/20 text-purple-300">{item.category}</span>
-                <div className="flex items-center gap-1">
-                  {item.tags.map((tag) => (<span key={tag} className="text-[10px] text-[#6E6582]">#{tag}</span>))}
-                </div>
-              </div>
-              <h4 className="text-xs font-semibold text-white group-hover:text-purple-200 transition-colors">{item.title}</h4>
-              <p className="text-[11px] text-[#877E9C] mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
-              <div className="mt-3 p-2 rounded-xl bg-[#0F0A18] border border-[#1F172E] text-[11px] font-mono text-[#A89EC0] line-clamp-2">"{item.prompt}"</div>
-            </div>
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#1E172E]">
-              <button onClick={() => handleCopy(item.id, item.prompt)}
-                className="flex items-center gap-1 text-[11px] text-[#867C9D] hover:text-white transition-colors">
-                {copiedId === item.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                <span>{copiedId === item.id ? 'Copied' : 'Copy'}</span>
-              </button>
-              <button onClick={() => onUseTemplate?.(item.prompt)}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#231A38] hover:bg-[#8B5CF6] text-purple-200 hover:text-white text-xs font-medium transition-all shadow-sm">
-                <span>Use Template</span><ArrowUpRight className="w-3 h-3" />
-              </button>
-            </div>
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-[#1A1328] border border-[#2B1F42] flex items-center justify-center mb-3">
+            <Sparkles className="w-5 h-5 text-purple-400/60" />
           </div>
-        ))}
-      </div>
+          <p className="text-xs text-[#877E9C] font-medium">No templates found</p>
+          <p className="text-[11px] text-[#6E6582] mt-1">Try a different search or category</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filtered.map((item) => (
+            <div key={item.id} className="p-4 rounded-2xl bg-[#130E20] border border-[#271D3A] hover:border-[#4B376E] transition-all flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-950/80 border border-purple-500/20 text-purple-300">{item.category}</span>
+                  <div className="flex items-center gap-1">
+                    {item.tags.map((tag) => (<span key={tag} className="text-[10px] text-[#6E6582]">#{tag}</span>))}
+                  </div>
+                </div>
+                <h4 className="text-xs font-semibold text-white group-hover:text-purple-200 transition-colors">{item.title}</h4>
+                <p className="text-[11px] text-[#877E9C] mt-1 line-clamp-2 leading-relaxed">{item.description}</p>
+                <div className="mt-3 p-2 rounded-xl bg-[#0F0A18] border border-[#1F172E] text-[11px] font-mono text-[#A89EC0] line-clamp-2">"{item.prompt}"</div>
+              </div>
+              <div className="flex items-center justify-between mt-4 pt-3 border-t border-[#1E172E]">
+                <button onClick={() => handleCopy(item.id, item.prompt)}
+                  className="flex items-center gap-1 text-[11px] text-[#867C9D] hover:text-white transition-colors">
+                  {copiedId === item.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  <span>{copiedId === item.id ? 'Copied' : 'Copy'}</span>
+                </button>
+                <button onClick={() => {
+                  onUseTemplate?.(item.prompt);
+                  showToast('Template loaded into chat', 'success');
+                }}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#231A38] hover:bg-[#8B5CF6] text-purple-200 hover:text-white text-xs font-medium transition-all shadow-sm">
+                  <span>Use Template</span><ArrowUpRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

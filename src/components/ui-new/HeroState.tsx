@@ -15,66 +15,8 @@ interface HeroStateProps {
   onSelectPromptSuggestion: (promptText: string) => void;
 }
 
-const THEMES: Record<string, { border: string; hoverBorder: string; bg: string; hoverBg: string; iconBg: string; iconHoverBg: string; text: string; shadow: string }> = {
-  blue: {
-    border: 'border-blue-500/30', hoverBorder: 'hover:border-blue-500/60',
-    bg: 'bg-blue-600/20', hoverBg: 'hover:bg-blue-600/30',
-    iconBg: 'bg-blue-500/25', iconHoverBg: 'group-hover:bg-blue-500/35',
-    text: 'text-blue-300', shadow: 'hover:shadow-blue-500/20',
-  },
-  purple: {
-    border: 'border-purple-500/30', hoverBorder: 'hover:border-purple-500/60',
-    bg: 'bg-purple-600/20', hoverBg: 'hover:bg-purple-600/30',
-    iconBg: 'bg-purple-500/25', iconHoverBg: 'group-hover:bg-purple-500/35',
-    text: 'text-purple-300', shadow: 'hover:shadow-purple-500/20',
-  },
-  amber: {
-    border: 'border-amber-500/30', hoverBorder: 'hover:border-amber-500/60',
-    bg: 'bg-amber-600/20', hoverBg: 'hover:bg-amber-600/30',
-    iconBg: 'bg-amber-500/25', iconHoverBg: 'group-hover:bg-amber-500/35',
-    text: 'text-amber-300', shadow: 'hover:shadow-amber-500/20',
-  },
-  emerald: {
-    border: 'border-emerald-500/30', hoverBorder: 'hover:border-emerald-500/60',
-    bg: 'bg-emerald-600/20', hoverBg: 'hover:bg-emerald-600/30',
-    iconBg: 'bg-emerald-500/25', iconHoverBg: 'group-hover:bg-emerald-500/35',
-    text: 'text-emerald-300', shadow: 'hover:shadow-emerald-500/20',
-  },
-  rose: {
-    border: 'border-rose-500/30', hoverBorder: 'hover:border-rose-500/60',
-    bg: 'bg-rose-600/20', hoverBg: 'hover:bg-rose-600/30',
-    iconBg: 'bg-rose-500/25', iconHoverBg: 'group-hover:bg-rose-500/35',
-    text: 'text-rose-300', shadow: 'hover:shadow-rose-500/20',
-  },
-  cyan: {
-    border: 'border-cyan-500/30', hoverBorder: 'hover:border-cyan-500/60',
-    bg: 'bg-cyan-600/20', hoverBg: 'hover:bg-cyan-600/30',
-    iconBg: 'bg-cyan-500/25', iconHoverBg: 'group-hover:bg-cyan-500/35',
-    text: 'text-cyan-300', shadow: 'hover:shadow-cyan-500/20',
-  },
-  violet: {
-    border: 'border-violet-500/30', hoverBorder: 'hover:border-violet-500/60',
-    bg: 'bg-violet-600/20', hoverBg: 'hover:bg-violet-600/30',
-    iconBg: 'bg-violet-500/25', iconHoverBg: 'group-hover:bg-violet-500/35',
-    text: 'text-violet-300', shadow: 'hover:shadow-violet-500/20',
-  },
-  orange: {
-    border: 'border-orange-500/30', hoverBorder: 'hover:border-orange-500/60',
-    bg: 'bg-orange-600/20', hoverBg: 'hover:bg-orange-600/30',
-    iconBg: 'bg-orange-500/25', iconHoverBg: 'group-hover:bg-orange-500/35',
-    text: 'text-orange-300', shadow: 'hover:shadow-orange-500/20',
-  },
-};
-
-const ANIM_VARIANTS = {
-  fadeRight: { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 } },
-  fadeLeft: { initial: { opacity: 0, x: 20 }, animate: { opacity: 1, x: 0 } },
-  fadeUp: { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } },
-  scale: { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 } },
-} as const;
-
 function SuggestionIcon({ iconName }: { iconName: string }) {
-  const props = { className: "w-3.5 h-3.5" };
+  const props = { className: "w-4 h-4" };
   switch (iconName) {
     case 'Layout': return <Layout {...props} />;
     case 'Sparkles': return <Sparkles {...props} />;
@@ -226,68 +168,63 @@ export function HeroState({
 
       {/* Recommended Prompts */}
       {recommended.length > 0 && (
-        <div className="w-full mt-6 sm:mt-8">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-purple-400">Recommended</span>
-            <div className="h-px flex-1 bg-gradient-to-r from-purple-500/30 to-transparent" />
+        <div className="w-full mt-8">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-purple-400/80">Recommended</span>
+            <div className="h-px flex-1 bg-gradient-to-r from-purple-500/20 to-transparent" />
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 w-full">
-            {recommended.map((sug, i) => {
-              const theme = THEMES[sug.theme || 'purple'];
-              return (
-                <motion.button
-                  key={sug.id}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, delay: 0.3 + i * 0.06 }}
-                  onClick={() => onSelectPromptSuggestion(sug.promptText)}
-                  className={`group flex items-center gap-2.5 p-3 rounded-xl border transition-all duration-200 text-left shadow-md active:scale-[0.98] cursor-pointer w-full ${theme.bg} ${theme.border} ${theme.hoverBg} ${theme.hoverBorder} ${theme.shadow} relative overflow-hidden`}
-                >
-                  <div className={`p-1.5 rounded-lg transition-colors shrink-0 ${theme.iconBg} ${theme.iconHoverBg}`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+            {recommended.map((sug, i) => (
+              <motion.button
+                key={sug.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.3 + i * 0.06 }}
+                onClick={() => onSelectPromptSuggestion(sug.promptText)}
+                className="group relative flex flex-col gap-2.5 p-4 rounded-2xl border border-[#271D3A]/60 hover:border-purple-500/40 bg-[#130E20]/60 hover:bg-[#1a1429]/80 backdrop-blur-sm transition-all duration-300 text-left cursor-pointer w-full overflow-hidden"
+              >
+                {/* Subtle glow on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-500/0 group-hover:from-purple-500/5 group-hover:to-transparent transition-all duration-500 pointer-events-none" />
+
+                <div className="relative flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 group-hover:bg-purple-500/15 group-hover:border-purple-500/30 transition-all text-purple-300">
                     <SuggestionIcon iconName={sug.icon} />
                   </div>
-                  <span className={`text-xs font-semibold truncate ${theme.text} group-hover:text-white transition-colors`}>
+                  <span className="text-sm font-medium text-white/90 group-hover:text-white transition-colors">
                     {sug.label}
                   </span>
-                </motion.button>
-              )
-            })}
+                </div>
+
+                <p className="relative text-[11px] text-[#7a7090] leading-relaxed line-clamp-2 group-hover:text-[#9b92b0] transition-colors">
+                  {sug.promptText.slice(0, 80)}...
+                </p>
+              </motion.button>
+            ))}
           </div>
         </div>
       )}
 
       {/* More Prompts */}
-      <div className="w-full mt-5">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-[#6e6680]">More prompts</span>
-          <div className="h-px flex-1 bg-gradient-to-r from-[#271D3A] to-transparent" />
+      <div className="w-full mt-6">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-[#5a5270]">More prompts</span>
+          <div className="h-px flex-1 bg-gradient-to-r from-[#271D3A]/60 to-transparent" />
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full">
-          {others.map((sug, i) => {
-            const theme = THEMES[sug.theme || 'purple'];
-            const anim = ANIM_VARIANTS[sug.anim || 'fadeUp'];
-            return (
-              <motion.div
-                key={sug.id}
-                initial={anim.initial}
-                animate={anim.animate}
-                transition={{ duration: 0.35, delay: 0.3 + i * 0.04 }}
-                className="w-full"
-              >
-                <button
-                  onClick={() => onSelectPromptSuggestion(sug.promptText)}
-                  className={`group flex items-center gap-2 sm:gap-2.5 p-2 sm:p-3 rounded-xl sm:rounded-2xl border transition-all duration-200 text-left shadow-md active:scale-98 cursor-pointer w-full ${theme.bg} ${theme.border} ${theme.hoverBg} ${theme.hoverBorder} ${theme.shadow}`}
-                >
-                  <div className={`p-1 sm:p-1.5 rounded-lg sm:rounded-xl transition-colors shrink-0 ${theme.iconBg} ${theme.iconHoverBg}`}>
-                    <SuggestionIcon iconName={sug.icon} />
-                  </div>
-                  <span className={`text-[10px] sm:text-xs font-medium truncate ${theme.text} group-hover:text-white transition-colors`}>
-                    {sug.label}
-                  </span>
-                </button>
-              </motion.div>
-            );
-          })}
+        <div className="flex flex-wrap gap-2 w-full">
+          {others.map((sug) => (
+            <button
+              key={sug.id}
+              onClick={() => onSelectPromptSuggestion(sug.promptText)}
+              className="group flex items-center gap-2 px-3 py-2 rounded-xl border border-[#271D3A]/40 hover:border-purple-500/30 bg-[#130E20]/40 hover:bg-[#1a1429]/60 transition-all duration-200 text-left cursor-pointer"
+            >
+              <div className="p-1 rounded-lg bg-purple-500/8 group-hover:bg-purple-500/15 transition-colors text-purple-400/70 group-hover:text-purple-300">
+                <SuggestionIcon iconName={sug.icon} />
+              </div>
+              <span className="text-xs text-[#887e9e] group-hover:text-white/90 transition-colors">
+                {sug.label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     </div>

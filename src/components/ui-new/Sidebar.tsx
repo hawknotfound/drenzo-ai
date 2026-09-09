@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  X, MessageSquare, Archive, Library, Trash2, Pencil, Pin, PinOff,
-  PanelLeftClose, PanelLeftOpen, Plus, Settings, Sparkles, Presentation, Code2
+  X, MessageSquare, Library, Trash2, Pencil, Pin, PinOff,
+  PanelLeftClose, PanelLeftOpen, Plus, Settings, Presentation, Code2
 } from 'lucide-react';
 import type { Conversation } from '@/types/database';
 
@@ -17,7 +17,7 @@ interface SidebarProps {
   onRenameConversation: (id: string, title: string) => void;
   onTogglePin: (id: string, isPinned: boolean) => void;
   onOpenSettings: () => void;
-  onOpenStudio: (view: 'image' | 'presentation' | 'dev' | 'archived' | 'library' | 'workspace') => void;
+  onOpenStudio: (view: 'presentation' | 'dev' | 'library' | 'workspace') => void;
   isMobileOpen: boolean;
   onCloseMobile: () => void;
 }
@@ -55,7 +55,7 @@ export function Sidebar({
   const unpinned = conversations.filter(c => !c.is_pinned);
   const sorted = [...pinned, ...unpinned];
 
-  const sidebarWidth = isCollapsed ? 72 : 240;
+  const sidebarWidth = isCollapsed ? 68 : 240;
 
   return (
     <>
@@ -88,7 +88,7 @@ export function Sidebar({
         {/* Top Header & Navigation Area */}
         <div className="flex flex-col flex-1 overflow-y-auto px-3.5 pt-4 pb-2 min-w-0">
           {/* Logo & Collapse Toggle */}
-          <div className="flex items-center justify-between mb-4 px-1">
+          <div className={`flex mb-4 px-1 ${isCollapsed ? 'flex-col items-center gap-2' : 'items-center justify-between'}`}>
             <div
               className="flex items-center gap-2.5 cursor-pointer group"
               onClick={onNewChat}
@@ -115,7 +115,7 @@ export function Sidebar({
             {/* Collapse button for desktop */}
             <button
               onClick={onToggleCollapse}
-              className="hidden lg:flex p-1.5 rounded-lg text-[#7c7391] hover:text-white hover:bg-[#1a1429] transition-colors shrink-0"
+              className={`hidden lg:flex p-1.5 rounded-lg text-[#7c7391] hover:text-white hover:bg-[#1a1429] transition-colors shrink-0 ${isCollapsed ? 'mx-auto' : ''}`}
               title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               aria-label="Toggle sidebar"
             >
@@ -127,13 +127,15 @@ export function Sidebar({
             </button>
 
             {/* Mobile close button */}
-            <button
-              onClick={onCloseMobile}
-              className="lg:hidden p-1.5 rounded-lg text-[#7c7391] hover:text-white shrink-0"
-              aria-label="Close sidebar"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            {!isCollapsed && (
+              <button
+                onClick={onCloseMobile}
+                className="lg:hidden p-1.5 rounded-lg text-[#7c7391] hover:text-white shrink-0"
+                aria-label="Close sidebar"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
 
           {/* New Chat Button */}
@@ -186,9 +188,7 @@ export function Sidebar({
             <div className="space-y-0.5">
               {[
                 { icon: MessageSquare, label: 'Chat', action: () => onNewChat(), active: !activeConversationId, color: 'text-[#a855f7]' },
-                { icon: Archive, label: 'Archived', action: () => onOpenStudio('archived'), active: false, color: 'text-[#8b82a1]' },
                 { icon: Library, label: 'Library', action: () => onOpenStudio('library'), active: false, color: 'text-[#8b82a1]' },
-                { icon: Sparkles, label: 'Image Generation', action: () => onOpenStudio('image'), active: false, color: 'text-[#a855f7]' },
                 { icon: Presentation, label: 'Presentations', action: () => onOpenStudio('presentation'), active: false, color: 'text-[#a855f7]' },
                 { icon: Code2, label: 'Code Assistant', action: () => onOpenStudio('dev'), active: false, color: 'text-[#a855f7]' },
               ].map((item) => (
@@ -330,6 +330,7 @@ export function Sidebar({
           <button
             onClick={onOpenSettings}
             className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-[#181326] hover:bg-[#1e1830] border border-[#271f3a] text-xs font-medium text-[#9b92b0] hover:text-white transition-all ${isCollapsed ? 'justify-center px-0' : ''}`}
+            title={isCollapsed ? 'Settings' : undefined}
           >
             <Settings className="w-4 h-4 text-[#8b82a1] shrink-0" />
             <AnimatePresence mode="wait">

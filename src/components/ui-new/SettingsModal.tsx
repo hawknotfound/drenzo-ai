@@ -5,7 +5,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useInstructions } from '@/hooks/useInstructions';
 import { isFounder } from '@/lib/config';
 
-const USER_API_KEY_STORAGE = 'drenzo_user_api_key';
+import { USER_API_KEY_STORAGE } from '@/lib/constants';
 
 type InstructionsApi = ReturnType<typeof useInstructions>
 

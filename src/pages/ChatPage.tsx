@@ -14,17 +14,15 @@ import { SearchModal } from '@/components/ui-new/SearchModal'
 import { SettingsModal } from '@/components/ui-new/SettingsModal'
 import { ExportModal } from '@/components/ui-new/ExportModal'
 import { Toast } from '@/components/ui-new/Toast'
-import { ImageStudio } from '@/components/ui-new/ImageStudio'
 import { PresentationStudio } from '@/components/ui-new/PresentationStudio'
 import { DevStudio } from '@/components/ui-new/DevStudio'
-import { ArchivedView } from '@/components/ui-new/ArchivedView'
 import { LibraryView } from '@/components/ui-new/LibraryView'
 import { WorkspaceView } from '@/components/ui-new/WorkspaceView'
 import { isFounder } from '@/lib/config'
 import { LanguageSwitch } from '@/components/ui-new/LanguageSwitch'
 import { LogIn, UserPlus, MessageSquare, KeyRound, X } from 'lucide-react'
+import { USER_API_KEY_STORAGE } from '@/lib/constants'
 
-const USER_API_KEY_STORAGE = 'drenzo_user_api_key'
 const API_KEY_BANNER_DISMISSED = 'drenzo_api_key_banner_dismissed'
 
 interface ChatPageProps {
@@ -36,11 +34,10 @@ const ONBOARDING_KEY = 'drenzo_onboarding_seen'
 
 export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const { user, signOut } = useAuthContext()
-  type ViewMode = 'chat' | 'image' | 'presentation' | 'dev' | 'archived' | 'library' | 'workspace'
+  type ViewMode = 'chat' | 'presentation' | 'dev' | 'library' | 'workspace'
   const [currentView, setCurrentView] = useState<ViewMode>('chat')
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isFramed, setIsFramed] = useState(true)
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
   const [inputText, setInputText] = useState('')
 
@@ -93,6 +90,10 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
 
   const handleNewChat = useCallback(async () => {
     setInputText('')
+    if (activeConversationId) {
+      setCurrentView('chat')
+      return
+    }
     if (isGuest) {
       guestConvId.current = crypto.randomUUID()
       setActiveConversationId(null)
@@ -100,7 +101,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     }
     const conv = await createConversation()
     if (conv) setActiveConversationId(conv.id)
-  }, [createConversation, isGuest])
+  }, [createConversation, isGuest, activeConversationId])
 
   const handleSelectConversation = useCallback((id: string) => {
     setInputText('')
@@ -160,6 +161,10 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
         e.preventDefault()
         handleNewChat()
       }
+      if (mod && e.key === 'b') {
+        e.preventDefault()
+        setSidebarCollapsed(prev => !prev)
+      }
         if (e.key === 'Escape') {
           if (currentView !== 'chat') {
             setCurrentView('chat')
@@ -191,22 +196,11 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const isFounderUser = isFounder(userEmail)
 
   return (
-    <div
-      className={`min-h-screen w-full flex items-center justify-center transition-all duration-300 ${
-        isFramed
-          ? 'bg-[#B497BD] p-1 sm:p-2 md:p-4 lg:p-6'
-          : 'bg-[#0B0912] p-0'
-      }`}
-    >
+    <div className="min-h-screen w-full bg-[#0B0912] flex">
       {/* Main Application Container */}
       <div
         className={`
-          relative flex overflow-hidden transition-all duration-300
-          ${
-            isFramed
-              ? 'w-full max-w-[1240px] h-[92vh] sm:h-[92vh] max-h-[860px] min-h-[85vh] sm:min-h-[640px] rounded-2xl sm:rounded-[28px] border border-[#271F38] shadow-[0_30px_90px_rgba(0,0,0,0.65)]'
-              : 'w-full h-screen rounded-none border-none shadow-none'
-          }
+          relative flex w-full h-screen overflow-hidden
           bg-[#0B0912] text-white
         `}
       >
@@ -243,8 +237,6 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
             onOpenSearch={() => setIsSearchOpen(true)}
             onExportChat={handleExportChat}
             onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            isFramed={isFramed}
-            onToggleFramed={() => setIsFramed(!isFramed)}
           />
 
           {/* Banners */}
@@ -353,11 +345,17 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
                   transition={{ duration: 0.2 }}
                   className="w-full h-full overflow-y-auto"
                 >
-                  {currentView === 'image' && <ImageStudio onBack={() => setCurrentView('chat')} />}
                   {currentView === 'presentation' && <PresentationStudio onBack={() => setCurrentView('chat')} />}
                   {currentView === 'dev' && <DevStudio onBack={() => setCurrentView('chat')} />}
-                  {currentView === 'archived' && <ArchivedView onBack={() => setCurrentView('chat')} />}
-                  {currentView === 'library' && <LibraryView onBack={() => setCurrentView('chat')} />}
+                  {currentView === 'library' && (
+                    <LibraryView
+                      onBack={() => setCurrentView('chat')}
+                      onUseTemplate={(prompt) => {
+                        setInputText(prompt);
+                        setCurrentView('chat');
+                      }}
+                    />
+                  )}
                   {currentView === 'workspace' && <WorkspaceView onBack={() => setCurrentView('chat')} />}
                 </motion.div>
               )}

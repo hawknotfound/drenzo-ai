@@ -3,8 +3,6 @@ import { supabase } from '@/lib/supabase/client'
 import type { UserInstruction } from '@/types/instructions'
 
 const SETTINGS_DEFAULTS = {
-  theme: 'dark',
-  model: 'deepseek-v4-flash-free',
   temperature: 0.7,
   max_tokens: 4096,
 }

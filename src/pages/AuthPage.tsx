@@ -29,14 +29,14 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
         <motion.div
           initial={{ opacity: 0, y: 24, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="w-full max-w-sm"
         >
           {/* Brand */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
             className="text-center mb-8"
           >
             <div className="w-14 h-14 mx-auto mb-3">
@@ -50,7 +50,7 @@ export function AuthPage({ onTryAsGuest }: AuthPageProps) {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
             className="rounded-2xl bg-[#161a25]/80 border border-white/[0.06] backdrop-blur-2xl shadow-[0_0_40px_rgba(0,0,0,0.3)] p-6 sm:p-8"
           >
             {/* Form */}

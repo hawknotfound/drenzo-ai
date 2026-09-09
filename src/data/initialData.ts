@@ -1,16 +1,4 @@
-import type { AIModel, PromptSuggestion } from '@/types/ui';
-
-export const AI_MODELS: AIModel[] = [
-  {
-    id: 'deepseek-v4-flash',
-    name: 'DeepSeek V4 Flash Free',
-    provider: 'DeepSeek',
-    badge: 'FREE',
-    description: 'High-speed reasoning model optimized for code and quick chat',
-    speed: 'Ultra Fast',
-    contextWindow: '128k'
-  }
-];
+import type { PromptSuggestion } from '@/types/ui';
 
 export const PROMPT_SUGGESTIONS: PromptSuggestion[] = [
   {

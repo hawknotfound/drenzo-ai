@@ -1,12 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Code2, ArrowLeft, Play, Copy, Check, RefreshCw, Terminal } from 'lucide-react';
 
 interface DevStudioProps {
   onBack: () => void;
-  initialPrompt?: string;
 }
 
-const SNIPPETS: Record<string, string> = {
+const INITIAL_SNIPPETS: Record<string, string> = {
   typescript: `/**
  * Async Debounced Task with AbortController
  */
@@ -89,11 +88,31 @@ const TABS = ['typescript', 'react', 'python', 'sql'] as const;
 
 export function DevStudio({ onBack }: DevStudioProps) {
   const [activeTab, setActiveTab] = useState<typeof TABS[number]>('typescript');
+  const [snippets, setSnippets] = useState(INITIAL_SNIPPETS);
   const [copied, setCopied] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
   const [consoleOutput, setConsoleOutput] = useState<string | null>(null);
+  const [modified, setModified] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const currentCode = SNIPPETS[activeTab];
+  const currentCode = snippets[activeTab];
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  }, [currentCode]);
+
+  const handleCodeChange = (value: string) => {
+    setSnippets(prev => ({ ...prev, [activeTab]: value }));
+    setModified(true);
+  };
+
+  const handleTabChange = (tab: typeof TABS[number]) => {
+    setActiveTab(tab);
+    setConsoleOutput(null);
+    setModified(false);
+  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(currentCode);
@@ -102,13 +121,22 @@ export function DevStudio({ onBack }: DevStudioProps) {
   };
 
   const handleRun = () => {
-    setIsRunning(true);
-    setConsoleOutput('Compiling and executing sandbox test...');
-    setTimeout(() => {
-      setIsRunning(false);
-      setConsoleOutput('✔ Test suite passed (4 assertions)\n⚡ Execution time: 14.2ms\n📦 Memory allocation: 412 KB\n✨ Status: OK 200');
-    }, 900);
+    setConsoleOutput('⚡ Code execution coming soon — edit your code and copy it to use in chat.');
+    setTimeout(() => setConsoleOutput(null), 3000);
   };
+
+  const handleReset = () => {
+    setSnippets(prev => ({ ...prev, [activeTab]: INITIAL_SNIPPETS[activeTab] }));
+    setModified(false);
+    showToast('Snippet reset to default');
+  };
+
+  const showToast = (msg: string) => {
+    setConsoleOutput(`ℹ ${msg}`);
+    setTimeout(() => setConsoleOutput(null), 2000);
+  };
+
+  const lineCount = currentCode.split('\n').length;
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-4 space-y-5 animate-in fade-in duration-200">
@@ -118,6 +146,7 @@ export function DevStudio({ onBack }: DevStudioProps) {
         </button>
         <span className="text-xs font-semibold uppercase tracking-wider text-[#8A81A1] flex items-center gap-1.5">
           <Code2 className="w-3.5 h-3.5 text-purple-400" /><span>Dev Studio</span>
+          {modified && <span className="w-1.5 h-1.5 rounded-full bg-purple-400 ml-1" title="Modified" />}
         </span>
       </div>
 
@@ -125,17 +154,24 @@ export function DevStudio({ onBack }: DevStudioProps) {
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 bg-[#161024] border-b border-[#241A38]">
           <div className="flex items-center gap-1">
             {TABS.map((tab) => (
-              <button key={tab} onClick={() => { setActiveTab(tab); setConsoleOutput(null); }}
+              <button key={tab} onClick={() => handleTabChange(tab)}
                 className={`px-3 py-1 rounded-lg text-xs font-mono capitalize transition-all ${activeTab === tab ? 'bg-[#291C43] text-purple-200 border border-purple-500/40 font-semibold' : 'text-[#877E9E] hover:text-white'}`}>
                 {tab}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={handleRun} disabled={isRunning}
+            {modified && (
+              <button onClick={handleReset}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#221838] hover:bg-[#2F214C] border border-[#352752] text-xs font-medium text-[#877E9E] hover:text-white transition-colors">
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Reset</span>
+              </button>
+            )}
+            <button onClick={handleRun}
               className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-950/70 hover:bg-emerald-900 border border-emerald-500/40 text-xs font-semibold text-emerald-300 transition-colors shadow-sm">
-              {isRunning ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isRunning ? 'Running...' : 'Run'}</span>
+              <Play className="w-3.5 h-3.5" />
+              <span>Run</span>
             </button>
             <button onClick={handleCopy}
               className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#221838] hover:bg-[#2F214C] border border-[#352752] text-xs font-medium text-white transition-colors">
@@ -145,8 +181,22 @@ export function DevStudio({ onBack }: DevStudioProps) {
           </div>
         </div>
 
-        <div className="p-4 bg-[#0A0712] overflow-x-auto">
-          <pre className="text-xs font-mono text-[#D8D0EA] leading-relaxed select-text"><code>{currentCode}</code></pre>
+        <div className="flex bg-[#0A0712] overflow-x-auto">
+          <div className="flex flex-col items-end pt-4 pb-4 pl-4 pr-2 select-none shrink-0">
+            {Array.from({ length: lineCount }, (_, i) => (
+              <div key={i} className="text-[11px] font-mono text-[#3a3252] leading-relaxed text-right min-w-[2ch]">
+                {i + 1}
+              </div>
+            ))}
+          </div>
+          <textarea
+            ref={textareaRef}
+            value={currentCode}
+            onChange={(e) => handleCodeChange(e.target.value)}
+            spellCheck={false}
+            className="flex-1 p-4 bg-transparent text-xs font-mono text-[#D8D0EA] leading-relaxed resize-none outline-none border-none min-h-[300px] w-full"
+            style={{ tabSize: 2 }}
+          />
         </div>
 
         {consoleOutput && (

@@ -379,7 +379,7 @@ export function ChatTimeline({
         {/* Loading Indicator */}
         {isStreaming && messages.length > 0 && messages[messages.length - 1].role === 'assistant' && !messages[messages.length - 1].content && (
           <div className="flex items-start gap-3 animate-in fade-in duration-150">
-            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#7e22ce] to-[#3b0764] flex items-center justify-center text-white shadow-[0_0_12px_rgba(147,51,234,0.5)] animate-pulse">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#7e22ce] to-[#3b0764] flex items-center justify-center text-white shadow-[0_0_12px_rgba(147,51,234,0.5)]">
               <Sparkles className="w-3.5 h-3.5" />
             </div>
             <div className="rounded-2xl px-4 py-3 bg-[#140E22] border border-[#261C3B] text-xs text-[#9F95B5] flex items-center gap-2">
