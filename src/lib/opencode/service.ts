@@ -7,6 +7,7 @@ export interface OpenCodeRequest {
   messages: OpenCodeMessage[]
   temperature?: number
   max_tokens?: number
+  userApiKey?: string
 }
 
 export interface StreamToken {

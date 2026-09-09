@@ -12,12 +12,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  if (!OPENCODE_API_KEY) return res.status(500).json({ error: 'OpenCode API key not configured' })
-
-  const { messages, temperature = 0.7, max_tokens = 4096 } = req.body
+  const { messages, temperature = 0.7, max_tokens = 4096, userApiKey } = req.body
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'messages array is required' })
+  }
+
+  const apiKey = userApiKey || OPENCODE_API_KEY
+  if (!apiKey) {
+    return res.status(400).json({ error: 'No API key configured. Add your OpenCode Zen key in Settings.' })
   }
 
   res.setHeader('Content-Type', 'text/event-stream')
@@ -29,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${OPENCODE_API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         'session_id': OPENCODE_SESSION_ID,
       },
       body: JSON.stringify({

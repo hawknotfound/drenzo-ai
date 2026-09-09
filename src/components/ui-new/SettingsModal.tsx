@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, X, LogOut, Crown, Plus, Pencil, Trash2, Check, Lock } from 'lucide-react';
+import { Settings, X, LogOut, Crown, Plus, Pencil, Trash2, Check, Lock, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { useInstructions } from '@/hooks/useInstructions';
 import { isFounder } from '@/lib/config';
+
+const USER_API_KEY_STORAGE = 'drenzo_user_api_key';
 
 type InstructionsApi = ReturnType<typeof useInstructions>
 
@@ -26,12 +28,20 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
   const [content, setContent] = useState('')
   const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null)
   const confirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [userApiKey, setUserApiKey] = useState('')
+  const [showApiKey, setShowApiKey] = useState(false)
+  const [apiKeySaved, setApiKeySaved] = useState(false)
 
   useEffect(() => {
     if (isOpen) {
       load()
       setCreating(false)
       setEditingId(null)
+      try {
+        setUserApiKey(localStorage.getItem(USER_API_KEY_STORAGE) || '')
+      } catch {}
+      setShowApiKey(false)
+      setApiKeySaved(false)
     }
   }, [isOpen, load])
 
@@ -251,6 +261,78 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                   New Instruction
                 </button>
               )}
+            </div>
+
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <span className="w-1 h-4 rounded-full bg-blue-500" />
+                API Key
+              </h3>
+              <p className="text-[11px] text-zinc-500 leading-relaxed">
+                Use your own OpenCode Zen API key to avoid shared rate limits. Drenzo works without it — this is optional.
+              </p>
+              <div className="space-y-2">
+                <div className="relative">
+                  <input
+                    type={showApiKey ? 'text' : 'password'}
+                    value={userApiKey}
+                    onChange={(e) => { setUserApiKey(e.target.value); setApiKeySaved(false) }}
+                    placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+                    className="w-full bg-[#121622] border border-white/10 rounded-lg pl-3 pr-10 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-blue-500/50 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-zinc-500 hover:text-zinc-300 transition-colors"
+                    aria-label={showApiKey ? 'Hide key' : 'Show key'}
+                  >
+                    {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      const trimmed = userApiKey.trim()
+                      if (trimmed) {
+                        localStorage.setItem(USER_API_KEY_STORAGE, trimmed)
+                        setUserApiKey(trimmed)
+                      } else {
+                        localStorage.removeItem(USER_API_KEY_STORAGE)
+                        setUserApiKey('')
+                      }
+                      setApiKeySaved(true)
+                    }}
+                    className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${apiKeySaved
+                      ? 'bg-green-500/20 border border-green-500/40 text-green-400'
+                      : 'bg-blue-600 hover:bg-blue-500 text-white'
+                    }`}
+                  >
+                    {apiKeySaved ? 'Saved' : 'Save Key'}
+                  </button>
+                  {userApiKey && (
+                    <button
+                      onClick={() => {
+                        localStorage.removeItem(USER_API_KEY_STORAGE)
+                        setUserApiKey('')
+                        setApiKeySaved(false)
+                      }}
+                      className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-zinc-300 text-xs font-medium transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="px-3 py-2.5 rounded-xl bg-[#0d1117] border border-white/10 space-y-1.5">
+                <p className="text-[11px] font-semibold text-zinc-300">How to get your key:</p>
+                <ol className="text-[11px] text-zinc-500 space-y-1 list-decimal list-inside leading-relaxed">
+                  <li>Go to <span className="text-blue-400">opencode.ai</span> and sign in</li>
+                  <li>Open Settings → API Keys (or visit <span className="text-blue-400">opencode.ai/keys</span>)</li>
+                  <li>Copy your API key (starts with <span className="text-zinc-400 font-mono">sk-</span>)</li>
+                  <li>Paste it above and hit Save</li>
+                </ol>
+                <p className="text-[10px] text-zinc-600">Your key stays in your browser only — never stored on our servers.</p>
+              </div>
             </div>
 
             <div className="space-y-3">
