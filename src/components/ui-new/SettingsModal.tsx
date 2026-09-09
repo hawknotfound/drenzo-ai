@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, X, LogOut, Crown, Plus, Pencil, Trash2, Check, Lock, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { Settings, X, LogOut, Crown, Plus, Pencil, Trash2, Check, Lock, Eye, EyeOff } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { useInstructions } from '@/hooks/useInstructions';
 import { isFounder } from '@/lib/config';
