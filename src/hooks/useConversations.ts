@@ -6,18 +6,34 @@ export function useConversations(userId: string | undefined) {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [loading, setLoading] = useState(true)
 
-  const fetchConversations = useCallback(async () => {
+  const fetchConversations = useCallback(async (retries = 1) => {
     if (!userId) return
     setLoading(true)
-    const { data, error } = await supabase
-      .from('conversations')
-      .select('*')
-      .eq('user_id', userId)
-      .order('is_pinned', { ascending: false })
-      .order('updated_at', { ascending: false })
+    try {
+      const { data, error } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('user_id', userId)
+        .order('is_pinned', { ascending: false })
+        .order('updated_at', { ascending: false })
 
-    if (!error && data) setConversations(data)
-    setLoading(false)
+      if (error) {
+        // Retry on transient network errors (ERR_CONNECTION_CLOSED)
+        if (retries > 0 && (error.message?.includes('Failed to fetch') || (error as any).code === 'NETWORK_ERROR')) {
+          await new Promise(r => setTimeout(r, 1000))
+          return fetchConversations(retries - 1)
+        }
+        console.error('Fetch conversations error:', error.message || error)
+      } else if (data) setConversations(data)
+    } catch (err: any) {
+      if (retries > 0) {
+        await new Promise(r => setTimeout(r, 1000))
+        return fetchConversations(retries - 1)
+      }
+      console.error('Fetch conversations network error:', err?.message || err)
+    } finally {
+      setLoading(false)
+    }
   }, [userId])
 
   useEffect(() => {

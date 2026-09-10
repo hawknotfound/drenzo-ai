@@ -30,25 +30,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Connection', 'keep-alive')
 
   try {
-    const response = await fetch(`${OPENCODE_API_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-        'session_id': effectiveSessionId,
-      },
-      body: JSON.stringify({
-        model: OPENCODE_MODEL,
-        messages,
-        temperature,
-        max_tokens,
-        stream: true,
-      }),
-    })
+    const fallbacks = ['muse-spark-1.2-contributor-free', 'mimo-v2.5-free'].filter(m => m !== OPENCODE_MODEL)
+    const modelsToTry = [OPENCODE_MODEL, ...fallbacks]
+    let response: Response | null = null
+    let lastErr = ''
+    for (const model of modelsToTry) {
+      response = await fetch(`${OPENCODE_API_URL}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+          'session_id': effectiveSessionId,
+        },
+        body: JSON.stringify({ model, messages, temperature, max_tokens, stream: true }),
+      })
+      if (response.ok) break
+      lastErr = await response.text()
+      const isRetryable = lastErr.includes('Rate limit') || lastErr.includes('FreeUsageLimitError') || lastErr.includes('Internal server error') || lastErr.includes('Model is unavailable') || response.status === 429 || response.status === 500
+      if (!isRetryable) break
+    }
 
-    if (!response.ok) {
-      const err = await response.text()
-      res.write(`data: ${JSON.stringify({ error: `OpenCode API error: ${err}` })}\n\n`)
+    if (!response || !response.ok) {
+      res.write(`data: ${JSON.stringify({ error: `OpenCode API error: ${lastErr}` })}\n\n`)
       res.write('data: [DONE]\n\n')
       res.end()
       return

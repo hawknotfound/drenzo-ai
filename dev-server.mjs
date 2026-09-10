@@ -64,26 +64,31 @@ const server = createServer(async (req, res) => {
     if (url.startsWith('/api/chat') && req.method === 'POST') {
       const { messages, temperature, max_tokens, sessionId, userApiKey } = JSON.parse(body)
       const apiKey = userApiKey || OPENCODE_KEY
-      const response = await fetch(`${OPENCODE_URL}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`,
-          'session_id': sessionId || SESSION_ID,
-        },
-        body: JSON.stringify({
-          model: OPENCODE_MODEL,
-          messages,
-          temperature: temperature ?? 0.7,
-          max_tokens: max_tokens ?? 4096,
-          stream: true,
-        }),
-      })
+      const fallbacks = ['muse-spark-1.2-contributor-free', 'mimo-v2.5-free'].filter(m => m !== OPENCODE_MODEL)
+      const modelsToTry = [OPENCODE_MODEL, ...fallbacks]
+      let response = null
+      let lastErr = ''
+      let lastStatus = 500
+      for (const model of modelsToTry) {
+        response = await fetch(`${OPENCODE_URL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+            'session_id': sessionId || SESSION_ID,
+          },
+          body: JSON.stringify({ model, messages, temperature: temperature ?? 0.7, max_tokens: max_tokens ?? 4096, stream: true }),
+        })
+        if (response.ok) break
+        lastErr = await response.text()
+        lastStatus = response.status
+        const retryable = lastErr.includes('Rate limit') || lastErr.includes('FreeUsageLimitError') || lastErr.includes('Internal server error') || lastErr.includes('Model is unavailable') || response.status === 429 || response.status === 500
+        if (!retryable) break
+      }
 
-      if (!response.ok) {
-        const err = await response.text()
-        res.writeHead(response.status, { 'Access-Control-Allow-Origin': 'http://localhost:5173' })
-        res.end(err)
+      if (!response || !response.ok) {
+        res.writeHead(lastStatus, { 'Access-Control-Allow-Origin': 'http://localhost:5173' })
+        res.end(lastErr || 'Upstream error')
         return
       }
 
