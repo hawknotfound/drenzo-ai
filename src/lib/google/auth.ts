@@ -18,20 +18,22 @@ interface TokenClient {
   requestAccessToken: (params?: { prompt?: string }) => void
 }
 
-interface TokenState {
-  accessToken: string
-  expiresAt: number
+interface GoogleUser {
+  email: string
+  name: string
+  picture: string
 }
 
 let tokenClient: TokenClient | null = null
 let tokenResolve: ((token: string) => void) | null = null
 let tokenReject: ((err: Error) => void) | null = null
+let cachedUser: GoogleUser | null = null
 
 const TOKEN_KEY = 'g_access_token'
 const TOKEN_EXPIRES_KEY = 'g_token_expires'
-const REFRESH_TOKEN_KEY = 'g_refresh_token'
+const USER_KEY = 'g_user_info'
 
-function loadStoredToken(): TokenState | null {
+function loadStoredToken(): { accessToken: string; expiresAt: number } | null {
   const token = localStorage.getItem(TOKEN_KEY)
   const expires = localStorage.getItem(TOKEN_EXPIRES_KEY)
   if (!token || !expires) return null
@@ -44,10 +46,16 @@ function storeToken(token: string, expiresInSeconds: number) {
   localStorage.setItem(TOKEN_EXPIRES_KEY, String(expiresAt))
 }
 
+function storeUser(user: GoogleUser) {
+  cachedUser = user
+  localStorage.setItem(USER_KEY, JSON.stringify(user))
+}
+
 function clearToken() {
   localStorage.removeItem(TOKEN_KEY)
   localStorage.removeItem(TOKEN_EXPIRES_KEY)
-  localStorage.removeItem(REFRESH_TOKEN_KEY)
+  localStorage.removeItem(USER_KEY)
+  cachedUser = null
 }
 
 function isExpired(): boolean {
@@ -66,9 +74,32 @@ function waitForGIS(): Promise<void> {
   })
 }
 
+async function fetchUserInfo(accessToken: string): Promise<GoogleUser> {
+  const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+  if (!res.ok) throw new Error('Failed to fetch user info')
+  const data = await res.json()
+  return { email: data.email, name: data.name, picture: data.picture }
+}
+
 export function getAccessToken(): string | null {
   if (isExpired()) return null
   return loadStoredToken()?.accessToken ?? null
+}
+
+export function getUserInfo(): GoogleUser | null {
+  if (cachedUser) return cachedUser
+  const stored = localStorage.getItem(USER_KEY)
+  if (stored) {
+    try {
+      cachedUser = JSON.parse(stored)
+      return cachedUser
+    } catch {}
+  }
+  const token = getAccessToken()
+  if (!token) return null
+  return null
 }
 
 export async function ensureToken(): Promise<string> {
@@ -97,6 +128,7 @@ async function requestNewToken(): Promise<string> {
         }
         if (response.access_token && response.expires_in) {
           storeToken(response.access_token, response.expires_in)
+          fetchUserInfo(response.access_token).then(storeUser).catch(() => {})
           tokenResolve?.(response.access_token)
         }
         tokenResolve = null
@@ -141,15 +173,4 @@ export function signOut(): void {
   }
   clearToken()
   tokenClient = null
-}
-
-export function getUserInfo(): { email: string; name: string; picture: string } | null {
-  const token = loadStoredToken()
-  if (!token) return null
-  try {
-    const payload = JSON.parse(atob(token.accessToken.split('.')[1]))
-    return { email: payload.email, name: payload.name, picture: payload.picture }
-  } catch {
-    return null
-  }
 }
