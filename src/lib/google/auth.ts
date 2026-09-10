@@ -159,7 +159,7 @@ export async function silentRefresh(): Promise<string | null> {
   if (!window.google?.accounts?.oauth2) return null
   if (!tokenClient) return null
 
-  return new Promise<string>((resolve) => {
+  return new Promise<string | null>((resolve) => {
     tokenResolve = (token) => resolve(token)
     tokenReject = () => resolve(null)
     tokenClient!.requestAccessToken({ prompt: 'none' })
