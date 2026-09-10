@@ -129,7 +129,9 @@ export function useChat(conversationId: string | null, isGuest = false, language
           .join('\n\n')
         if (searchRes.answer) searchContext += `\n\nSummary: ${searchRes.answer}`
       }
-    } catch {}
+    } catch {
+      // Search failure is non-blocking — continue without web context
+    }
 
     const assistantId = crypto.randomUUID()
     accumulatedContent.current = ''

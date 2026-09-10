@@ -38,6 +38,13 @@ export async function* streamChat(
     throw new Error(`Chat API error (${response.status}): ${err}`)
   }
 
+  // Check if response is actually JSON (error case) instead of SSE stream
+  const contentType = response.headers.get('content-type') || ''
+  if (contentType.includes('application/json')) {
+    const data = await response.json()
+    throw new Error(data.error || 'Unexpected JSON response from chat API')
+  }
+
   const reader = response.body?.getReader()
   if (!reader) throw new Error('Response body is not readable')
 
@@ -65,8 +72,9 @@ export async function* streamChat(
           const parsed = JSON.parse(data)
           if (parsed.error) throw new Error(parsed.error)
           const delta = parsed.choices?.[0]?.delta
-          const content = delta?.content || ''
-          const reasoning = delta?.reasoning_content || ''
+          if (!delta) continue
+          const content = delta.content || ''
+          const reasoning = delta.reasoning_content || ''
           if (reasoning) yield { type: 'thinking', text: reasoning }
           if (content) yield { type: 'content', text: content }
         } catch (e) {

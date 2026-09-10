@@ -14,21 +14,29 @@ interface SearchResult {
 async function searchFreeSerp(query: string): Promise<{ results: SearchResult[]; answer: string }> {
   const url = `https://freeserp.ai/api.php?q=${encodeURIComponent(query)}&format=json`
 
-  const response = await fetch(url, {
-    headers: { 'User-Agent': 'DrenzoAI/1.0' },
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
 
-  if (!response.ok) throw new Error(`FreeSerp error: ${response.status}`)
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'DrenzoAI/1.0' },
+      signal: controller.signal,
+    })
 
-  const data = await response.json()
+    if (!response.ok) throw new Error(`FreeSerp error: ${response.status}`)
 
-  const results: SearchResult[] = (data.organic || data.results || []).slice(0, 8).map((r: any) => ({
-    title: r.title || '',
-    url: r.url || r.link || '',
-    content: r.snippet || r.content || r.description || '',
-  }))
+    const data = await response.json()
 
-  return { results, answer: data.answer || '' }
+    const results: SearchResult[] = (data.organic || data.results || []).slice(0, 8).map((r: any) => ({
+      title: r.title || '',
+      url: r.url || r.link || '',
+      content: r.snippet || r.content || r.description || '',
+    }))
+
+    return { results, answer: data.answer || '' }
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 // ─── Tavily (fallback — needs API key) ──────────────────────────────
@@ -67,49 +75,57 @@ async function searchTavily(query: string): Promise<{ results: SearchResult[]; a
 async function searchDuckDuckGo(query: string): Promise<{ results: SearchResult[]; answer: string }> {
   const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&skip_disambig=1`
 
-  const response = await fetch(url, {
-    headers: { 'User-Agent': 'DrenzoAI/1.0' },
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
 
-  if (!response.ok) throw new Error(`DuckDuckGo error: ${response.status}`)
-
-  const data = await response.json()
-
-  const results: SearchResult[] = []
-  const answer = data.AbstractText || data.Answer || ''
-
-  if (data.AbstractText && data.AbstractURL) {
-    results.push({
-      title: data.AbstractSource || 'Summary',
-      url: data.AbstractURL,
-      content: data.AbstractText,
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'DrenzoAI/1.0' },
+      signal: controller.signal,
     })
-  }
 
-  if (data.RelatedTopics) {
-    for (const topic of data.RelatedTopics.slice(0, 6)) {
-      if (topic.Text) {
-        results.push({
-          title: topic.Text?.split(' - ')[0] || topic.FirstURL || 'Related',
-          url: topic.FirstURL || '',
-          content: topic.Text,
-        })
-      }
-      if (topic.Topics) {
-        for (const sub of topic.Topics.slice(0, 3)) {
-          if (sub.Text) {
-            results.push({
-              title: sub.Text?.split(' - ')[0] || sub.FirstURL || 'Related',
-              url: sub.FirstURL || '',
-              content: sub.Text,
-            })
+    if (!response.ok) throw new Error(`DuckDuckGo error: ${response.status}`)
+
+    const data = await response.json()
+
+    const results: SearchResult[] = []
+    const answer = data.AbstractText || data.Answer || ''
+
+    if (data.AbstractText && data.AbstractURL) {
+      results.push({
+        title: data.AbstractSource || 'Summary',
+        url: data.AbstractURL,
+        content: data.AbstractText,
+      })
+    }
+
+    if (data.RelatedTopics) {
+      for (const topic of data.RelatedTopics.slice(0, 6)) {
+        if (topic.Text) {
+          results.push({
+            title: topic.Text?.split(' - ')[0] || topic.FirstURL || 'Related',
+            url: topic.FirstURL || '',
+            content: topic.Text,
+          })
+        }
+        if (topic.Topics) {
+          for (const sub of topic.Topics.slice(0, 3)) {
+            if (sub.Text) {
+              results.push({
+                title: sub.Text?.split(' - ')[0] || sub.FirstURL || 'Related',
+                url: sub.FirstURL || '',
+                content: sub.Text,
+              })
+            }
           }
         }
       }
     }
-  }
 
-  return { results, answer }
+    return { results, answer }
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 // ─── Handler ─────────────────────────────────────────────────────────
@@ -143,7 +159,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const result = await searchDuckDuckGo(query)
     return res.json(result)
-  } catch (err) {
-    return res.status(500).json({ error: String(err) })
+  } catch {
+    // All searches failed — return empty results instead of error
+    return res.json({ results: [], answer: '' })
   }
 }
