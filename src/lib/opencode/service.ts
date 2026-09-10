@@ -9,6 +9,9 @@ export interface OpenCodeRequest {
   max_tokens?: number
   userApiKey?: string
   sessionId?: string
+  provider?: 'opencode' | 'openrouter'
+  openRouterApiKey?: string
+  openRouterModel?: string
 }
 
 export interface StreamToken {

@@ -4,7 +4,7 @@ import { Settings, X, LogOut, Crown, Plus, Pencil, Trash2, Check, Lock, Eye, Eye
 import { useSettings } from '@/hooks/useSettings';
 import { useInstructions } from '@/hooks/useInstructions';
 import { isFounder } from '@/lib/config';
-import { USER_API_KEY_STORAGE } from '@/lib/constants';
+import { USER_API_KEY_STORAGE, PROVIDER_STORAGE, OPENROUTER_API_KEY_STORAGE, OPENROUTER_MODEL_STORAGE, OPENROUTER_MODELS } from '@/lib/constants';
 
 type InstructionsApi = ReturnType<typeof useInstructions>
 
@@ -30,6 +30,15 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
   const [userApiKey, setUserApiKey] = useState('')
   const [showApiKey, setShowApiKey] = useState(false)
   const [apiKeySaved, setApiKeySaved] = useState(false)
+  const [provider, setProvider] = useState<'opencode' | 'openrouter'>(() => {
+    try { return (localStorage.getItem(PROVIDER_STORAGE) as 'opencode' | 'openrouter') || 'opencode' } catch { return 'opencode' }
+  })
+  const [openRouterKey, setOpenRouterKey] = useState('')
+  const [showORKey, setShowORKey] = useState(false)
+  const [orKeySaved, setOrKeySaved] = useState(false)
+  const [orModel, setOrModel] = useState(() => {
+    try { return localStorage.getItem(OPENROUTER_MODEL_STORAGE) || 'openai/gpt-4o-mini' } catch { return 'openai/gpt-4o-mini' }
+  })
 
   useEffect(() => {
     if (isOpen) {
@@ -38,9 +47,14 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
       setEditingId(null)
       try {
         setUserApiKey(localStorage.getItem(USER_API_KEY_STORAGE) || '')
+        setProvider((localStorage.getItem(PROVIDER_STORAGE) as 'opencode' | 'openrouter') || 'opencode')
+        setOpenRouterKey(localStorage.getItem(OPENROUTER_API_KEY_STORAGE) || '')
+        setOrModel(localStorage.getItem(OPENROUTER_MODEL_STORAGE) || 'openai/gpt-4o-mini')
       } catch {}
       setShowApiKey(false)
       setApiKeySaved(false)
+      setShowORKey(false)
+      setOrKeySaved(false)
     }
   }, [isOpen, load])
 
@@ -264,6 +278,34 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
                   <Plus className="w-3.5 h-3.5" />
                   New Instruction
                 </button>
+              )}
+            </div>
+
+            {/* Provider */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                <span className="w-1 h-4 rounded-full bg-purple-500" />
+                Provider
+              </h3>
+              <div className="grid grid-cols-2 gap-2">
+                <button onClick={() => { setProvider('opencode'); localStorage.setItem(PROVIDER_STORAGE, 'opencode') }} className={`py-2.5 rounded-xl text-xs font-medium border transition-colors ${provider === 'opencode' ? 'bg-purple-500/20 border-purple-500/40 text-white' : 'bg-[#181226] border-[#2c2240] text-[#9b92b0] hover:text-white'}`}>Drenzo AI (OpenCode)</button>
+                <button onClick={() => { setProvider('openrouter'); localStorage.setItem(PROVIDER_STORAGE, 'openrouter') }} className={`py-2.5 rounded-xl text-xs font-medium border transition-colors ${provider === 'openrouter' ? 'bg-purple-500/20 border-purple-500/40 text-white' : 'bg-[#181226] border-[#2c2240] text-[#9b92b0] hover:text-white'}`}>OpenRouter</button>
+              </div>
+              {provider === 'openrouter' && (
+                <div className="space-y-2">
+                  <div className="relative">
+                    <input type={showORKey ? 'text' : 'password'} value={openRouterKey} onChange={(e) => { setOpenRouterKey(e.target.value); setOrKeySaved(false) }} placeholder="sk-or-v1-xxxxxxxxxxxxxxxx" className="w-full bg-[#1B142B] border border-[#2D2244] rounded-lg pl-3 pr-10 py-2 text-xs text-white placeholder-[#706785] focus:outline-none focus:border-purple-500/50 font-mono" />
+                    <button type="button" onClick={() => setShowORKey(!showORKey)} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#706785] hover:text-[#9b92b0]">{showORKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}</button>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => { const t = openRouterKey.trim(); if (t) localStorage.setItem(OPENROUTER_API_KEY_STORAGE, t); else localStorage.removeItem(OPENROUTER_API_KEY_STORAGE); setOrKeySaved(true); window.dispatchEvent(new Event('drenzo-apikey-saved')) }} className={`flex-1 py-2 rounded-lg text-xs font-medium transition-colors ${orKeySaved ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-400' : 'bg-[#8B5CF6] hover:bg-[#7C3AED] text-white'}`}>{orKeySaved ? 'Saved' : 'Save Key'}</button>
+                    {openRouterKey && <button onClick={() => { localStorage.removeItem(OPENROUTER_API_KEY_STORAGE); setOpenRouterKey(''); setOrKeySaved(false) }} className="px-4 py-2 rounded-lg bg-[#151122] border border-[#251e36] text-xs text-[#A59DBA]">Clear</button>}
+                  </div>
+                  <select value={orModel} onChange={(e) => { setOrModel(e.target.value); localStorage.setItem(OPENROUTER_MODEL_STORAGE, e.target.value) }} className="w-full bg-[#1B142B] border border-[#2D2244] rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500/50">
+                    {OPENROUTER_MODELS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}
+                  </select>
+                  <p className="text-[10px] text-[#6e6680]">Get key at openrouter.ai/keys — any model above works. Your key stays in browser only.</p>
+                </div>
               )}
             </div>
 

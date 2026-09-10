@@ -28,6 +28,8 @@ const PORT = 3001
 const OPENCODE_URL = process.env.VITE_OPENCODE_API_URL || 'https://opencode.ai/zen/v1'
 const OPENCODE_KEY = process.env.VITE_OPENCODE_API_KEY
 const OPENCODE_MODEL = process.env.VITE_OPENCODE_MODEL || 'mimo-v2.5-free'
+const OPENROUTER_URL = process.env.VITE_OPENROUTER_API_URL || 'https://openrouter.ai/api/v1'
+const OPENROUTER_KEY = process.env.VITE_OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY
 const CLOUD_NAME = process.env.VITE_CLOUDINARY_CLOUD_NAME
 const CLOUD_KEY = process.env.VITE_CLOUDINARY_API_KEY
 const CLOUD_SECRET = process.env.CLOUDINARY_API_SECRET || process.env.VITE_CLOUDINARY_API_SECRET
@@ -62,7 +64,22 @@ const server = createServer(async (req, res) => {
   try {
     // ─── POST /api/chat ─────────────────────────
     if (url.startsWith('/api/chat') && req.method === 'POST') {
-      const { messages, temperature, max_tokens, sessionId, userApiKey } = JSON.parse(body)
+      const { messages, temperature, max_tokens, sessionId, userApiKey, provider, openRouterApiKey, openRouterModel } = JSON.parse(body)
+      if (provider === 'openrouter') {
+        const orKey = openRouterApiKey || OPENROUTER_KEY
+        if (!orKey) { json(res, 400, { error: 'No OpenRouter API key' }); return }
+        const orModel = openRouterModel || 'openai/gpt-4o-mini'
+        const orRes = await fetch(`${OPENROUTER_URL}/chat/completions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${orKey}`, 'HTTP-Referer': 'https://drenzo-ai.vercel.app', 'X-Title': 'Drenzo AI' },
+          body: JSON.stringify({ model: orModel, messages, temperature: temperature ?? 0.7, max_tokens: max_tokens ?? 4096, stream: true }),
+        })
+        if (!orRes.ok) { const err = await orRes.text(); json(res, orRes.status, { error: `OpenRouter error: ${err}` }); return }
+        res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Access-Control-Allow-Origin': 'http://localhost:5173' })
+        const reader = orRes.body.getReader(); const decoder = new TextDecoder()
+        while (true) { const { done, value } = await reader.read(); if (done) break; res.write(decoder.decode(value, { stream: true })) }
+        res.write('data: [DONE]\n\n'); res.end(); return
+      }
       const apiKey = userApiKey || OPENCODE_KEY
       const fallbacks = ['muse-spark-1.2-contributor-free', 'mimo-v2.5-free'].filter(m => m !== OPENCODE_MODEL)
       const modelsToTry = [OPENCODE_MODEL, ...fallbacks]
