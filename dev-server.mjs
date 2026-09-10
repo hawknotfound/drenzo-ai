@@ -62,12 +62,13 @@ const server = createServer(async (req, res) => {
   try {
     // ─── POST /api/chat ─────────────────────────
     if (url.startsWith('/api/chat') && req.method === 'POST') {
-      const { messages, temperature, max_tokens, sessionId } = JSON.parse(body)
+      const { messages, temperature, max_tokens, sessionId, userApiKey } = JSON.parse(body)
+      const apiKey = userApiKey || OPENCODE_KEY
       const response = await fetch(`${OPENCODE_URL}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${OPENCODE_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
           'session_id': sessionId || SESSION_ID,
         },
         body: JSON.stringify({
