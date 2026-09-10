@@ -8,10 +8,6 @@ export interface OpenCodeRequest {
   temperature?: number
   max_tokens?: number
   userApiKey?: string
-  sessionId?: string
-  provider?: 'opencode' | 'openrouter'
-  openRouterApiKey?: string
-  openRouterModel?: string
 }
 
 export interface StreamToken {
@@ -42,13 +38,6 @@ export async function* streamChat(
     throw new Error(`Chat API error (${response.status}): ${err}`)
   }
 
-  // Check if response is actually JSON (error case) instead of SSE stream
-  const contentType = response.headers.get('content-type') || ''
-  if (contentType.includes('application/json')) {
-    const data = await response.json()
-    throw new Error(data.error || 'Unexpected JSON response from chat API')
-  }
-
   const reader = response.body?.getReader()
   if (!reader) throw new Error('Response body is not readable')
 
@@ -76,9 +65,8 @@ export async function* streamChat(
           const parsed = JSON.parse(data)
           if (parsed.error) throw new Error(parsed.error)
           const delta = parsed.choices?.[0]?.delta
-          if (!delta) continue
-          const content = delta.content || ''
-          const reasoning = delta.reasoning_content || ''
+          const content = delta?.content || ''
+          const reasoning = delta?.reasoning_content || ''
           if (reasoning) yield { type: 'thinking', text: reasoning }
           if (content) yield { type: 'content', text: content }
         } catch (e) {
@@ -94,45 +82,26 @@ export async function* streamChat(
 
 export function streamChatWithCallbacks(
   request: OpenCodeRequest,
-  callbacks: OpenCodeStreamCallbacks,
-  retries = 2
+  callbacks: OpenCodeStreamCallbacks
 ): AbortController {
   const controller = new AbortController()
 
   ;(async () => {
-    let lastError: Error | null = null
-
-    for (let attempt = 0; attempt <= retries; attempt++) {
-      if (controller.signal.aborted) return
-
-      try {
-        for await (const token of streamChat(request)) {
-          if (controller.signal.aborted) break
-          if (token.type === 'thinking' && callbacks.onThinking) {
-            callbacks.onThinking(token.text)
-          } else if (token.type === 'content') {
-            callbacks.onToken(token.text)
-          }
+    try {
+      for await (const token of streamChat(request)) {
+        if (controller.signal.aborted) break
+        if (token.type === 'thinking' && callbacks.onThinking) {
+          callbacks.onThinking(token.text)
+        } else if (token.type === 'content') {
+          callbacks.onToken(token.text)
         }
-        if (!controller.signal.aborted) {
-          callbacks.onDone()
-        }
-        return
-      } catch (err) {
-        lastError = err instanceof Error ? err : new Error(String(err))
-        const msg = lastError.message.toLowerCase()
-        const isRateLimit = msg.includes('rate limit') || msg.includes('too many') || msg.includes('429')
-
-        if (isRateLimit && attempt < retries) {
-          const delay = (attempt + 1) * 3000
-          await new Promise(r => setTimeout(r, delay))
-          continue
-        }
-
-        if (!controller.signal.aborted) {
-          callbacks.onError(lastError)
-        }
-        return
+      }
+      if (!controller.signal.aborted) {
+        callbacks.onDone()
+      }
+    } catch (err) {
+      if (!controller.signal.aborted) {
+        callbacks.onError(err instanceof Error ? err : new Error(String(err)))
       }
     }
   })()

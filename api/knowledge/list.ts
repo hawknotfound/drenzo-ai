@@ -21,7 +21,7 @@ export default async function handler(_req: VercelRequest, res: VercelResponse) 
   }
 
   const auth = Buffer.from(`${CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}`).toString('base64')
-  const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/resources/search?expression=folder="${CLOUDINARY_FOLDER}"+AND+format=md&max_results=500`
+  const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/resources/search?expression=folder="${CLOUDINARY_FOLDER}"+AND+format=md&max_results=50`
 
   try {
     const response = await fetch(url, { headers: { Authorization: `Basic ${auth}` } })

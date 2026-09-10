@@ -74,8 +74,6 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const { settings } = useSettings(user?.id)
   const { toasts, showToast, dismissToast } = useToast()
 
-  const sessionId = user?.email ? `drenzo-${btoa(user.email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16)}` : undefined
-
   const {
     messages,
     isStreaming,
@@ -89,7 +87,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     regenerate,
     clearError,
     editAndResend,
-  } = useChat(isGuest ? guestConvId.current : activeConversationId, !!isGuest, language, instructionsApi.activeInstruction?.content, settings.temperature, settings.max_tokens, sessionId)
+  } = useChat(isGuest ? guestConvId.current : activeConversationId, !!isGuest, language, instructionsApi.activeInstruction?.content, settings.temperature, settings.max_tokens)
 
   const handleNewChat = useCallback(async () => {
     setInputText('')

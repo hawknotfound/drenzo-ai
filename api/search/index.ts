@@ -9,38 +9,6 @@ interface SearchResult {
   content: string
 }
 
-// ─── FreeSerp (primary — no API key) ────────────────────────────────
-
-async function searchFreeSerp(query: string): Promise<{ results: SearchResult[]; answer: string }> {
-  const url = `https://freeserp.ai/api.php?q=${encodeURIComponent(query)}&format=json`
-
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 5000)
-
-  try {
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'DrenzoAI/1.0' },
-      signal: controller.signal,
-    })
-
-    if (!response.ok) throw new Error(`FreeSerp error: ${response.status}`)
-
-    const data = await response.json()
-
-    const results: SearchResult[] = (data.organic || data.results || []).slice(0, 8).map((r: any) => ({
-      title: r.title || '',
-      url: r.url || r.link || '',
-      content: r.snippet || r.content || r.description || '',
-    }))
-
-    return { results, answer: data.answer || '' }
-  } finally {
-    clearTimeout(timeout)
-  }
-}
-
-// ─── Tavily (fallback — needs API key) ──────────────────────────────
-
 async function searchTavily(query: string): Promise<{ results: SearchResult[]; answer: string }> {
   const response = await fetch('https://api.tavily.com/search', {
     method: 'POST',
@@ -70,65 +38,53 @@ async function searchTavily(query: string): Promise<{ results: SearchResult[]; a
   }
 }
 
-// ─── DuckDuckGo (last resort — free, no key) ────────────────────────
-
 async function searchDuckDuckGo(query: string): Promise<{ results: SearchResult[]; answer: string }> {
   const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&skip_disambig=1`
 
-  const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), 5000)
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'DrenzoAI/1.0' },
+  })
 
-  try {
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'DrenzoAI/1.0' },
-      signal: controller.signal,
+  if (!response.ok) throw new Error(`DuckDuckGo error: ${response.status}`)
+
+  const data = await response.json()
+
+  const results: SearchResult[] = []
+  const answer = data.AbstractText || data.Answer || ''
+
+  if (data.AbstractText && data.AbstractURL) {
+    results.push({
+      title: data.AbstractSource || 'Summary',
+      url: data.AbstractURL,
+      content: data.AbstractText,
     })
+  }
 
-    if (!response.ok) throw new Error(`DuckDuckGo error: ${response.status}`)
-
-    const data = await response.json()
-
-    const results: SearchResult[] = []
-    const answer = data.AbstractText || data.Answer || ''
-
-    if (data.AbstractText && data.AbstractURL) {
-      results.push({
-        title: data.AbstractSource || 'Summary',
-        url: data.AbstractURL,
-        content: data.AbstractText,
-      })
-    }
-
-    if (data.RelatedTopics) {
-      for (const topic of data.RelatedTopics.slice(0, 6)) {
-        if (topic.Text) {
-          results.push({
-            title: topic.Text?.split(' - ')[0] || topic.FirstURL || 'Related',
-            url: topic.FirstURL || '',
-            content: topic.Text,
-          })
-        }
-        if (topic.Topics) {
-          for (const sub of topic.Topics.slice(0, 3)) {
-            if (sub.Text) {
-              results.push({
-                title: sub.Text?.split(' - ')[0] || sub.FirstURL || 'Related',
-                url: sub.FirstURL || '',
-                content: sub.Text,
-              })
-            }
+  if (data.RelatedTopics) {
+    for (const topic of data.RelatedTopics.slice(0, 6)) {
+      if (topic.Text) {
+        results.push({
+          title: topic.Text?.split(' - ')[0] || topic.FirstURL || 'Related',
+          url: topic.FirstURL || '',
+          content: topic.Text,
+        })
+      }
+      if (topic.Topics) {
+        for (const sub of topic.Topics.slice(0, 3)) {
+          if (sub.Text) {
+            results.push({
+              title: sub.Text?.split(' - ')[0] || sub.FirstURL || 'Related',
+              url: sub.FirstURL || '',
+              content: sub.Text,
+            })
           }
         }
       }
     }
-
-    return { results, answer }
-  } finally {
-    clearTimeout(timeout)
   }
-}
 
-// ─── Handler ─────────────────────────────────────────────────────────
+  return { results, answer }
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (handleCors(req, res)) return
@@ -139,28 +95,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'query string required' })
   }
 
-  // Try FreeSerp first (no key needed)
   try {
-    const result = await searchFreeSerp(query)
-    if (result.results.length > 0) {
-      return res.json(result)
-    }
-  } catch {}
-
-  // Fallback to Tavily if key is set
-  if (TAVILY_API_KEY) {
-    try {
+    if (TAVILY_API_KEY) {
       const result = await searchTavily(query)
       return res.json(result)
-    } catch {}
-  }
+    }
 
-  // Last resort: DuckDuckGo
-  try {
     const result = await searchDuckDuckGo(query)
     return res.json(result)
-  } catch {
-    // All searches failed — return empty results instead of error
-    return res.json({ results: [], answer: '' })
+  } catch (err) {
+    return res.status(500).json({ error: String(err) })
   }
 }
