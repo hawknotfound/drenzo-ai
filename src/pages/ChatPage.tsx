@@ -68,10 +68,10 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     deleteConversation,
     renameConversation,
     togglePin,
-  } = useConversations(user?.email)
+  } = useConversations(user?.id)
 
-  const instructionsApi = useInstructions(user?.email)
-  const { settings } = useSettings(user?.email)
+  const instructionsApi = useInstructions(user?.id)
+  const { settings } = useSettings(user?.id)
   const { toasts, showToast, dismissToast } = useToast()
 
   const sessionId = user?.email ? `drenzo-${btoa(user.email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16)}` : undefined
@@ -422,7 +422,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         userEmail={user?.email}
-        userId={user?.email}
+        userId={user?.id}
         onSignOut={signOut}
         instructionsApi={instructionsApi}
       />

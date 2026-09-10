@@ -1,35 +1,48 @@
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '@/lib/supabase/client'
 import type { AppSettings } from '@/types/settings'
-import * as storage from '@/lib/google/storage'
+
+const DEFAULTS: AppSettings = {
+  temperature: 0.7,
+  max_tokens: 4096,
+}
 
 export function useSettings(userId: string | undefined) {
-  const [settings, setSettings] = useState<AppSettings>({ temperature: 0.7, max_tokens: 4096 })
-  const [loading, setLoading] = useState(false)
+  const [settings, setSettings] = useState<AppSettings>(DEFAULTS)
+  const [loading, setLoading] = useState(true)
 
-  const load = useCallback(async () => {
-    if (!userId) return
-    setLoading(true)
-    try {
-      const data = await storage.loadSettings()
-      setSettings({ temperature: data.temperature, max_tokens: data.max_tokens })
-    } catch (err) {
-      console.error('Load settings error:', err)
-    } finally {
-      setLoading(false)
-    }
+  useEffect(() => {
+    if (!userId) { setLoading(false); return }
+    supabase
+      .from('user_settings')
+      .select('*')
+      .eq('user_id', userId)
+      .single()
+      .then(({ data, error }) => {
+        if (!error && data) {
+          setSettings({
+            temperature: data.temperature,
+            max_tokens: data.max_tokens,
+          })
+        }
+        setLoading(false)
+      })
   }, [userId])
 
-  const loadSettings = load
-
   const updateSettings = useCallback(async (updates: Partial<AppSettings>) => {
+    if (!userId) return
     const newSettings = { ...settings, ...updates }
     setSettings(newSettings)
-    try {
-      await storage.saveSettings(updates)
-    } catch (err) {
-      console.error('Update settings error:', err)
-    }
-  }, [settings])
 
-  return { settings, loading, loadSettings, updateSettings }
+    const { error } = await supabase
+      .from('user_settings')
+      .upsert({
+        user_id: userId,
+        ...newSettings,
+      }, { onConflict: 'user_id' })
+
+    if (error) console.error('Update settings error:', error)
+  }, [userId, settings])
+
+  return { settings, loading, updateSettings }
 }
