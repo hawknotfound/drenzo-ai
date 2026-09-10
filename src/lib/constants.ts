@@ -13,4 +13,5 @@ export const OPENROUTER_MODELS = [
   { id: 'google/gemma-2-9b-it:free', label: 'Gemma 2 9B (free)' },
   { id: 'qwen/qwen-2.5-72b-instruct:free', label: 'Qwen 2.5 72B (free)' },
   { id: 'mistralai/mistral-7b-instruct:free', label: 'Mistral 7B (free)' },
+  { id: 'nex-agi/nex-n2.5-mini:free', label: 'Nex N2.5 Mini (free)' },
 ] as const
