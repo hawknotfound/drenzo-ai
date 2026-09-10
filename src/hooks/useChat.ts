@@ -98,7 +98,17 @@ export function useChat(conversationId: string | null, isGuest = false, language
     if (relevantFiles.length > 0) {
       try {
         const files = await getRelevantKnowledge(relevantFiles)
-        knowledgeContext = files.map(f => `[${f.filename}]\n${f.content}`).join('\n\n')
+        // Token budget: cap at ~4000 chars (~1000 tokens) to prevent context overflow
+        const MAX_KNOWLEDGE_CHARS = 4000
+        let total = 0
+        const parts: string[] = []
+        for (const f of files) {
+          const part = `[${f.filename}]\n${f.content}`
+          if (total + part.length > MAX_KNOWLEDGE_CHARS) break
+          parts.push(part)
+          total += part.length
+        }
+        knowledgeContext = parts.join('\n\n')
       } catch {}
     }
 
