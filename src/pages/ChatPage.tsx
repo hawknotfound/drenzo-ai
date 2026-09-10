@@ -74,7 +74,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
   const { settings } = useSettings(user?.email)
   const { toasts, showToast, dismissToast } = useToast()
 
-  const sessionId = userEmail ? `drenzo-${btoa(userEmail).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16)}` : undefined
+  const sessionId = user?.email ? `drenzo-${btoa(user.email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16)}` : undefined
 
   const {
     messages,
