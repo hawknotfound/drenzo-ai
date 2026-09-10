@@ -68,10 +68,10 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
     deleteConversation,
     renameConversation,
     togglePin,
-  } = useConversations(user?.id)
+  } = useConversations(user?.email)
 
-  const instructionsApi = useInstructions(user?.id)
-  const { settings } = useSettings(user?.id)
+  const instructionsApi = useInstructions(user?.email)
+  const { settings } = useSettings(user?.email)
   const { toasts, showToast, dismissToast } = useToast()
 
   const {
@@ -420,7 +420,7 @@ export function ChatPage({ isGuest, onExitGuest }: ChatPageProps) {
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         userEmail={user?.email}
-        userId={user?.id}
+        userId={user?.email}
         onSignOut={signOut}
         instructionsApi={instructionsApi}
       />
