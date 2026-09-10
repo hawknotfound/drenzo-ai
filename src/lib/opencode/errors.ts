@@ -52,7 +52,15 @@ export function friendlyChatError(raw: string): string {
     if (inner.includes('CreditsError') || inner.includes('payment method')) {
       return 'API key has no credits — check your account at opencode.ai/billing.'
     }
+    if (inner.includes('FreeUsageLimitError') || inner.includes('rate limit exceeded')) {
+      return 'Free tier rate limit hit — too many shared users. Add your own API key in Settings, or wait a few minutes.'
+    }
     return 'AI provider returned an error — try again in a few seconds.'
+  }
+
+  // Direct rate limit errors
+  if (r.includes('FreeUsageLimitError') || r.includes('rate limit exceeded')) {
+    return 'Free tier rate limit hit — too many shared users. Add your own API key in Settings, or wait a few minutes.'
   }
 
   // Abort (user cancelled)
