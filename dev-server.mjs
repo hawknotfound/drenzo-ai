@@ -161,6 +161,59 @@ const server = createServer(async (req, res) => {
       return
     }
 
+    // ─── POST /api/search ──────────────────────────
+    if (url.startsWith('/api/search') && req.method === 'POST') {
+      const { query } = JSON.parse(body)
+      if (!query) { json(res, 400, { error: 'query required' }); return }
+
+      // FreeSerp (no key)
+      try {
+        const r = await fetch('https://freeserp.ai/api.php?q=' + encodeURIComponent(query) + '&format=json', {
+          headers: { 'User-Agent': 'DrenzoAI/1.0' }
+        })
+        if (r.ok) {
+          const d = await r.json()
+          const results = (d.organic || d.results || []).slice(0, 8).map(x => ({
+            title: x.title || '', url: x.url || x.link || '', content: x.snippet || x.content || ''
+          }))
+          if (results.length > 0) { json(res, 200, { results, answer: d.answer || '' }); return }
+        }
+      } catch {}
+
+      // Tavily fallback
+      if (OPENKEY && process.env.TAVILY_API_KEY) {
+        try {
+          const r = await fetch('https://api.tavily.com/search', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ api_key: process.env.TAVILY_API_KEY, query, search_depth: 'advanced', include_answer: true, max_results: 5 })
+          })
+          if (r.ok) {
+            const d = await r.json()
+            const results = (d.results || []).map(x => ({ title: x.title, url: x.url, content: x.content }))
+            json(res, 200, { results, answer: d.answer || '' }); return
+          }
+        } catch {}
+      }
+
+      // DuckDuckGo fallback
+      try {
+        const r = await fetch('https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&skip_disambig=1', {
+          headers: { 'User-Agent': 'DrenzoAI/1.0' }
+        })
+        const d = await r.json()
+        const results = []
+        if (d.AbstractText && d.AbstractURL) results.push({ title: d.AbstractSource || 'Summary', url: d.AbstractURL, content: d.AbstractText })
+        for (const t of (d.RelatedTopics || []).slice(0, 5)) {
+          if (t.Text) results.push({ title: t.Text.split(' - ')[0], url: t.FirstURL || '', content: t.Text })
+        }
+        json(res, 200, { results, answer: d.AbstractText || d.Answer || '' })
+      } catch (err) {
+        json(res, 500, { error: String(err) })
+      }
+      return
+    }
+
     // ─── 404 ────────────────────────────────────
     json(res, 404, { error: 'Not found' })
 
