@@ -8,6 +8,7 @@ export interface OpenCodeRequest {
   temperature?: number
   max_tokens?: number
   userApiKey?: string
+  sessionId?: string
 }
 
 export interface StreamToken {
