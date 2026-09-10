@@ -82,26 +82,45 @@ export async function* streamChat(
 
 export function streamChatWithCallbacks(
   request: OpenCodeRequest,
-  callbacks: OpenCodeStreamCallbacks
+  callbacks: OpenCodeStreamCallbacks,
+  retries = 2
 ): AbortController {
   const controller = new AbortController()
 
   ;(async () => {
-    try {
-      for await (const token of streamChat(request)) {
-        if (controller.signal.aborted) break
-        if (token.type === 'thinking' && callbacks.onThinking) {
-          callbacks.onThinking(token.text)
-        } else if (token.type === 'content') {
-          callbacks.onToken(token.text)
+    let lastError: Error | null = null
+
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      if (controller.signal.aborted) return
+
+      try {
+        for await (const token of streamChat(request)) {
+          if (controller.signal.aborted) break
+          if (token.type === 'thinking' && callbacks.onThinking) {
+            callbacks.onThinking(token.text)
+          } else if (token.type === 'content') {
+            callbacks.onToken(token.text)
+          }
         }
-      }
-      if (!controller.signal.aborted) {
-        callbacks.onDone()
-      }
-    } catch (err) {
-      if (!controller.signal.aborted) {
-        callbacks.onError(err instanceof Error ? err : new Error(String(err)))
+        if (!controller.signal.aborted) {
+          callbacks.onDone()
+        }
+        return
+      } catch (err) {
+        lastError = err instanceof Error ? err : new Error(String(err))
+        const msg = lastError.message.toLowerCase()
+        const isRateLimit = msg.includes('rate limit') || msg.includes('too many') || msg.includes('429')
+
+        if (isRateLimit && attempt < retries) {
+          const delay = (attempt + 1) * 3000
+          await new Promise(r => setTimeout(r, delay))
+          continue
+        }
+
+        if (!controller.signal.aborted) {
+          callbacks.onError(lastError)
+        }
+        return
       }
     }
   })()
