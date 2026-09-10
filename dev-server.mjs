@@ -181,7 +181,7 @@ const server = createServer(async (req, res) => {
       } catch {}
 
       // Tavily fallback
-      if (OPENKEY && process.env.TAVILY_API_KEY) {
+      if (process.env.TAVILY_API_KEY) {
         try {
           const r = await fetch('https://api.tavily.com/search', {
             method: 'POST',
