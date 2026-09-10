@@ -37,7 +37,7 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
   const [showORKey, setShowORKey] = useState(false)
   const [orKeySaved, setOrKeySaved] = useState(false)
   const [orModel, setOrModel] = useState(() => {
-    try { return localStorage.getItem(OPENROUTER_MODEL_STORAGE) || 'openai/gpt-4o-mini' } catch { return 'openai/gpt-4o-mini' }
+    try { return localStorage.getItem(OPENROUTER_MODEL_STORAGE) || 'deepseek/deepseek-r1:free' } catch { return 'deepseek/deepseek-r1:free' }
   })
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export function SettingsModal({ isOpen, onClose, userEmail, userId, onSignOut, i
         setUserApiKey(localStorage.getItem(USER_API_KEY_STORAGE) || '')
         setProvider((localStorage.getItem(PROVIDER_STORAGE) as 'opencode' | 'openrouter') || 'opencode')
         setOpenRouterKey(localStorage.getItem(OPENROUTER_API_KEY_STORAGE) || '')
-        setOrModel(localStorage.getItem(OPENROUTER_MODEL_STORAGE) || 'openai/gpt-4o-mini')
+        setOrModel(localStorage.getItem(OPENROUTER_MODEL_STORAGE) || 'deepseek/deepseek-r1:free')
       } catch {}
       setShowApiKey(false)
       setApiKeySaved(false)

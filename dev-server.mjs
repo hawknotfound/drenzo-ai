@@ -68,7 +68,7 @@ const server = createServer(async (req, res) => {
       if (provider === 'openrouter') {
         const orKey = openRouterApiKey || OPENROUTER_KEY
         if (!orKey) { json(res, 400, { error: 'No OpenRouter API key' }); return }
-        const orModel = openRouterModel || 'openai/gpt-4o-mini'
+        const orModel = openRouterModel || 'deepseek/deepseek-r1:free'
         const orRes = await fetch(`${OPENROUTER_URL}/chat/completions`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${orKey}`, 'HTTP-Referer': 'https://drenzo-ai.vercel.app', 'X-Title': 'Drenzo AI' },

@@ -25,7 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (useOpenRouter) {
     const orKey = openRouterApiKey || OPENROUTER_API_KEY
     if (!orKey) return res.status(400).json({ error: 'No OpenRouter API key. Add it in Settings → Provider.' })
-    const orModel = openRouterModel || 'openai/gpt-4o-mini'
+    const orModel = openRouterModel || 'deepseek/deepseek-r1:free'
     res.setHeader('Content-Type', 'text/event-stream')
     res.setHeader('Cache-Control', 'no-cache')
     res.setHeader('Connection', 'keep-alive')
