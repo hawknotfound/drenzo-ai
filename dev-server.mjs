@@ -27,11 +27,12 @@ loadEnv()
 const PORT = 3001
 const OPENCODE_URL = process.env.VITE_OPENCODE_API_URL || 'https://opencode.ai/zen/v1'
 const OPENCODE_KEY = process.env.VITE_OPENCODE_API_KEY
-const OPENCODE_MODEL = process.env.VITE_OPENCODE_MODEL || 'deepseek-v4-flash-free'
+const OPENCODE_MODEL = process.env.VITE_OPENCODE_MODEL || 'mimo-v2.5-free'
 const CLOUD_NAME = process.env.VITE_CLOUDINARY_CLOUD_NAME
 const CLOUD_KEY = process.env.VITE_CLOUDINARY_API_KEY
 const CLOUD_SECRET = process.env.CLOUDINARY_API_SECRET || process.env.VITE_CLOUDINARY_API_SECRET
 const CLOUD_FOLDER = process.env.CLOUDINARY_FOLDER || 'Drenzo AI'
+const SESSION_ID = process.env.OPENCODE_SESSION_ID || 'drenzo-ai-free'
 
 if (!OPENCODE_KEY) {
   console.error('Missing VITE_OPENCODE_API_KEY in .env')
@@ -67,6 +68,7 @@ const server = createServer(async (req, res) => {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${OPENCODE_KEY}`,
+          'session_id': SESSION_ID,
         },
         body: JSON.stringify({
           model: OPENCODE_MODEL,
@@ -110,7 +112,7 @@ const server = createServer(async (req, res) => {
         return
       }
       const auth = Buffer.from(`${CLOUD_KEY}:${CLOUD_SECRET || ''}`).toString('base64')
-      const apiUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/resources/search?expression=folder="${CLOUD_FOLDER}"+AND+format=md&max_results=50`
+      const apiUrl = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/resources/search?expression=folder="${CLOUD_FOLDER}"+AND+format=md&max_results=500`
 
       const response = await fetch(apiUrl, { headers: { Authorization: `Basic ${auth}` } })
       if (!response.ok) { json(res, 502, { error: `Cloudinary error: ${await response.text()}` }); return }
